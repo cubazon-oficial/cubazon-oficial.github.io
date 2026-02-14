@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html lang='es'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>CUBAZON · Tienda online en Sagua de Tánamo</title>
+    
+    <!-- Fonts -->
+    <link href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap' rel='stylesheet'>
+    <link href='https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css' rel='stylesheet'>
+    
+    <!-- Owl Carousel -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css">
+    
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ===== ANTI-PESTAÑEO Y OPTIMIZACIÓN DE CARGA ===== */
+        .products-grid,
+        .hot-posts,
+        #featured-products,
+        #hot-posts-container,
+        #consumibles-products,
+        #limpieza-products,
+        #latest-products {
+            min-height: 400px;
+            position: relative;
+            contain: content;
+            content-visibility: auto;
+            transition: opacity 0.2s ease;
+        }
+
+        .products-grid:empty,
+        .hot-posts:empty,
+        #featured-products:empty,
+        #hot-posts-container:empty,
+        #consumibles-products:empty,
+        #limpieza-products:empty,
+        #latest-products:empty {
+            min-height: 400px;
+            background: linear-gradient(90deg, #f0f0f0 25%, #f8f8f8 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 8px;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .product-card {
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fadeInUp 0.3s ease forwards;
+            will-change: transform, opacity;
+            backface-visibility: hidden;
+            transform: translateZ(0);
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .product-card:nth-child(1) { animation-delay: 0.05s; }
+        .product-card:nth-child(2) { animation-delay: 0.1s; }
+        .product-card:nth-child(3) { animation-delay: 0.15s; }
+        .product-card:nth-child(4) { animation-delay: 0.2s; }
+        .product-card:nth-child(5) { animation-delay: 0.25s; }
+        .product-card:nth-child(6) { animation-delay: 0.3s; }
+        .product-card:nth-child(7) { animation-delay: 0.35s; }
+        .product-card:nth-child(8) { animation-delay: 0.4s; }
+        .product-card:nth-child(n+9) { animation-delay: 0.45s; }
+
+        #hot-posts-container {
+            min-height: 400px;
+        }
+
+        #featured-products {
+            min-height: 600px;
+        }
+
+        #consumibles-products,
+        #limpieza-products {
+            min-height: 300px;
+        }
+
+        #latest-products {
+            min-height: 600px;
+        }
+
+        .product-image {
+            aspect-ratio: 1/1;
+            width: 100%;
+            object-fit: contain;
+            background: #f8f9fa;
+            content-visibility: auto;
+            contain: paint;
+        }
+
+        .slider-outer-wrap {
+            min-height: 400px;
+            contain: content;
+        }
+
+        /* ===== AVATAR DE USUARIO ===== */
+        .user-avatar-circle {
+            width: 40px;
+            height: 40px;
+            background: #f08804;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #131921;
+            font-weight: 700;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .user-avatar-circle:hover {
+            background: #f7ca00;
+            transform: scale(1.05);
+        }
+
+        .user-avatar-circle i {
+            font-size: 20px;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f0f2f5;
+            color: #0f1111;
+            line-height: 1.5;
+        }
+
+        a {
+            text-decoration: none;
+            color: #007185;
+        }
+
+        a:hover {
+            color: #c7511f;
+        }
+
+        #header-wrap {
+            background: #131921;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-header {
+            padding: 10px 20px;
+        }
+
+        .container.row {
+            max-width: 1500px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-logo img {
+            height: 50px;
+            width: auto;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .top-bar-social ul {
+            display: flex;
+            gap: 15px;
+            list-style: none;
+        }
+
+        .top-bar-social ul li a {
+            color: white;
+            font-size: 18px;
+        }
+
+        .right-menu ul {
+            display: flex;
+            gap: 20px;
+            list-style: none;
+            align-items: center;
+        }
+
+        .right-menu ul li a {
+            color: white;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.3s;
+        }
+
+        .right-menu ul li a:hover {
+            color: #f08804;
+        }
+
+        .sora-cart {
+            position: relative;
+        }
+
+        .sora-cart-details {
+            display: flex;
+            align-items: center;
+            color: white;
+            cursor: pointer;
+        }
+
+        .sora-cart-details:after {
+            content: '\f290';
+            font-family: 'FontAwesome';
+            font-size: 24px;
+            margin-left: 5px;
+        }
+
+        .simpleCart_quantity {
+            background: #f08804;
+            color: #0f1111;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-left: 5px;
+        }
+
+        .sora-cart-description {
+            position: absolute;
+            right: 0;
+            top: 40px;
+            width: 350px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            padding: 20px;
+            display: none;
+            z-index: 1000;
+        }
+
+        .sora-cart:hover .sora-cart-description {
+            display: block;
+        }
+
+        .header-menu {
+            background: #232f3e;
+            padding: 0 20px;
+        }
+
+        #main-menu ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+
+        #main-menu ul li a {
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 0;
+            display: block;
+        }
+
+        #main-menu ul li a:hover {
+            color: #f08804;
+        }
+
+        .slider-outer-wrap {
+            max-width: 1500px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .main-slider {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .slider-item {
+            position: relative;
+            height: 400px;
+        }
+
+        .slider-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .slider-item .post-info-wrap {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 40px 30px;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            color: white;
+        }
+
+        .slider-item .post-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .slider-item .post-title a {
+            color: white;
+        }
+
+        .slider-item .post-tag {
+            background: #f08804;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 30px 0 20px;
+            color: #0f1111;
+            padding: 0 20px;
+            max-width: 1500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            max-width: 1500px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 250px;
+            object-fit: contain;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+
+        .product-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            line-height: 1.4;
+            height: 44px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            color: #0f1111;
+        }
+
+        .product-title:hover {
+            color: #c7511f;
+        }
+
+        .product-price {
+            font-size: 24px;
+            font-weight: 700;
+            color: #b12704;
+            margin: 10px 0;
+        }
+
+        .product-price small {
+            font-size: 14px;
+            font-weight: 400;
+            color: #565959;
+            margin-left: 5px;
+            text-decoration: line-through;
+        }
+
+        .product-rating {
+            color: #ffa41c;
+            margin-bottom: 10px;
+        }
+
+        .product-stock {
+            font-size: 12px;
+            color: #007600;
+            margin-bottom: 15px;
+        }
+
+        .product-agotado {
+            background: #dc3545;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .btn-add-cart {
+            background: #ffd814;
+            border: none;
+            border-radius: 20px;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #0f1111;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-add-cart:hover {
+            background: #f7ca00;
+        }
+
+        .btn-add-cart:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .hot-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            margin: 40px 0;
+            color: white;
+        }
+
+        .hot-header {
+            max-width: 1500px;
+            margin: 0 auto 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .hot-header h2 {
+            font-size: 32px;
+            font-weight: 800;
+        }
+
+        .hot-posts {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+            max-width: 1500px;
+            margin: 0 auto;
+        }
+
+        .categorias-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            max-width: 1500px;
+            margin: 0 auto 40px;
+            padding: 0 20px;
+        }
+
+        .categoria-card {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .categoria-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .categoria-card i {
+            font-size: 40px;
+            color: #232f3e;
+            margin-bottom: 15px;
+        }
+
+        .categoria-card h3 {
+            font-size: 18px;
+            color: #0f1111;
+            margin-bottom: 5px;
+        }
+
+        .categoria-card p {
+            color: #6c757d;
+            font-size: 13px;
+        }
+
+        .categoria-card.ofertas {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .categoria-card.ofertas i,
+        .categoria-card.ofertas h3,
+        .categoria-card.ofertas p {
+            color: white;
+        }
+
+        #footer-wrapper {
+            background: #232f3e;
+            color: white;
+            padding: 50px 20px;
+            margin-top: 50px;
+        }
+
+        .footer-widgets-wrap {
+            max-width: 1500px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+        }
+
+        .footer a {
+            color: #ddd;
+        }
+
+        .footer a:hover {
+            color: white;
+        }
+
+        #sub-footer-wrapper {
+            background: #131921;
+            padding: 20px;
+            text-align: center;
+            color: #ddd;
+        }
+
+        .back-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #232f3e;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            display: none;
+            transition: all 0.3s;
+            z-index: 99;
+        }
+
+        .back-top:hover {
+            background: #f08804;
+        }
+
+        @media (max-width: 1024px) {
+            .hot-posts {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .footer-widgets-wrap {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-right .right-menu {
+                display: none;
+            }
+            .hot-posts {
+                grid-template-columns: 1fr;
+            }
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            }
+            .footer-widgets-wrap {
+                grid-template-columns: 1fr;
+            }
+            .categorias-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+            .slider-item .post-title {
+                font-size: 24px;
+            }
+            .slider-item {
+                height: 300px;
+            }
+            .categorias-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+      /* ===== CORRECCIÓN DE ESPACIO EN BLANCO ===== */
+body {
+    margin: 0;
+    padding: 0;
+    background: #f0f2f5;
+}
+
+#outer-wrapper {
+    margin-top: 0;
+    padding-top: 0;
+}
+
+/* Restaurar márgenes normales para los contenedores principales */
+.slider-outer-wrap {
+    margin-top: 20px !important;
+    margin-bottom: 20px !important;
+    padding: 0 20px !important;
+}
+
+.hot-section {
+    margin-top: 40px !important;
+    margin-bottom: 40px !important;
+}
+
+.section-title {
+    margin-top: 30px !important;
+    margin-bottom: 20px !important;
+    padding: 0 20px !important;
+}
+
+.products-grid,
+.categorias-grid {
+    margin-bottom: 30px !important;
+}
+
+#footer-wrapper {
+    margin-top: 50px !important;
+}
+
+/* Skeletons con altura reducida pero respetando márgenes */
+.products-grid:empty,
+.hot-posts:empty,
+#featured-products:empty,
+#hot-posts-container:empty,
+#consumibles-products:empty,
+#limpieza-products:empty,
+#latest-products:empty {
+    min-height: 200px;
+    margin-top: 0;
+    margin-bottom: 20px !important;
+}
+
+/* Restaurar márgenes a títulos */
+h1, h2, h3, h4, h5, h6 {
+    margin-top: 0;
+    margin-bottom: 0.5em;
+}
+
+.section-title:first-of-type {
+    margin-top: 20px !important;
+}
+
+/* Asegurar que el header se vea bien */
+#header-wrap {
+    margin-bottom: 0;
+}
+
+.header-header {
+    padding: 10px 20px;
+}
+
+.header-menu {
+    padding: 0 20px;
+}
+
+    </style>
+</head>
+<body>
+    <div id="outer-wrapper">
+
+        <div id="header-wrap">
+            <div class="header-header">
+                <div class="container row">
+                    <div class="header-logo">
+                        <a href="/">
+                            <img src="http://imgfz.com/i/oXOfVlT.png" alt="CUBAZON" style="height: 50px;">
+                        </a>
+                    </div>
+                    
+                    <div class="header-right">
+                        <div class="top-bar-social">
+                            <ul>
+                                <li><a href="#"><i class="fa fa-facebook"></i></a></li>
+                                <li><a href="#"><i class="fa fa-instagram"></i></a></li>
+                                <li><a href="#"><i class="fa fa-twitter"></i></a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="right-menu">
+                            <ul>
+                                <li id="userMenuItem" style="display: flex; align-items: center;">
+                                    <!-- Avatar circular (visible cuando está autenticado) -->
+                                    <div id="userAvatar" class="user-avatar-circle" style="display: none; cursor: pointer;" onclick="window.location.href='/mi-cuenta.html'">
+                                        <i class="fa fa-user"></i>
+                                    </div>
+                                    
+                                    <!-- Link de texto (visible cuando NO está autenticado) -->
+                                    <a href="/login.html" id="userMenuLink" style="display: flex; align-items: center; gap: 5px;">
+                                        <i class="fa fa-sign-in"></i> 
+                                        <span id="userMenuText">Iniciar sesión</span>
+                                    </a>
+                                </li>
+                                <li><a href="#"><i class="fa fa-phone"></i> +53 56940021</a></li>
+                                <li><a href="#"><i class="fa fa-envelope"></i> soporte@cubazon.com</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="sora-cart">
+                            <div class="sora-cart-details">
+                                <span class="simpleCart_quantity" id="cart-counter">0</span>
+                            </div>
+                            <div class="sora-cart-description">
+                                <div class="simpleCart_items" id="cart-preview">
+                                    <p style="padding: 20px; text-align: center; color: #666;">Tu carrito está vacío</p>
+                                </div>
+                                <div class="sora-cart-buttons-wrap">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+                                        <button onclick="window.cart.vaciar()" style="background: none; border: none; color: #0f1111; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 5px;">
+                                            <i class="fa fa-trash"></i> Vaciar todo
+                                        </button>
+                                        <a href="/p/checkout.html" style="background: #ffd814; padding: 8px 20px; border-radius: 20px; color: #0f1111; font-weight: 600; text-decoration: none;">
+                                            <i class="fa fa-lock"></i> Pagar
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="header-menu">
+                <div class="container row">
+                    <div id="main-menu">
+                        <ul>
+                            <li><a href="/">Inicio</a></li>
+                            <li><a href="/categoria.html?cat=ofertas">Ofertas</a></li>
+                            <li><a href="/categoria.html?cat=Electrónica">Electrónica</a></li>
+                            <li><a href="/categoria.html?cat=Ropa">Ropa</a></li>
+                            <li><a href="/categoria.html?cat=Hogar">Hogar</a></li>
+                            <li><a href="/categoria.html?cat=Accesorios">Accesorios</a></li>
+                            <li><a href="/buscar.html"><i class="fa fa-search"></i> Buscar</a></li>
+                            <li><a href="/p/cart.html">Mi Carrito</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slider-outer-wrap">
+            <div class="main-slider owl-carousel" id="home-slider"></div>
+        </div>
+
+        <div class="hot-section">
+            <div class="hot-header">
+                <h2>🔥 Ofertas del Día</h2>
+                <a href="/categoria.html?cat=ofertas" style="color: white; font-weight: 600;">Ver todas →</a>
+            </div>
+            <div class="hot-posts" id="hot-posts-container"></div>
+        </div>
+
+        <h2 class="section-title">✨ Productos Destacados</h2>
+        <div class="products-grid" id="featured-products"></div>
+
+        <h2 class="section-title">📦 Categorías</h2>
+        <div class="categorias-grid">
+            <a href="/categoria.html?cat=Electrónica" style="text-decoration: none;">
+                <div class="categoria-card">
+                    <i class="fa fa-laptop"></i>
+                    <h3>Electrónica</h3>
+                    <p>Ver productos →</p>
+                </div>
+            </a>
+            <a href="/categoria.html?cat=Ropa" style="text-decoration: none;">
+                <div class="categoria-card">
+                    <i class="fa fa-tshirt"></i>
+                    <h3>Ropa</h3>
+                    <p>Ver productos →</p>
+                </div>
+            </a>
+            <a href="/categoria.html?cat=Hogar" style="text-decoration: none;">
+                <div class="categoria-card">
+                    <i class="fa fa-home"></i>
+                    <h3>Hogar</h3>
+                    <p>Ver productos →</p>
+                </div>
+            </a>
+            <a href="/categoria.html?cat=Deportes" style="text-decoration: none;">
+                <div class="categoria-card">
+                    <i class="fa fa-soccer-ball-o"></i>
+                    <h3>Deportes</h3>
+                    <p>Ver productos →</p>
+                </div>
+            </a>
+            <a href="/categoria.html?cat=Útiles" style="text-decoration: none;">
+                <div class="categoria-card">
+                    <i class="fa fa-book"></i>
+                    <h3>Útiles</h3>
+                    <p>Ver productos →</p>
+                </div>
+            </a>
+            <a href="/categoria.html?cat=Accesorios" style="text-decoration: none;">
+                <div class="categoria-card">
+                    <i class="fa fa-battery-full"></i>
+                    <h3>Accesorios</h3>
+                    <p>Ver productos →</p>
+                </div>
+            </a>
+            <a href="/categoria.html?cat=Consumibles" style="text-decoration: none;">
+                <div class="categoria-card">
+                    <i class="fa fa-print"></i>
+                    <h3>Consumibles</h3>
+                    <p>Ver productos →</p>
+                </div>
+            </a>
+            <a href="/categoria.html?cat=Limpieza" style="text-decoration: none;">
+                <div class="categoria-card">
+                    <i class="fa fa-filter"></i>
+                    <h3>Limpieza</h3>
+                    <p>Ver productos →</p>
+                </div>
+            </a>
+            <a href="/categoria.html?cat=ofertas" style="text-decoration: none;">
+                <div class="categoria-card ofertas">
+                    <i class="fa fa-fire"></i>
+                    <h3>Ofertas</h3>
+                    <p>Hasta 50% OFF →</p>
+                </div>
+            </a>
+        </div>
+
+        <div style="max-width: 1500px; margin: 0 auto; padding: 0 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+            <div>
+                <h2 class="section-title" style="padding-left: 0;">🖨️ Consumibles</h2>
+                <div class="products-grid" id="consumibles-products" style="grid-template-columns: 1fr 1fr;"></div>
+            </div>
+            <div>
+                <h2 class="section-title" style="padding-left: 0;">🧹 Limpieza</h2>
+                <div class="products-grid" id="limpieza-products" style="grid-template-columns: 1fr 1fr;"></div>
+            </div>
+        </div>
+
+        <h2 class="section-title">🆕 Últimos Productos</h2>
+        <div class="products-grid" id="latest-products"></div>
+
+        <div id="footer-wrapper">
+            <div class="footer-widgets-wrap">
+                <div class="footer">
+                    <h3 style="color: white; margin-bottom: 20px;">CUBAZON</h3>
+                    <p style="color: #ddd; margin-bottom: 15px;">Tu tienda online de confianza en Sagua de Tánamo.</p>
+                    <p style="color: #ddd;"><i class="fa fa-map-marker"></i> Sagua de Tánamo, Holguín, Cuba</p>
+                </div>
+                <div class="footer">
+                    <h3 style="color: white; margin-bottom: 20px;">Enlaces rápidos</h3>
+                    <ul style="list-style: none;">
+                        <li style="margin-bottom: 10px;"><a href="#">Sobre nosotros</a></li>
+                        <li style="margin-bottom: 10px;"><a href="#">Términos y condiciones</a></li>
+                        <li style="margin-bottom: 10px;"><a href="#">Política de envíos</a></li>
+                        <li style="margin-bottom: 10px;"><a href="/buscar.html">Búsqueda avanzada</a></li>
+                    </ul>
+                </div>
+                <div class="footer">
+                    <h3 style="color: white; margin-bottom: 20px;">Atención al cliente</h3>
+                    <p style="color: #ddd; margin-bottom: 10px;"><i class="fa fa-phone"></i> +53 56940021</p>
+                    <p style="color: #ddd; margin-bottom: 10px;"><i class="fa fa-envelope"></i> soporte@cubazon.com</p>
+                    <p style="color: #ddd;"><i class="fa fa-whatsapp"></i> +53 56940021</p>
+                </div>
+            </div>
+        </div>
+        <div id="sub-footer-wrapper">
+            <div class="container row">
+                <p>@Copyright 2026 CUBAZON · Diseñado por Des.Joshua_Technology · Todos los derechos reservados</p>
+            </div>
+        </div>
+
+        <div class="back-top" title="Volver arriba">
+            <i class="fa fa-chevron-up"></i>
+        </div>
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+
+    <script type="module">
+        import { supabase } from '/js/supabase-client.js'
+        import { initCarrito } from '/js/cart.js'
+        import { auth } from '/js/auth.js'
+        
+        const carrito = initCarrito()
+        window.cart = carrito
+        carrito.cargarDeLocalStorage()
+        carrito.actualizarInterfaz()
+
+        async function cargarDestacados() {
+    const { data, error } = await supabase
+        .from('productos')
+        .select('*')
+        .eq('destacado', true)
+        .limit(8)
+    
+    if (error) {
+        console.error('Error cargando destacados:', error)
+        return
+    }
+    
+    const container = document.getElementById('featured-products')
+    if (!container) return
+    
+    container.innerHTML = data.map(producto => {
+        if (producto.stock <= 0) {
+            // Producto AGOTADO
+            return `
+                <div class="product-card">
+                    <a href="/producto.html?id=${producto.id}" style="text-decoration: none; color: inherit;">
+                        <img src="${producto.imagen_url || '/assets/images/no-image.jpg'}" 
+                             alt="${producto.nombre}" 
+                             class="product-image"
+                             onerror="this.src='/assets/images/no-image.jpg'">
+                        <h3 class="product-title">${producto.nombre}</h3>
+                    </a>
+                    <div class="product-price">
+                        $${producto.precio_oferta || producto.precio} CUP
+                        ${producto.precio_oferta ? `<small>$${producto.precio}</small>` : ''}
+                    </div>
+                    <div style="margin: 15px 0;">
+                        <span class="product-agotado" style="display: block; width: 100%;">
+                            <i class="fa fa-ban"></i> AGOTADO
+                        </span>
+                    </div>
+                    <div style="color: #6c757d; font-size: 13px; text-align: center; margin-top: 10px;">
+                        Producto sin stock
+                    </div>
+                </div>
+            `
+        } else {
+            // Producto con stock
+            return `
+                <div class="product-card">
+                    <a href="/producto.html?id=${producto.id}" style="text-decoration: none; color: inherit;">
+                        <img src="${producto.imagen_url || '/assets/images/no-image.jpg'}" 
+                             alt="${producto.nombre}" 
+                             class="product-image"
+                             onerror="this.src='/assets/images/no-image.jpg'">
+                        <h3 class="product-title">${producto.nombre}</h3>
+                    </a>
+                    <div class="product-price">
+                        $${producto.precio_oferta || producto.precio} CUP
+                        ${producto.precio_oferta ? `<small>$${producto.precio}</small>` : ''}
+                    </div>
+                    <div class="product-stock">
+                        ${producto.stock > 0 ? '✅ En stock' : '❌ Agotado'}
+                    </div>
+                    <button class="btn-add-cart" 
+                            onclick="window.cart.agregar('${producto.id}', 1, {})">
+                        <i class="fa fa-shopping-cart"></i> Agregar al carrito
+                    </button>
+                </div>
+            `
+        }
+    }).join('')
+}
+
+        async function cargarOfertas() {
+    const { data, error } = await supabase
+        .from('productos')
+        .select('*')
+        .eq('oferta_del_dia', true)
+        .limit(4)
+    
+    if (error) {
+        console.error('Error cargando ofertas:', error)
+        return
+    }
+    
+    const container = document.getElementById('hot-posts-container')
+    if (!container) return
+    
+    container.innerHTML = data.map(producto => {
+        if (producto.stock <= 0) {
+            return `
+                <div class="product-card">
+                    <a href="/producto.html?id=${producto.id}" style="text-decoration: none; color: inherit;">
+                        <img src="${producto.imagen_url || '/assets/images/no-image.jpg'}" 
+                             alt="${producto.nombre}" 
+                             class="product-image"
+                             style="height: 180px;"
+                             onerror="this.src='/assets/images/no-image.jpg'">
+                        <h3 class="product-title">${producto.nombre}</h3>
+                    </a>
+                    <div class="product-price">
+                        $${producto.precio_oferta || producto.precio} CUP
+                    </div>
+                    <div style="margin: 15px 0;">
+                        <span class="product-agotado" style="display: block; width: 100%;">
+                            <i class="fa fa-ban"></i> AGOTADO
+                        </span>
+                    </div>
+                </div>
+            `
+        } else {
+            return `
+                <div class="product-card">
+                    <a href="/producto.html?id=${producto.id}" style="text-decoration: none; color: inherit;">
+                        <img src="${producto.imagen_url || '/assets/images/no-image.jpg'}" 
+                             alt="${producto.nombre}" 
+                             class="product-image"
+                             style="height: 180px;"
+                             onerror="this.src='/assets/images/no-image.jpg'">
+                        <h3 class="product-title">${producto.nombre}</h3>
+                    </a>
+                    <div class="product-price">
+                        $${producto.precio_oferta || producto.precio} CUP
+                    </div>
+                    <button class="btn-add-cart" 
+                            onclick="window.cart.agregar('${producto.id}', 1, {})">
+                        <i class="fa fa-shopping-cart"></i> Comprar
+                    </button>
+                </div>
+            `
+        }
+    }).join('')
+}
+
+        async function cargarConsumibles() {
+            const { data, error } = await supabase
+                .from('productos')
+                .select('*')
+                .contains('etiquetas', ['Consumibles'])
+                .limit(2)
+            
+            if (error) {
+                console.error('Error cargando consumibles:', error)
+                return
+            }
+            
+            const container = document.getElementById('consumibles-products')
+            if (!container) return
+            
+            container.innerHTML = data.map(producto => `
+                <div class="product-card">
+                    <a href="/producto.html?id=${producto.id}" style="text-decoration: none; color: inherit;">
+                        <img src="${producto.imagen_url || '/assets/images/no-image.jpg'}" 
+                             alt="${producto.nombre}" 
+                             class="product-image"
+                             style="height: 150px;"
+                             onerror="this.src='/assets/images/no-image.jpg'">
+                        <h3 class="product-title">${producto.nombre}</h3>
+                    </a>
+                    <div class="product-price">$${producto.precio} CUP</div>
+                    <button class="btn-add-cart" 
+                            onclick="window.cart.agregar('${producto.id}', 1, {})"
+                            ${producto.stock === 0 ? 'disabled' : ''}>
+                        <i class="fa fa-shopping-cart"></i>
+                    </button>
+                </div>
+            `).join('')
+        }
+
+        async function cargarLimpieza() {
+            const { data, error } = await supabase
+                .from('productos')
+                .select('*')
+                .contains('etiquetas', ['Limpieza'])
+                .limit(2)
+            
+            if (error) {
+                console.error('Error cargando limpieza:', error)
+                return
+            }
+            
+            const container = document.getElementById('limpieza-products')
+            if (!container) return
+            
+            container.innerHTML = data.map(producto => `
+                <div class="product-card">
+                    <a href="/producto.html?id=${producto.id}" style="text-decoration: none; color: inherit;">
+                        <img src="${producto.imagen_url || '/assets/images/no-image.jpg'}" 
+                             alt="${producto.nombre}" 
+                             class="product-image"
+                             style="height: 150px;"
+                             onerror="this.src='/assets/images/no-image.jpg'">
+                        <h3 class="product-title">${producto.nombre}</h3>
+                    </a>
+                    <div class="product-price">$${producto.precio} CUP</div>
+                    <button class="btn-add-cart" 
+                            onclick="window.cart.agregar('${producto.id}', 1, {})"
+                            ${producto.stock === 0 ? 'disabled' : ''}>
+                        <i class="fa fa-shopping-cart"></i>
+                    </button>
+                </div>
+            `).join('')
+        }
+
+        async function cargarUltimos() {
+    const { data, error } = await supabase
+        .from('productos')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(8)
+    
+    if (error) {
+        console.error('Error cargando últimos:', error)
+        return
+    }
+    
+    const container = document.getElementById('latest-products')
+    if (!container) return
+    
+    container.innerHTML = data.map(producto => {
+        if (producto.stock <= 0) {
+            return `
+                <div class="product-card">
+                    <a href="/producto.html?id=${producto.id}" style="text-decoration: none; color: inherit;">
+                        <img src="${producto.imagen_url || '/assets/images/no-image.jpg'}" 
+                             alt="${producto.nombre}" 
+                             class="product-image"
+                             onerror="this.src='/assets/images/no-image.jpg'">
+                        <h3 class="product-title">${producto.nombre}</h3>
+                    </a>
+                    <div class="product-price">$${producto.precio} CUP</div>
+                    <div style="margin: 15px 0;">
+                        <span class="product-agotado" style="display: block; width: 100%;">
+                            <i class="fa fa-ban"></i> AGOTADO
+                        </span>
+                    </div>
+                </div>
+            `
+        } else {
+            return `
+                <div class="product-card">
+                    <a href="/producto.html?id=${producto.id}" style="text-decoration: none; color: inherit;">
+                        <img src="${producto.imagen_url || '/assets/images/no-image.jpg'}" 
+                             alt="${producto.nombre}" 
+                             class="product-image"
+                             onerror="this.src='/assets/images/no-image.jpg'">
+                        <h3 class="product-title">${producto.nombre}</h3>
+                    </a>
+                    <div class="product-price">$${producto.precio} CUP</div>
+                    <button class="btn-add-cart" 
+                            onclick="window.cart.agregar('${producto.id}', 1, {})">
+                        <i class="fa fa-shopping-cart"></i> Agregar
+                    </button>
+                </div>
+            `
+        }
+    }).join('')
+}
+        
+async function cargarSlider() {
+    const { data, error } = await supabase
+        .from('productos')
+        .select('id, nombre, imagen_url, categoria')
+        .eq('destacado', true)
+        .limit(5)
+    
+    if (error) {
+        console.error('Error cargando slider:', error)
+        return
+    }
+    
+    const container = document.getElementById('home-slider')
+    if (!container || data.length === 0) return
+    
+    container.innerHTML = data.map(producto => `
+        <div class="slider-item">
+            <a href="/producto.html?id=${producto.id}">
+                <img src="${producto.imagen_url || '/assets/images/no-image.jpg'}" 
+                     alt="${producto.nombre}"
+                     onerror="this.src='/assets/images/no-image.jpg'">
+            </a>
+            <div class="post-info-wrap">
+                <span class="post-tag">${producto.categoria || 'Destacado'}</span>
+                <h2 class="post-title">
+                    <a href="/producto.html?id=${producto.id}">${producto.nombre}</a>
+                </h2>
+            </div>
+        </div>
+    `).join('')
+}
+        function actualizarMenuUsuario() {
+            const userMenuLink = document.getElementById('userMenuLink')
+            const userMenuText = document.getElementById('userMenuText')
+            const userAvatar = document.getElementById('userAvatar')
+            
+            if (!userMenuLink || !userMenuText || !userAvatar) return
+            
+            if (auth.isAuthenticated()) {
+                const usuario = auth.getUsuario()
+                const nombre = usuario?.nombre || 'Usuario'
+                const inicial = nombre.charAt(0).toUpperCase()
+                
+                // Mostrar avatar circular, ocultar link de texto
+                userMenuLink.style.display = 'none'
+                userAvatar.style.display = 'flex'
+                
+                // Mostrar inicial en el avatar
+                userAvatar.innerHTML = `<span style="font-weight: 700;">${inicial}</span>`
+                
+                // Tooltip con nombre completo
+                userAvatar.title = nombre
+            } else {
+                // Mostrar link de texto, ocultar avatar
+                userMenuLink.style.display = 'flex'
+                userAvatar.style.display = 'none'
+                
+                userMenuText.textContent = 'Iniciar sesión'
+                userMenuLink.href = '/login.html'
+                userMenuLink.innerHTML = '<i class="fa fa-sign-in"></i> <span id="userMenuText">Iniciar sesión</span>'
+            }
+        }
+
+        function initSlider() {
+    if (typeof $ !== 'undefined' && $.fn.owlCarousel) {
+        $('#home-slider').owlCarousel({
+            items: 1,
+            loop: true,
+            autoplay: true,
+            autoplayTimeout: 5000,
+            dots: true,
+            nav: false
+        })
+    }
+    
+    // Ocultar slider si no tiene imágenes y ajustar márgenes
+    setTimeout(() => {
+        const slides = document.querySelectorAll('#home-slider .slider-item');
+        const sliderWrap = document.querySelector('.slider-outer-wrap');
+        
+        if (slides.length === 0) {
+            if (sliderWrap) sliderWrap.style.display = 'none';
+        } else {
+            if (sliderWrap) {
+                sliderWrap.style.marginTop = '20px';
+                sliderWrap.style.marginBottom = '20px';
+            }
+        }
+    }, 300);
+}
+
+        // Mostrar skeletons mientras carga
+        const containers = [
+            'featured-products',
+            'hot-posts-container',
+            'consumibles-products',
+            'limpieza-products',
+            'latest-products'
+        ];
+
+        containers.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.classList.add('loading');
+        });
+
+        // Cargar productos
+Promise.all([
+    cargarSlider(),
+    cargarDestacados(),
+    cargarOfertas(),
+    cargarConsumibles(),
+    cargarLimpieza(),
+    cargarUltimos()
+]).then(() => {
+    console.log('✅ Todos los productos cargados');
+    
+    containers.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove('loading');
+    });
+    
+    initSlider();
+}).catch(error => {
+    console.error('Error cargando productos:', error);
+    
+    containers.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove('loading');
+    });
+});
+        setTimeout(actualizarMenuUsuario, 500)
+        auth.onCambio(actualizarMenuUsuario)
+        
+        console.log('✅ Index inicializado')
+    </script>
+
+    <script>
+        window.addEventListener('scroll', function() {
+            const backTop = document.querySelector('.back-top')
+            if (window.scrollY > 300) {
+                backTop.style.display = 'flex'
+            } else {
+                backTop.style.display = 'none'
+            }
+        })
+        
+        document.querySelector('.back-top')?.addEventListener('click', function() {
+            window.scrollTo({ top: 0, behavior: 'smooth' })
+        })
+    </script>
+
+</body>
+</html>
