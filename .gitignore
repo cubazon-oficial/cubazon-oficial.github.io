@@ -1,0 +1,38 @@
+# Environment variables
+.env
+.env.local
+.env.production
+.dev.vars
+
+# Dependencies (if any)
+node_modules/
+vendor/
+
+# Build outputs
+dist/
+build/
+*.min.js
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+
+# Sensitive config
+secrets.json
+config.json
