@@ -1,0 +1,679 @@
+/* ============================================
+   responsive.css - CUBAZON AMAZON STYLE - VERSIÓN FINAL
+   Optimizado para todos los dispositivos
+============================================ */
+
+/* ===== PREVENIR PESTAÑEO Y MEJORAR RENDIMIENTO ===== */
+.products-grid,
+.hot-posts,
+.featured-products,
+.latest-products,
+.categorias-grid {
+    min-height: 400px;
+    transition: opacity 0.2s ease;
+}
+
+.products-grid.loading,
+.hot-posts.loading {
+    opacity: 0.5;
+}
+
+.product-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    will-change: transform, opacity;
+}
+
+.product-image {
+    aspect-ratio: 1/1;
+    width: 100%;
+    object-fit: contain;
+    background: #f8f9fa;
+}
+
+.btn-add-cart {
+    will-change: transform, opacity;
+}
+
+/* === TABLETS (max-width: 1024px) === */
+@media screen and (max-width: 1024px) {
+    .cart-grid,
+    .checkout-grid,
+    .account-grid {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+    }
+    
+    .products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)) !important;
+    }
+    
+    .hot-posts {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    
+    .footer-widgets-wrap {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 30px !important;
+    }
+    
+    .admin-stats {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    
+    .pedido-grid-2 {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .product-detail-grid {
+        gap: 30px !important;
+    }
+    
+    .main-image {
+        height: 400px !important;
+    }
+    
+    .coupon-details {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+/* === MÓVILES GRANDES (max-width: 768px) === */
+@media screen and (max-width: 768px) {
+    /* ===== HEADER ===== */
+    .header-right .right-menu {
+        display: none !important;
+    }
+    
+    .header-header .container.row {
+        flex-wrap: wrap !important;
+        gap: 10px !important;
+    }
+    
+    .header-logo {
+        flex: 1 !important;
+    }
+    
+    .header-logo img {
+        height: 40px !important;
+    }
+    
+    .sora-cart {
+        margin-left: auto !important;
+    }
+    
+    .sora-cart-description {
+        width: 300px !important;
+        right: -50px !important;
+    }
+    
+    /* ===== GRIDS ===== */
+    .products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important;
+        gap: 15px !important;
+        padding: 0 15px !important;
+    }
+    
+    .hot-posts {
+        grid-template-columns: 1fr !important;
+        padding: 0 15px !important;
+    }
+    
+    .categorias-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 15px !important;
+        padding: 0 15px !important;
+    }
+    
+    .footer-widgets-wrap {
+        grid-template-columns: 1fr !important;
+        gap: 30px !important;
+        text-align: center !important;
+        padding: 0 20px !important;
+    }
+    
+    .admin-stats {
+        grid-template-columns: 1fr !important;
+    }
+    
+    /* ===== SLIDER ===== */
+    .slider-item .post-title {
+        font-size: 24px !important;
+    }
+    
+    .slider-item {
+        height: 300px !important;
+    }
+    
+    .slider-item .post-info-wrap {
+        padding: 20px !important;
+    }
+    
+    /* ===== FORMULARIOS ===== */
+    .row-2 {
+        grid-template-columns: 1fr !important;
+        gap: 15px !important;
+    }
+    
+    .filtros {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        padding: 0 15px !important;
+    }
+    
+    .search-box {
+        width: 100% !important;
+        flex-direction: column !important;
+    }
+    
+    .search-box button {
+        width: 100% !important;
+    }
+    
+    .filtro-select,
+    .sort-select {
+        width: 100% !important;
+    }
+    
+    .coupon-input {
+        flex-direction: column !important;
+    }
+    
+    .coupon-input .btn {
+        width: 100% !important;
+    }
+    
+    /* ===== CARRITO Y CHECKOUT ===== */
+    .cart-item {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 15px !important;
+        padding: 15px !important;
+    }
+    
+    .cart-item img {
+        width: 120px !important;
+        height: 120px !important;
+        align-self: center !important;
+    }
+    
+    .cart-item-details {
+        width: 100% !important;
+    }
+    
+    .cart-item-controls {
+        flex-wrap: wrap !important;
+    }
+    
+    .cart-item-subtotal {
+        text-align: left !important;
+        margin-left: 0 !important;
+        width: 100% !important;
+        padding-top: 10px !important;
+        border-top: 1px solid #eee !important;
+    }
+    
+    .checkout-sidebar {
+        margin-top: 20px !important;
+    }
+    
+    /* ===== PRODUCTO DETALLE ===== */
+    .product-detail-grid {
+        grid-template-columns: 1fr !important;
+        padding: 20px !important;
+    }
+    
+    .main-image {
+        height: 350px !important;
+    }
+    
+    .product-actions {
+        flex-direction: column !important;
+    }
+    
+    .btn {
+        width: 100% !important;
+    }
+    
+    .product-title {
+        font-size: 24px !important;
+    }
+    
+    .product-price {
+        font-size: 28px !important;
+    }
+    
+    /* ===== ADMIN ===== */
+    .admin-actions {
+        flex-direction: column !important;
+    }
+    
+    .admin-actions .btn {
+        width: 100% !important;
+    }
+    
+    .coupon-details {
+        grid-template-columns: 1fr 1fr !important;
+    }
+    
+    .coupon-actions {
+        flex-direction: column !important;
+    }
+    
+    .coupon-actions .btn-small {
+        width: 100% !important;
+    }
+    
+    /* ===== PEDIDOS ===== */
+    .pedido-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px !important;
+    }
+    
+    .acciones-pedido {
+        flex-direction: column !important;
+    }
+    
+    .acciones-pedido select {
+        width: 100% !important;
+    }
+    
+    .pedido-grid-2 {
+        grid-template-columns: 1fr !important;
+    }
+    
+    /* ===== MODALES ===== */
+    .modal-content {
+        width: 95% !important;
+        margin: 20px auto !important;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+    }
+    
+    /* ===== CATEGORÍAS ===== */
+    .category-title {
+        font-size: 28px !important;
+        flex-direction: column !important;
+        text-align: center !important;
+    }
+    
+    .category-icon {
+        margin-bottom: 10px !important;
+    }
+    
+    .category-controls {
+        flex-direction: column !important;
+    }
+    
+    /* ===== MI CUENTA ===== */
+    .account-header {
+        flex-direction: column !important;
+        text-align: center !important;
+    }
+    
+    .account-title {
+        flex-direction: column !important;
+    }
+    
+    .user-avatar {
+        margin-bottom: 15px !important;
+    }
+    
+    .account-menu a {
+        justify-content: center !important;
+    }
+}
+
+/* === MÓVILES PEQUEÑOS (max-width: 480px) === */
+@media screen and (max-width: 480px) {
+    /* ===== GRIDS ===== */
+    .products-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .categorias-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .hot-posts {
+        padding: 0 10px !important;
+    }
+    
+    /* ===== SLIDER ===== */
+    .slider-item .post-title {
+        font-size: 20px !important;
+    }
+    
+    .slider-item {
+        height: 250px !important;
+    }
+    
+    .slider-item .post-info-wrap {
+        padding: 15px !important;
+    }
+    
+    .slider-item .post-tag {
+        font-size: 10px !important;
+        padding: 3px 10px !important;
+    }
+    
+    /* ===== HEADER ===== */
+    .cart-header {
+        flex-direction: column !important;
+        gap: 15px !important;
+        text-align: center !important;
+    }
+    
+    .header-logo img {
+        height: 35px !important;
+    }
+    
+    .sora-cart-description {
+        width: 280px !important;
+        right: -80px !important;
+    }
+    
+    /* ===== PAGO ===== */
+    .payment-option {
+        flex-direction: column !important;
+        text-align: center !important;
+        align-items: center !important;
+        padding: 15px !important;
+    }
+    
+    .payment-option img {
+        margin-left: 0 !important;
+        margin-top: 10px !important;
+        height: 25px !important;
+    }
+    
+    .payment-option input[type="radio"] {
+        margin-right: 0 !important;
+        margin-bottom: 10px !important;
+    }
+    
+    /* ===== PRODUCTOS ===== */
+    .product-card .product-image {
+        height: 180px !important;
+    }
+    
+    .product-price {
+        font-size: 20px !important;
+    }
+    
+    .product-title {
+        font-size: 15px !important;
+        height: 40px !important;
+    }
+    
+    .btn-add-cart {
+        padding: 10px !important;
+        font-size: 13px !important;
+    }
+    
+    /* ===== CARRITO ===== */
+    .cart-item img {
+        width: 80px !important;
+        height: 80px !important;
+    }
+    
+    .cart-item-title {
+        font-size: 14px !important;
+    }
+    
+    .cart-item-price {
+        font-size: 16px !important;
+    }
+    
+    .cart-item-controls {
+        gap: 5px !important;
+    }
+    
+    .btn-icon {
+        width: 28px !important;
+        height: 28px !important;
+    }
+    
+    .cart-item-quantity {
+        min-width: 25px !important;
+    }
+    
+    /* ===== CHECKOUT ===== */
+    .checkout-sidebar {
+        padding: 20px !important;
+    }
+    
+    .grand-total {
+        font-size: 20px !important;
+    }
+    
+    .total-row {
+        font-size: 14px !important;
+    }
+    
+    /* ===== ADMIN ===== */
+    .coupon-details {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .stat-card .stat-number {
+        font-size: 24px !important;
+    }
+    
+    .stat-card h3 {
+        font-size: 12px !important;
+    }
+    
+    .coupon-code-display {
+        font-size: 14px !important;
+        padding: 6px 12px !important;
+    }
+    
+    .producto-acciones {
+        flex-direction: column !important;
+    }
+    
+    .producto-acciones .btn-small {
+        width: 100% !important;
+    }
+    
+    /* ===== MODALES ===== */
+    .modal-header h2 {
+        font-size: 18px !important;
+    }
+    
+    .modal-body {
+        padding: 15px !important;
+    }
+    
+    .modal-footer {
+        flex-direction: column !important;
+        gap: 10px !important;
+    }
+    
+    .modal-footer .btn {
+        width: 100% !important;
+    }
+    
+    /* ===== DETALLE PRODUCTO ===== */
+    .main-image {
+        height: 250px !important;
+    }
+    
+    .product-detail-grid {
+        padding: 15px !important;
+    }
+    
+    .product-price-box {
+        padding: 15px !important;
+    }
+    
+    .product-stock {
+        font-size: 12px !important;
+        padding: 5px 10px !important;
+    }
+    
+    .product-agotado-large {
+        font-size: 16px !important;
+        padding: 12px !important;
+    }
+    
+    /* ===== CATEGORÍAS ===== */
+    .categoria-card {
+        padding: 20px !important;
+    }
+    
+    .categoria-card i {
+        font-size: 30px !important;
+    }
+    
+    .categoria-card h3 {
+        font-size: 16px !important;
+    }
+    
+    /* ===== FOOTER ===== */
+    .footer {
+        padding: 0 10px !important;
+    }
+    
+    .footer h3 {
+        font-size: 18px !important;
+    }
+    
+    .footer ul li a {
+        font-size: 13px !important;
+    }
+    
+    /* ===== BOTONES FLOTANTES ===== */
+    .back-top {
+        width: 40px !important;
+        height: 40px !important;
+        bottom: 20px !important;
+        right: 20px !important;
+    }
+}
+
+/* === DISPOSITIVOS MUY PEQUEÑOS (max-width: 360px) === */
+@media screen and (max-width: 360px) {
+    .header-logo img {
+        height: 30px !important;
+    }
+    
+    .sora-cart-description {
+        width: 250px !important;
+        right: -100px !important;
+    }
+    
+    .product-title {
+        font-size: 14px !important;
+    }
+    
+    .product-price {
+        font-size: 18px !important;
+    }
+    
+    .btn-add-cart {
+        font-size: 12px !important;
+        padding: 8px !important;
+    }
+    
+    .cart-item img {
+        width: 60px !important;
+        height: 60px !important;
+    }
+    
+    .cart-item-title {
+        font-size: 13px !important;
+    }
+    
+    .stat-card .stat-number {
+        font-size: 20px !important;
+    }
+    
+    .coupon-code-display {
+        font-size: 12px !important;
+        letter-spacing: 1px !important;
+    }
+}
+
+/* === ANIMACIONES SUAVES (reduce pestañeo) === */
+.product-card,
+.pedido-card,
+.coupon-card,
+.cart-item,
+button,
+a,
+img,
+.btn,
+.modal-content,
+.dropdown-menu {
+    transition: all 0.2s ease-in-out !important;
+}
+
+/* === CORRECCIÓN DE ASPECT RATIO PARA IMÁGENES === */
+.product-image,
+.cart-item img,
+.pedido-card img,
+.producto-imagen img,
+.thumbnail img,
+.product-card-image,
+.main-image img {
+    aspect-ratio: 1/1;
+    object-fit: contain;
+    background: #f8f9fa;
+}
+
+/* === MEJORA DE LEGIBILIDAD EN ADMIN === */
+.stat-number {
+    font-size: clamp(24px, 5vw, 32px);
+}
+
+.coupon-code-display {
+    font-size: clamp(14px, 3vw, 18px);
+    word-break: break-all;
+}
+
+/* === OPTIMIZACIÓN DE TOUCH EN MÓVILES === */
+@media (hover: none) and (pointer: coarse) {
+    .btn,
+    button,
+    .btn-add-cart,
+    .product-card,
+    .categoria-card,
+    .coupon-card,
+    .pedido-card {
+        cursor: pointer;
+        -webkit-tap-highlight-color: rgba(240, 136, 4, 0.3);
+    }
+    
+    .btn:active,
+    button:active,
+    .btn-add-cart:active {
+        transform: scale(0.98);
+    }
+}
+
+/* === GARANTIZAR QUE LOS PRODUCTOS NO SE DESBORDEN === */
+* {
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+
+/* === MEJORAR SCROLL EN MÓVILES === */
+.cart-items-container,
+.productos-list,
+.orders-list {
+    -webkit-overflow-scrolling: touch;
+}
+
+/* === OCULTAR ELEMENTOS DECORATIVOS EN MÓVILES QUE PUEDAN CAUSAR PESTAÑEO === */
+.owl-nav,
+.owl-dots {
+    display: none !important;
+}

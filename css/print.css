@@ -1,0 +1,343 @@
+/* ============================================
+   print.css - CUBAZON AMAZON STYLE - VERSIÓN FINAL
+   Estilos optimizados para impresión
+============================================ */
+
+@media print {
+    /* ===== OCULTAR ELEMENTOS NO IMPRIMIBLES ===== */
+    .header-menu,
+    .header-right,
+    .right-menu,
+    #footer-wrapper,
+    .sora-cart,
+    .back-top,
+    .btn,
+    .btn-add-cart,
+    .btn-primary,
+    .btn-secondary,
+    .btn-danger,
+    .btn-warning,
+    .owl-nav,
+    .owl-dots,
+    .coupon-section,
+    .payment-methods,
+    .cart-item-controls,
+    .cart-item-remove,
+    .acciones-pedido,
+    .admin-actions,
+    .search-box,
+    .filtros,
+    .modal,
+    .overlay,
+    .password-prompt,
+    .loading,
+    .sora-cart-description,
+    .back-link,
+    .demo-account,
+    .product-actions,
+    .add-to-cart,
+    .buy-now,
+    .quantity-selector,
+    .variation-section,
+    .social-share,
+    .related-products,
+    .comments,
+    .pagination,
+    .back-to-top,
+    .mobile-menu,
+    .slide-menu-toggle,
+    .top-bar-social {
+        display: none !important;
+    }
+
+    /* ===== CONFIGURACIÓN GENERAL ===== */
+    * {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+
+    body {
+        background: white !important;
+        color: black !important;
+        font-family: 'Inter', 'Arial', sans-serif !important;
+        font-size: 11pt !important;
+        line-height: 1.4 !important;
+        padding: 0.25in !important;
+        margin: 0 !important;
+        width: 100% !important;
+    }
+
+    /* ===== CONTENEDORES PRINCIPALES ===== */
+    #outer-wrapper,
+    .admin-container,
+    .checkout-container,
+    .account-container,
+    .product-detail-container,
+    .category-container,
+    .cart-container {
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        background: white !important;
+        float: none !important;
+        width: 100% !important;
+    }
+
+    /* ===== TARJETAS Y CONTENEDORES DE CONTENIDO ===== */
+    .product-card,
+    .pedido-card,
+    .coupon-card,
+    .cart-item,
+    .checkout-sidebar,
+    .checkout-form,
+    .account-content,
+    .account-sidebar,
+    .category-header,
+    .product-detail-grid,
+    .product-description,
+    .order-card,
+    .address-card {
+        background: white !important;
+        border: 1px solid #ccc !important;
+        border-radius: 4px !important;
+        box-shadow: none !important;
+        page-break-inside: avoid;
+        margin-bottom: 20px !important;
+        padding: 15px !important;
+        break-inside: avoid;
+    }
+
+    /* ===== ENCABEZADOS ===== */
+    h1, h2, h3, h4, h5, h6 {
+        color: black !important;
+        page-break-after: avoid;
+    }
+
+    h1 {
+        font-size: 18pt !important;
+    }
+
+    h2 {
+        font-size: 16pt !important;
+        border-bottom: 1px solid #ccc !important;
+        padding-bottom: 5px !important;
+    }
+
+    /* ===== PRECIOS Y NÚMEROS DESTACADOS ===== */
+    .product-price,
+    .cart-item-price,
+    .grand-total,
+    #checkout-total,
+    .precio-actual,
+    .detail-value.discount,
+    .stat-number,
+    .total-pedido span,
+    .order-total,
+    .cart-item-subtotal,
+    .product-price-box .product-price {
+        color: black !important;
+        font-weight: 700 !important;
+    }
+
+    /* ===== TABLAS ===== */
+    table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 15px 0;
+    }
+    
+    th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+
+    th {
+        background-color: #f2f2f2 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    /* ===== LISTAS DE PRODUCTOS ===== */
+    .productos-list,
+    .items-list,
+    .orders-list {
+        background: white !important;
+        padding: 10px !important;
+    }
+
+    .producto-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .producto-item:last-child {
+        border-bottom: none;
+    }
+
+    /* ===== IMÁGENES ===== */
+    img {
+        max-width: 100% !important;
+        max-height: 300px !important;
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+
+    .product-image,
+    .cart-item img,
+    .pedido-card img,
+    .producto-imagen img,
+    .main-image img {
+        max-height: 200px !important;
+        object-fit: contain;
+    }
+
+    /* ===== URLs VISIBLES PARA ENLACES ÚTILES ===== */
+    a[href]:after {
+        content: " (" attr(href) ")";
+        font-size: 9pt;
+        font-style: italic;
+        color: #666;
+        word-break: break-all;
+        font-weight: normal;
+    }
+
+    /* No mostrar URL en ciertos elementos */
+    .btn[href]:after,
+    .product-card a[href]:after,
+    img[href]:after,
+    .logo a[href]:after,
+    .header-logo a[href]:after,
+    .breadcrumb a[href]:after {
+        display: none !important;
+    }
+
+    /* ===== SALTOS DE PÁGINA CONTROLADOS ===== */
+    .product-card,
+    .pedido-card,
+    .coupon-card,
+    .order-card {
+        page-break-after: always;
+        break-after: page;
+    }
+
+    .section-title,
+    .category-title,
+    .account-header {
+        page-break-after: avoid;
+    }
+
+    /* ===== ESTADÍSTICAS Y DATOS ===== */
+    .stat-card {
+        border: 1px solid #ccc !important;
+        background: white !important;
+        margin: 10px 0 !important;
+    }
+
+    .stat-number {
+        font-size: 14pt !important;
+    }
+
+    /* ===== INFORMACIÓN DE CLIENTE Y ENVÍO ===== */
+    .cliente-info,
+    .shipping-info,
+    .pedido-info {
+        background: white !important;
+        padding: 10px !important;
+        border-left: 3px solid #ccc !important;
+    }
+
+    /* ===== TOTALES Y RESUMENES ===== */
+    .total-row,
+    .grand-total,
+    .resumen-pedido {
+        border-top: 2px solid #000 !important;
+        padding-top: 10px !important;
+        margin-top: 10px !important;
+    }
+
+    /* ===== BREADCRUMB ===== */
+    .breadcrumb {
+        font-size: 10pt !important;
+        color: #666 !important;
+        margin-bottom: 10px !important;
+    }
+
+    .breadcrumb a {
+        color: #666 !important;
+    }
+
+    /* ===== FOOTER EN IMPRESIÓN ===== */
+    .footer-widgets-wrap {
+        display: none !important;
+    }
+
+    #sub-footer-wrapper {
+        display: none !important;
+    }
+
+    /* ===== MENSAJE DE COPYRIGHT SIMPLIFICADO ===== */
+    .print-copyright {
+        display: block !important;
+        text-align: center;
+        font-size: 8pt;
+        color: #999;
+        margin-top: 30px;
+        border-top: 1px solid #eee;
+        padding-top: 10px;
+    }
+
+    /* ===== FORZAR COLORES NEGROS PARA MEJOR LECTURA ===== */
+    .text-success,
+    .text-danger,
+    .text-warning,
+    .text-info,
+    .badge,
+    .estado-pendiente,
+    .estado-pagado,
+    .estado-enviado,
+    .estado-entregado,
+    .estado-cancelado,
+    .status-active,
+    .status-used,
+    .status-expired {
+        color: black !important;
+        background: white !important;
+        border: 1px solid #ccc !important;
+    }
+
+    /* ===== OCULTAR ELEMENTOS DECORATIVOS ===== */
+    .owl-carousel,
+    .owl-stage-outer,
+    .owl-stage,
+    .owl-item {
+        display: block !important;
+        width: 100% !important;
+        transform: none !important;
+    }
+
+    .slider-item {
+        page-break-inside: avoid;
+        margin-bottom: 20px !important;
+    }
+
+    /* ===== GARANTIZAR QUE EL CONTENIDO NO SE CORTE ===== */
+    tr, 
+    .product-card, 
+    .pedido-card, 
+    .coupon-card {
+        break-inside: avoid;
+    }
+
+    thead {
+        display: table-header-group;
+    }
+
+    tfoot {
+        display: table-footer-group;
+    }
+}
