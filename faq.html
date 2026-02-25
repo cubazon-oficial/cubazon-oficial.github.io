@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preguntas Frecuentes · CUBAZON</title>
+    <!-- Fonts y Estilos (Copie los mismos enlaces que usa en index.html) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- Aquí debe ir el enlace a su archivo CSS principal o copiar los estilos aquí -->
+    <style>
+        /* ===== ESTILOS GENERALES (Copie los estilos de su index.html) ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f2f5;
+            color: #0f1111;
+            line-height: 1.5;
+        }
+        a {
+            text-decoration: none;
+            color: #007185;
+        }
+        a:hover {
+            color: #c7511f;
+        }
+        /* ===== HEADER (Copie el header de su index.html) ===== */
+        /* ... su código del header aquí ... */
+
+        /* ===== CONTENEDOR PRINCIPAL DE LA FAQ ===== */
+        .faq-container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .faq-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .faq-header h1 {
+            font-size: 36px;
+            font-weight: 700;
+            color: #0f1111;
+            margin-bottom: 10px;
+        }
+        .faq-header p {
+            color: #6c757d;
+            font-size: 18px;
+        }
+
+        /* ===== ACORDEÓN DE PREGUNTAS FRECUENTES ===== */
+        .faq-section {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        .faq-section h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f2f5;
+            color: #131921;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .faq-section h2 i {
+            color: #f08804;
+        }
+        .faq-item {
+            border-bottom: 1px solid #e9ecef;
+            margin-bottom: 15px;
+        }
+        .faq-question {
+            width: 100%;
+            padding: 18px 5px;
+            background: none;
+            border: none;
+            text-align: left;
+            font-size: 18px;
+            font-weight: 600;
+            color: #0f1111;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: color 0.2s;
+        }
+        .faq-question:hover {
+            color: #f08804;
+        }
+        .faq-question i {
+            transition: transform 0.3s ease;
+            color: #6c757d;
+        }
+        .faq-question.active i {
+            transform: rotate(180deg);
+        }
+        .faq-answer {
+            padding: 0 5px 20px 5px;
+            color: #6c757d;
+            line-height: 1.7;
+            display: none;
+        }
+        .faq-answer.show {
+            display: block;
+        }
+        .faq-answer a {
+            color: #f08804;
+            font-weight: 500;
+        }
+
+        /* ===== FORMULARIO DE CONTACTO ADICIONAL ===== */
+        .contact-box {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+            margin-top: 30px;
+        }
+        .contact-box h3 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+        .contact-box p {
+            color: #6c757d;
+            margin-bottom: 25px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 14px 35px;
+            background: #ffd814;
+            color: #0f1111;
+            font-weight: 600;
+            border-radius: 40px;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background: #f7ca00;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        /* ===== FOOTER (Copie el footer de su index.html) ===== */
+        /* ... su código del footer aquí ... */
+
+    </style>
+</head>
+<body>
+    <!-- ===== HEADER (CÓPIELO EXACTAMENTE DE SU index.html) ===== -->
+    <div id="header-wrap">...</div>
+
+    <!-- ===== CONTENIDO PRINCIPAL DE LA FAQ ===== -->
+    <div class="faq-container">
+        <div class="faq-header">
+            <h1>Preguntas Frecuentes</h1>
+            <p>Encuentra respuestas rápidas a las dudas más comunes.</p>
+        </div>
+
+        <!-- SECCIÓN: PEDIDOS Y ENVÍOS -->
+        <div class="faq-section">
+            <h2><i class="fa fa-truck"></i> Pedidos y Envíos</h2>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    ¿Cómo puedo realizar un pedido?
+                    <i class="fa fa-chevron-down"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Es muy sencillo. Solo tienes que navegar por nuestros productos, seleccionar los que desees y agregarlos al carrito. Cuando termines, ve al carrito y haz clic en "Proceder al pago". Completa tus datos de envío y selecciona el método de pago. ¡Así de fácil!</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    ¿Cuánto tarda en llegar mi pedido?
+                    <i class="fa fa-chevron-down"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Los tiempos de entrega varían según tu ubicación. Generalmente, para la zona de Sagua de Tánamo y cercanías, el plazo es de 1 a 2 días hábiles. Para otras localidades de Holguín, puede tardar de 3 a 5 días hábiles. El costo exacto y el tiempo se calculan al momento de finalizar la compra.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    ¿Hacen envíos a mi localidad?
+                    <i class="fa fa-chevron-down"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Actualmente realizamos envíos a la mayoría de las localidades de la provincia de Holguín, incluyendo Sagua de Tánamo, Jobo, Plazuela, Bazán, Sabála, Carpintero, El Miguel y El Caró. Si tu localidad no aparece en la lista durante el checkout, por favor <a href="/contacto.html">contáctanos</a> para consultar disponibilidad.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN: PAGOS Y FACTURACIÓN -->
+        <div class="faq-section">
+            <h2><i class="fa fa-credit-card"></i> Pagos y Facturación</h2>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    ¿Qué métodos de pago aceptan?
+                    <i class="fa fa-chevron-down"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Aceptamos varios métodos para tu comodidad: pago en efectivo contra entrega, pago con saldo CUBAZON (si has realizado recargas previas) y transferencia bancaria. Durante el proceso de compra podrás seleccionar el que mejor te convenga.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    ¿Cómo funciona el saldo CUBAZON?
+                    <i class="fa fa-chevron-down"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>El saldo CUBAZON es una forma de pago anticipado. Puedes solicitar una recarga desde tu <a href="/mi-cuenta.html">panel de Mi Cuenta</a>. Un administrador aprobará la solicitud y, una vez confirmado el pago, se añadirá el saldo a tu cuenta para que lo uses en tus compras de forma más rápida.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN: DEVOLUCIONES Y GARANTÍAS -->
+        <div class="faq-section">
+            <h2><i class="fa fa-undo"></i> Devoluciones y Garantías</h2>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    ¿Puedo devolver un producto si no estoy satisfecho?
+                    <i class="fa fa-chevron-down"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>¡Por supuesto! Queremos que estés 100% satisfecho. Si por alguna razón no estás conforme con tu compra, tienes un plazo de 7 días desde la recepción para solicitar un cambio o devolución. El producto debe estar en su estado original, sin usar y con su empaque. Escríbenos a soporte@cubazon.com para gestionarlo.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    ¿Qué hago si mi producto llega dañado?
+                    <i class="fa fa-chevron-down"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Lamentamos mucho que eso pase. Si tu pedido llega en mal estado, por favor repórtalo en un plazo máximo de 24 horas después de la entrega enviando un correo a soporte@cubazon.com con tu número de pedido y una foto del daño. Te gestionaremos un cambio o reembolso a la mayor brevedad.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- CAJA DE CONTACTO ADICIONAL -->
+        <div class="contact-box">
+            <h3>¿No encontraste lo que buscabas?</h3>
+            <p>Si tu pregunta no está en la lista, escríbenos directamente y te responderemos a la mayor brevedad.</p>
+            <a href="/contacto.html" class="btn"><i class="fa fa-envelope"></i> Contactar a Soporte</a>
+        </div>
+    </div>
+
+    <!-- ===== FOOTER (CÓPIELO EXACTAMENTE DE SU index.html) ===== -->
+    <div id="footer-wrapper">...</div>
+
+    <!-- Script para el acordeón FAQ -->
+    <script>
+        document.querySelectorAll('.faq-question').forEach(button => {
+            button.addEventListener('click', () => {
+                const answer = button.nextElementSibling;
+                const icon = button.querySelector('i');
+
+                // Cerrar otras preguntas (opcional, para mejor UX)
+                // document.querySelectorAll('.faq-answer').forEach(ans => {
+                //     if (ans !== answer) ans.classList.remove('show');
+                // });
+                // document.querySelectorAll('.faq-question i').forEach(ic => {
+                //     if (ic !== icon) ic.classList.remove('fa-chevron-up');
+                // });
+
+                // Toggle la respuesta actual
+                answer.classList.toggle('show');
+                icon.classList.toggle('fa-chevron-down');
+                icon.classList.toggle('fa-chevron-up');
+                button.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
+</html>
