@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Prueba de Email</title>
+</head>
+<body>
+    <h1>Prueba de conexión SMTP</h1>
+    <p>Abre la consola (F12) para ver el resultado.</p>
+    
+    <script type="module">
+        import { createTransport } from 'https://esm.sh/nodemailer'
+
+        const transporter = createTransport({
+            host: 'smtp.resend.com',
+            port: 465,
+            secure: true,
+            auth: {
+                user: 'resend',
+                pass: 're_JspNMvGN_CnRdiMuPrx6gsM7cZH8HUEKC' // ← Cambia por tu API Key
+            }
+        })
+
+        try {
+            const info = await transporter.sendMail({
+                from: 'josueperez991022@gmail.com',
+                to: 'josueperez991022@gmail.com',
+                subject: 'Prueba SMTP',
+                text: 'Si ves esto, la conexión funciona'
+            })
+            console.log('✅ Éxito:', info)
+            document.body.innerHTML += '<p style="color:green">✅ Email enviado correctamente</p>'
+        } catch (error) {
+            console.error('❌ Error:', error)
+            document.body.innerHTML += `<p style="color:red">❌ Error: ${error.message}</p>`
+        }
+    </script>
+</body>
+</html>

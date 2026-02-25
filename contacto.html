@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="-width, initial-scale=1.0">
     <title>Contacto · CUBAZON</title>
     
     <!-- Fonts -->
@@ -16,9 +16,6 @@
     <!-- Leaflet CSS para el mapa (gratuito, sin API key) -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    
-    <!-- EmailJS SDK -->
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     
     <style>
         * {
@@ -830,11 +827,6 @@
     </div>
 
     <script>
-        // ========== INICIALIZAR EMAILJS ==========
-        (function() {
-            emailjs.init('i3FvhnQiQhyU6QeH-'); // Public Key de EmailJS
-        })();
-
         // ========== INICIALIZAR MAPA ==========
         var map = L.map('map').setView([20.5858, -75.2417], 13);
         
@@ -842,7 +834,8 @@
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
         
-        L.marker([20.580207,-75.241298]).addTo(map)
+        // Marcador en la ubicación correcta de Sagua de Tánamo
+        L.marker([20.580207, -75.241298]).addTo(map)
             .bindPopup('<b>CUBAZON</b><br>Sagua de Tánamo<br>Holguín, Cuba')
             .openPopup();
         
@@ -856,7 +849,7 @@
             icon.classList.toggle('fa-chevron-up');
         };
         
-        // ========== MANEJAR ENVÍO DEL FORMULARIO CON EMAILJS ==========
+        // ========== MANEJAR ENVÍO DEL FORMULARIO (VERSIÓN SEGURA) ==========
         document.getElementById('contactForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -890,24 +883,28 @@
                 default: subjectText = 'Otro';
             }
             
-            // Preparar parámetros para EmailJS
-            const templateParams = {
+            // Preparar datos para enviar a nuestra API
+            const formData = {
                 name: name,
                 email: email,
                 phone: phone || 'No proporcionado',
-                title: subjectText,
+                subject: subjectText,
                 message: message
             };
             
             try {
-                // Enviar email usando EmailJS
-                const response = await emailjs.send(
-                    'service_ymdrw6t',      // Service ID
-                    'template_2ggh5m1',      // Template ID
-                    templateParams
-                );
+                // Llamar a nuestra API segura (en lugar de EmailJS directamente)
+                const response = await fetch('/api/contacto', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
                 
-                if (response.status === 200) {
+                const result = await response.json();
+                
+                if (response.ok) {
                     // Mostrar mensaje de éxito con SweetAlert
                     Swal.fire({
                         icon: 'success',
@@ -918,7 +915,7 @@
                     
                     this.reset(); // Limpiar formulario
                 } else {
-                    Swal.fire('Error', 'Error al enviar el mensaje. Intente de nuevo.', 'error');
+                    Swal.fire('Error', result.error || 'Error al enviar el mensaje. Intente de nuevo.', 'error');
                 }
                 
             } catch (error) {
