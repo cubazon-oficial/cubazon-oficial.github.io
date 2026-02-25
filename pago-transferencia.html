@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pago por Transferencia · CUBAZON</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        /* MISMOS ESTILOS - SIN CAMBIOS */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f2f5;
+            color: #0f1111;
+            line-height: 1.5;
+        }
+        .payment-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .payment-header {
+            background: #131921;
+            color: white;
+            padding: 25px 30px;
+            border-radius: 16px 16px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .payment-header h1 {
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .payment-header h1 i { color: #f08804; }
+        .payment-content {
+            background: white;
+            padding: 40px;
+            border-radius: 0 0 16px 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .payment-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+        .payment-info {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid #e9ecef;
+        }
+        .payment-info h2 {
+            font-size: 22px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #0f1111;
+        }
+        .payment-info h2 i { color: #009644; }
+        .card-details {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        .card-details::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: rgba(255,255,255,0.1);
+            transform: rotate(45deg);
+        }
+        .card-type {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-bottom: 20px;
+        }
+        .card-number {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+            font-family: monospace;
+        }
+        .card-number small {
+            font-size: 14px;
+            font-weight: 400;
+            opacity: 0.8;
+        }
+        .card-holder {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+        .copy-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .copy-btn:hover { background: rgba(255,255,255,0.3); }
+        .qr-section {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            border: 2px dashed #dee2e6;
+        }
+        .qr-section img {
+            width: 200px;
+            height: 200px;
+            object-fit: contain;
+            margin-bottom: 15px;
+        }
+        .qr-section p { color: #6c757d; font-size: 14px; }
+        .phone-info {
+            background: #e8f5e9;
+            border: 1px solid #c3e6cb;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .phone-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #009644;
+            font-family: monospace;
+        }
+        .order-summary {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid #e9ecef;
+        }
+        .order-summary h2 {
+            font-size: 22px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .order-item {
+            display: flex;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .order-item:last-child { border-bottom: none; }
+        .order-item img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: white;
+        }
+        .order-item-details { flex: 1; }
+        .order-item-name { font-weight: 600; margin-bottom: 5px; }
+        .order-item-price { color: #b12704; font-weight: 700; }
+        .order-item-subtotal { font-weight: 700; color: #b12704; }
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+        }
+        .summary-total {
+            font-size: 24px;
+            font-weight: 700;
+            color: #b12704;
+            border-top: 2px solid #dee2e6;
+            margin-top: 20px;
+            padding-top: 20px;
+        }
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 16px;
+        }
+        .btn-primary {
+            background: #ffd814;
+            color: #0f1111;
+        }
+        .btn-primary:hover {
+            background: #f7ca00;
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background: #f0f2f5;
+            color: #0f1111;
+        }
+        .btn-secondary:hover { background: #e3e6e9; }
+        .alert {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .alert i { font-size: 24px; }
+        @media (max-width: 768px) {
+            .payment-grid { grid-template-columns: 1fr; }
+            .card-number { font-size: 20px; }
+            .phone-number { font-size: 18px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-container">
+        <div class="payment-header">
+            <h1>
+                <i class="fa fa-credit-card"></i>
+                Pago por Transferencia
+            </h1>
+            <a href="/checkout.html" style="color: white; text-decoration: none;">
+                <i class="fa fa-arrow-left"></i> Volver al checkout
+            </a>
+        </div>
+        
+        <div class="payment-content">
+            <div class="alert">
+                <i class="fa fa-info-circle"></i>
+                <div>
+                    <strong>Importante:</strong> Una vez realizada la transferencia, tu pedido será procesado automáticamente. 
+                    El saldo se agregará a tu cuenta CUBAZON.
+                </div>
+            </div>
+            
+            <div class="payment-grid">
+                <!-- Información de pago -->
+                <div class="payment-info">
+                    <h2>
+                        <i class="fa fa-university"></i>
+                        Datos bancarios
+                    </h2>
+                    
+                    <div class="card-details">
+                        <div class="card-type">💳 Tarjeta CUBAZON</div>
+                        <div class="card-number" id="card-number">
+                            9205-1299-7980-8319
+                        </div>
+                        <div class="card-holder">
+                            <span>CUBAZON · Tienda online</span>
+                            <button class="copy-btn" onclick="copiarNumeroTarjeta()">
+                                <i class="fa fa-copy"></i> Copiar
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="qr-section">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=9205129979808319" alt="Código QR para pago">
+                        <p>Escanea este código QR para realizar el pago</p>
+                    </div>
+                    
+                    <h2 style="margin-top: 30px;">
+                        <i class="fa fa-phone"></i>
+                        Confirmación por teléfono
+                    </h2>
+                    
+                    <div class="phone-info">
+                        <span class="phone-number" id="phone-number">56940021</span>
+                        <button class="btn btn-secondary" onclick="copiarTelefono()">
+                            <i class="fa fa-copy"></i> Copiar
+                        </button>
+                    </div>
+                    
+                    <p style="margin-top: 20px; color: #6c757d; font-size: 14px;">
+                        <i class="fa fa-clock-o"></i> 
+                        Después de realizar el pago, tu pedido será procesado en menos de 24 horas.
+                    </p>
+                </div>
+                
+                <!-- Resumen del pedido -->
+                <div class="order-summary">
+                    <h2>
+                        <i class="fa fa-shopping-bag"></i>
+                        Resumen de tu pedido
+                    </h2>
+                    
+                    <div id="order-items-container">
+                        <!-- Se llena dinámicamente -->
+                    </div>
+                    
+                    <div style="margin-top: 30px;">
+                        <div class="summary-row">
+                            <span>Subtotal:</span>
+                            <span id="summary-subtotal">$0.00</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Envío:</span>
+                            <span id="summary-envio">$0.00</span>
+                        </div>
+                        <div class="summary-row" id="summary-discount-row" style="display: none;">
+                            <span>Descuento:</span>
+                            <span id="summary-discount" style="color: #059669;">-$0.00</span>
+                        </div>
+                        <div class="summary-total summary-row">
+                            <span>Total a pagar:</span>
+                            <span id="summary-total">$0.00</span>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px; margin-top: 30px;">
+                        <button class="btn btn-primary" style="flex: 2;" onclick="confirmarPago()">
+                            <i class="fa fa-check"></i> Ya realicé el pago
+                        </button>
+                        <button class="btn btn-secondary" style="flex: 1;" onclick="window.location.href='/checkout.html'">
+                            <i class="fa fa-times"></i> Cancelar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script>
+        // ============================================
+        // CONFIGURACIÓN SUPABASE
+        // ============================================
+        const SUPABASE_URL = 'https://sxxntcaobektiltyppwz.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4eG50Y2FvYmVrdGlsdHlwcHd6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzExMTU4NzIsImV4cCI6MjA4NjY5MTg3Mn0.Fi3SMNxUQeBm0fdMEJzNY_orgag5siD0IjDZsbJ2upg';
+        
+        if (!window.supabase) {
+            window.supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        }
+
+        // ============================================
+        // FUNCIONES ORIGINALES
+        // ============================================
+        function copiarNumeroTarjeta() {
+            const numero = document.getElementById('card-number').innerText;
+            navigator.clipboard.writeText(numero.replace(/-/g, '')).then(() => {
+                Swal.fire({ icon: 'success', title: 'Copiado', text: 'Número de tarjeta copiado', timer: 1500, showConfirmButton: false });
+            });
+        }
+        
+        function copiarTelefono() {
+            const telefono = document.getElementById('phone-number').innerText;
+            navigator.clipboard.writeText(telefono).then(() => {
+                Swal.fire({ icon: 'success', title: 'Copiado', text: 'Número de teléfono copiado', timer: 1500, showConfirmButton: false });
+            });
+        }
+        
+        // ============================================
+        // CARGAR PEDIDO
+        // ============================================
+        function cargarPedido() {
+            const pedidoStr = sessionStorage.getItem('pedido_transferencia');
+            if (!pedidoStr) {
+                window.location.href = '/checkout.html';
+                return;
+            }
+            
+            window.pedidoPendiente = JSON.parse(pedidoStr);
+            const pedido = window.pedidoPendiente;
+            
+            // Renderizar productos
+            const container = document.getElementById('order-items-container');
+            let itemsHtml = '';
+            
+            pedido.items.forEach(item => {
+                itemsHtml += `
+                    <div class="order-item">
+                        <img src="${item.imagen_url || '/assets/images/no-image.jpg'}" alt="${item.nombre}">
+                        <div class="order-item-details">
+                            <div class="order-item-name">${item.nombre}</div>
+                            <div class="order-item-price">$${item.precio.toFixed(2)} x ${item.cantidad}</div>
+                        </div>
+                        <div class="order-item-subtotal">
+                            $${(item.precio * item.cantidad).toFixed(2)}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = itemsHtml;
+            
+            document.getElementById('summary-subtotal').textContent = `$${pedido.subtotal.toFixed(2)}`;
+            document.getElementById('summary-envio').textContent = `$${pedido.envio.toFixed(2)}`;
+            document.getElementById('summary-total').textContent = `$${pedido.total.toFixed(2)}`;
+            
+            if (pedido.descuento > 0) {
+                document.getElementById('summary-discount-row').style.display = 'flex';
+                document.getElementById('summary-discount').textContent = `-$${pedido.descuento.toFixed(2)}`;
+            }
+        }
+        
+        // ============================================
+        // CONFIRMAR PAGO - VERSIÓN CORREGIDA
+        // ============================================
+        window.confirmarPago = async function() {
+            if (!window.pedidoPendiente) {
+                Swal.fire('Error', 'No hay información del pedido', 'error');
+                return;
+            }
+            
+            const btn = document.querySelector('.btn-primary');
+            const textoOriginal = btn.innerText;
+            btn.innerText = 'Procesando...';
+            btn.disabled = true;
+            
+            try {
+                // Preparar items con la MISMA ESTRUCTURA que usa checkout
+                const itemsFormateados = window.pedidoPendiente.items.map(item => ({
+                    id: String(item.producto_id || item.id || Math.random()),
+                    nombre: item.nombre,
+                    precio: item.precio,
+                    cantidad: item.cantidad,
+                    subtotal: item.precio * item.cantidad,
+                    imagen_url: item.imagen_url || '/assets/images/no-image.jpg',
+                    opciones: item.opciones || {}
+                }));
+                
+                console.log('📦 Items formateados:', itemsFormateados);
+                
+                const { data, error } = await window.supabase
+                    .from('pedidos')
+                    .insert([{
+                        items: itemsFormateados,
+                        subtotal: window.pedidoPendiente.subtotal,
+                        envio: window.pedidoPendiente.envio,
+                        descuento: window.pedidoPendiente.descuento || 0,
+                        total: window.pedidoPendiente.total,
+                        cliente: window.pedidoPendiente.cliente,
+                        metodo_pago: 'transferencia',
+                        estado: 'pendiente',
+                        cupon_aplicado: window.pedidoPendiente.cupon || null,
+                        created_at: new Date().toISOString()
+                    }])
+                    .select();
+                
+                if (error) {
+                    console.error('❌ Error de Supabase:', error);
+                    Swal.fire('Error', `Código: ${error.code} - ${error.message}`, 'error');
+                    btn.innerText = textoOriginal;
+                    btn.disabled = false;
+                    return;
+                }
+                
+                console.log('✅ Pedido guardado:', data);
+                
+                localStorage.removeItem('cubazon_carrito');
+                sessionStorage.removeItem('pedido_transferencia');
+                
+                await Swal.fire({
+                    icon: 'success',
+                    title: '¡Pedido registrado!',
+                    text: 'Gracias por tu compra',
+                    confirmButtonText: 'Ir al inicio'
+                });
+                
+                window.location.href = '/index.html';
+                
+            } catch (error) {
+                console.error('❌ Error inesperado:', error);
+                Swal.fire('Error', error.message || 'Error desconocido', 'error');
+                btn.innerText = textoOriginal;
+                btn.disabled = false;
+            }
+        };
+        
+        // Inicializar
+        cargarPedido();
+    </script>
+</body>
+</html>

@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacto · CUBAZON</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- Leaflet CSS para el mapa (gratuito, sin API key) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f2f5;
+            color: #0f1111;
+            line-height: 1.6;
+        }
+        
+        a {
+            text-decoration: none;
+            color: #007185;
+        }
+        
+        a:hover {
+            color: #c7511f;
+        }
+        
+        /* ===== HEADER ===== */
+        #header-wrap {
+            background: #131921;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-header {
+            padding: 10px 20px;
+        }
+        
+        .container.row {
+            max-width: 1500px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .header-logo img {
+            height: 50px;
+            width: auto;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+        
+        .top-bar-social ul {
+            display: flex;
+            gap: 15px;
+            list-style: none;
+        }
+        
+        .top-bar-social ul li a {
+            color: white;
+            font-size: 18px;
+        }
+        
+        .right-menu ul {
+            display: flex;
+            gap: 20px;
+            list-style: none;
+        }
+        
+        .right-menu ul li a {
+            color: white;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .right-menu ul li a:hover {
+            color: #f08804;
+        }
+        
+        .sora-cart {
+            position: relative;
+        }
+        
+        .sora-cart-details {
+            display: flex;
+            align-items: center;
+            color: white;
+            cursor: pointer;
+        }
+        
+        .sora-cart-details:after {
+            content: '\f290';
+            font-family: 'FontAwesome';
+            font-size: 24px;
+            margin-left: 5px;
+        }
+        
+        .simpleCart_quantity {
+            background: #f08804;
+            color: #0f1111;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-left: 5px;
+        }
+        
+        .sora-cart-description {
+            position: absolute;
+            right: 0;
+            top: 40px;
+            width: 350px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            padding: 20px;
+            display: none;
+            z-index: 1000;
+        }
+        
+        .sora-cart:hover .sora-cart-description {
+            display: block;
+        }
+        
+        .header-menu {
+            background: #232f3e;
+            padding: 0 20px;
+        }
+        
+        #main-menu ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+        
+        #main-menu ul li a {
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 0;
+            display: block;
+        }
+        
+        #main-menu ul li a:hover {
+            color: #f08804;
+        }
+        
+        /* ===== CONTENEDOR PRINCIPAL ===== */
+        .contact-container {
+            max-width: 1200px;
+            margin: 60px auto;
+            padding: 0 20px;
+        }
+        
+        .contact-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .contact-header h1 {
+            font-size: 42px;
+            font-weight: 800;
+            color: #0f1111;
+            margin-bottom: 15px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .contact-header h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: #f08804;
+            border-radius: 2px;
+        }
+        
+        .contact-header p {
+            color: #6c757d;
+            font-size: 18px;
+            max-width: 600px;
+            margin: 20px auto 0;
+        }
+        
+        /* ===== GRID DE CONTACTO ===== */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+        
+        /* ===== TARJETAS DE INFORMACIÓN ===== */
+        .info-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .info-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid #e9ecef;
+        }
+        
+        .info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-color: #f08804;
+        }
+        
+        .info-icon {
+            width: 60px;
+            height: 60px;
+            background: #fff6e5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+        
+        .info-icon i {
+            font-size: 28px;
+            color: #f08804;
+        }
+        
+        .info-card h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #131921;
+            margin-bottom: 10px;
+        }
+        
+        .info-card p {
+            color: #6c757d;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        
+        .info-card a {
+            color: #f08804;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .info-card a:hover {
+            text-decoration: underline;
+        }
+        
+        /* ===== MAPA ===== */
+        .map-container {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            height: 400px;
+            margin-bottom: 30px;
+        }
+        
+        #map {
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            z-index: 1;
+        }
+        
+        /* ===== HORARIO ===== */
+        .schedule-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        }
+        
+        .schedule-card h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #131921;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .schedule-card h3 i {
+            color: #f08804;
+        }
+        
+        .schedule-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .schedule-item:last-child {
+            border-bottom: none;
+        }
+        
+        .schedule-day {
+            font-weight: 600;
+            color: #0f1111;
+        }
+        
+        .schedule-time {
+            color: #6c757d;
+        }
+        
+        .schedule-note {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fff6e5;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #856404;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* ===== FORMULARIO DE CONTACTO ===== */
+        .form-card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        }
+        
+        .form-card h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #131921;
+            margin-bottom: 10px;
+        }
+        
+        .form-card > p {
+            color: #6c757d;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #0f1111;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: #f08804;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(240,136,4,0.1);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .btn {
+            padding: 14px 35px;
+            background: #ffd814;
+            color: #0f1111;
+            font-weight: 600;
+            border: none;
+            border-radius: 40px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn:hover {
+            background: #f7ca00;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+        }
+        
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .success-message.show {
+            display: block;
+        }
+        
+        /* ===== FAQ RÁPIDA ===== */
+        .faq-preview {
+            margin-top: 40px;
+        }
+        
+        .faq-preview h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #131921;
+            margin-bottom: 20px;
+        }
+        
+        .faq-preview-item {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .faq-preview-item:hover {
+            border-color: #f08804;
+            background: #fff6e5;
+        }
+        
+        .faq-preview-question {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+        }
+        
+        .faq-preview-answer {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #e9ecef;
+            color: #6c757d;
+            display: none;
+        }
+        
+        .faq-preview-answer.show {
+            display: block;
+        }
+        
+        /* ===== FOOTER ===== */
+        #footer-wrapper {
+            background: #232f3e;
+            color: white;
+            padding: 50px 20px;
+            margin-top: 50px;
+        }
+        
+        .footer-widgets-wrap {
+            max-width: 1500px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+        }
+        
+        .footer a {
+            color: #ddd;
+        }
+        
+        .footer a:hover {
+            color: white;
+        }
+        
+        #sub-footer-wrapper {
+            background: #131921;
+            padding: 20px;
+            text-align: center;
+            color: #ddd;
+        }
+        
+        .back-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #232f3e;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            display: none;
+            transition: all 0.3s;
+            z-index: 99;
+        }
+        
+        .back-top:hover {
+            background: #f08804;
+        }
+        
+        @media (max-width: 768px) {
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+            .info-cards {
+                grid-template-columns: 1fr;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .contact-header h1 {
+                font-size: 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ===== HEADER ===== -->
+    <div id="header-wrap">
+        <div class="header-header">
+            <div class="container row">
+                <div class="header-logo">
+                    <a href="/">
+                        <img src="http://imgfz.com/i/oXOfVlT.png" alt="CUBAZON" style="height: 50px;">
+                    </a>
+                </div>
+                <div class="header-right">
+                    <div class="top-bar-social">
+                        <ul>
+                            <li><a href="#"><i class="fa fa-facebook"></i></a></li>
+                            <li><a href="#"><i class="fa fa-instagram"></i></a></li>
+                            <li><a href="#"><i class="fa fa-twitter"></i></a></li>
+                        </ul>
+                    </div>
+                    <div class="right-menu">
+                        <ul>
+                            <li><a href="/login.html" id="userMenuLink">
+                                <i class="fa fa-sign-in"></i> 
+                                <span id="userMenuText">Iniciar sesión</span>
+                            </a></li>
+                            <li><a href="#"><i class="fa fa-phone"></i> +53 56940021</a></li>
+                            <li><a href="#"><i class="fa fa-envelope"></i> soporte@cubazon.com</a></li>
+                        </ul>
+                    </div>
+                    <div class="sora-cart">
+                        <div class="sora-cart-details">
+                            <span class="simpleCart_quantity" id="cart-counter">0</span>
+                        </div>
+                        <div class="sora-cart-description">
+                            <div class="simpleCart_items" id="cart-preview">
+                                <p style="padding: 20px; text-align: center; color: #666;">Tu carrito está vacío</p>
+                            </div>
+                            <div class="sora-cart-buttons-wrap">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+                                    <button onclick="window.cart.vaciar()" style="background: none; border: none; color: #0f1111; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 5px;">
+                                        <i class="fa fa-trash"></i> Vaciar todo
+                                    </button>
+                                    <a href="/p/checkout.html" style="background: #ffd814; padding: 8px 20px; border-radius: 20px; color: #0f1111; font-weight: 600; text-decoration: none;">
+                                        <i class="fa fa-lock"></i> Pagar
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="header-menu">
+            <div class="container row">
+                <div id="main-menu">
+                    <ul>
+                        <li><a href="/">Inicio</a></li>
+                        <li><a href="/categoria.html?cat=ofertas">Ofertas</a></li>
+                        <li><a href="/categoria.html?cat=Electrónica">Electrónica</a></li>
+                        <li><a href="/categoria.html?cat=Ropa">Ropa</a></li>
+                        <li><a href="/categoria.html?cat=Hogar">Hogar</a></li>
+                        <li><a href="/categoria.html?cat=Accesorios">Accesorios</a></li>
+                        <li><a href="/p/cart.html">Mi Carrito</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== CONTENIDO PRINCIPAL ===== -->
+    <div class="contact-container">
+        <div class="contact-header">
+            <h1>Contáctanos</h1>
+            <p>Estamos aquí para ayudarte. Elige el medio que prefieras y cuéntanos en qué podemos asistirte.</p>
+        </div>
+
+        <div class="contact-grid">
+            <!-- COLUMNA IZQUIERDA: INFORMACIÓN Y MAPA -->
+            <div>
+                <!-- TARJETAS DE INFORMACIÓN -->
+                <div class="info-cards">
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fa fa-phone"></i>
+                        </div>
+                        <h3>Teléfono</h3>
+                        <p><a href="tel:+5356940021">+53 56940021</a></p>
+                        <p style="font-size: 13px; margin-top: 5px;">Lunes a Viernes, 9am - 5pm</p>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fa fa-envelope"></i>
+                        </div>
+                        <h3>Email</h3>
+                        <p><a href="mailto:soporte@cubazon.com">soporte@cubazon.com</a></p>
+                        <p style="font-size: 13px; margin-top: 5px;">Respondemos en 24h</p>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fa fa-whatsapp"></i>
+                        </div>
+                        <h3>WhatsApp</h3>
+                        <p><a href="https://wa.me/5356940021" target="_blank">+53 56940021</a></p>
+                        <p style="font-size: 13px; margin-top: 5px;">Respuesta inmediata</p>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fa fa-map-marker"></i>
+                        </div>
+                        <h3>Dirección</h3>
+                        <p>Sagua de Tánamo, Holguín, Cuba</p>
+                    </div>
+                </div>
+
+                <!-- MAPA INTERACTIVO -->
+                <div class="map-container">
+                    <div id="map"></div>
+                </div>
+
+                <!-- HORARIO DE ATENCIÓN -->
+                <div class="schedule-card">
+                    <h3><i class="fa fa-clock-o"></i> Horario de Atención</h3>
+                    <div class="schedule-item">
+                        <span class="schedule-day">Lunes a Viernes</span>
+                        <span class="schedule-time">9:00 AM – 5:00 PM</span>
+                    </div>
+                    <div class="schedule-item">
+                        <span class="schedule-day">Sábados</span>
+                        <span class="schedule-time">9:00 AM – 1:00 PM</span>
+                    </div>
+                    <div class="schedule-item">
+                        <span class="schedule-day">Domingos</span>
+                        <span class="schedule-time">Cerrado</span>
+                    </div>
+                    <div class="schedule-note">
+                        <i class="fa fa-info-circle"></i>
+                        Los pedidos realizados fuera de horario se procesarán al siguiente día hábil.
+                    </div>
+                </div>
+            </div>
+
+            <!-- COLUMNA DERECHA: FORMULARIO -->
+            <div>
+                <div class="form-card">
+                    <h2>Envíanos un mensaje</h2>
+                    <p>¿Tienes alguna pregunta, sugerencia o problema? Completa el formulario y te responderemos a la brevedad.</p>
+                    
+                    <form id="contactForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Nombre *</label>
+                                <input type="text" id="contactName" placeholder="Tu nombre" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Teléfono</label>
+                                <input type="tel" id="contactPhone" placeholder="56940021">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Email *</label>
+                            <input type="email" id="contactEmail" placeholder="tucorreo@ejemplo.com" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Asunto *</label>
+                            <select id="contactSubject" required>
+                                <option value="">Selecciona un motivo</option>
+                                <option value="consulta">Consulta general</option>
+                                <option value="pedido">Problema con mi pedido</option>
+                                <option value="pago">Problema con pago</option>
+                                <option value="producto">Información de producto</option>
+                                <option value="sugerencia">Sugerencia</option>
+                                <option value="otro">Otro</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Mensaje *</label>
+                            <textarea id="contactMessage" rows="6" placeholder="Escribe tu mensaje aquí..." required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary" id="contactSubmitBtn">
+                            <i class="fa fa-paper-plane"></i> Enviar mensaje
+                        </button>
+                    </form>
+                    
+                    <div id="successMessage" class="success-message">
+                        <i class="fa fa-check-circle fa-2x" style="margin-bottom: 10px;"></i>
+                        <h3>¡Mensaje enviado!</h3>
+                        <p>Gracias por contactarnos. Te responderemos a la mayor brevedad.</p>
+                    </div>
+                </div>
+
+                <!-- PREGUNTAS FRECUENTES RÁPIDAS -->
+                <div class="faq-preview">
+                    <h3>Preguntas frecuentes</h3>
+                    <div class="faq-preview-item">
+                        <div class="faq-preview-question" onclick="toggleFaq(this)">
+                            <span>¿Cuánto tarda mi pedido?</span>
+                            <i class="fa fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-preview-answer">
+                            El tiempo de entrega depende de tu ubicación. En Sagua de Tánamo suele ser de 1-2 días hábiles. Para más detalles, revisa nuestra <a href="/faq.html">FAQ</a>.
+                        </div>
+                    </div>
+                    <div class="faq-preview-item">
+                        <div class="faq-preview-question" onclick="toggleFaq(this)">
+                            <span>¿Cómo pago con saldo CUBAZON?</span>
+                            <i class="fa fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-preview-answer">
+                            Debes solicitar una recarga en "Mi cuenta". Una vez aprobada, podrás seleccionar "Saldo CUBAZON" como método de pago en el checkout.
+                        </div>
+                    </div>
+                    <div class="faq-preview-item">
+                        <div class="faq-preview-question" onclick="toggleFaq(this)">
+                            <span>¿Puedo cancelar mi pedido?</span>
+                            <i class="fa fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-preview-answer">
+                            Sí, siempre que el pedido no haya sido enviado. Contáctanos lo antes posible para gestionarlo.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <div id="footer-wrapper">
+        <div class="footer-widgets-wrap">
+            <div class="footer">
+                <h3 style="color: white; margin-bottom: 20px;">CUBAZON</h3>
+                <p style="color: #ddd; margin-bottom: 15px;">Tu tienda online de confianza en Sagua de Tánamo.</p>
+                <p style="color: #ddd;"><i class="fa fa-map-marker"></i> Sagua de Tánamo, Holguín, Cuba</p>
+            </div>
+            <div class="footer">
+                <h3 style="color: white; margin-bottom: 20px;">Enlaces rápidos</h3>
+                <ul style="list-style: none;">
+                    <li style="margin-bottom: 10px;"><a href="/sobre-nosotros.html">Sobre nosotros</a></li>
+                    <li style="margin-bottom: 10px;"><a href="/terminos.html">Términos y condiciones</a></li>
+                    <li style="margin-bottom: 10px;"><a href="/faq.html">Preguntas frecuentes</a></li>
+                    <li style="margin-bottom: 10px;"><a href="/contacto.html">Contacto</a></li>
+                </ul>
+            </div>
+            <div class="footer">
+                <h3 style="color: white; margin-bottom: 20px;">Atención al cliente</h3>
+                <p style="color: #ddd; margin-bottom: 10px;"><i class="fa fa-phone"></i> +53 56940021</p>
+                <p style="color: #ddd; margin-bottom: 10px;"><i class="fa fa-envelope"></i> soporte@cubazon.com</p>
+                <p style="color: #ddd;"><i class="fa fa-whatsapp"></i> +53 56940021</p>
+            </div>
+        </div>
+    </div>
+    <div id="sub-footer-wrapper">
+        <div class="container row">
+            <p>@Copyright 2026 CUBAZON · Diseñado por Des.Joshua_Technology · Todos los derechos reservados</p>
+        </div>
+    </div>
+
+    <div class="back-top" title="Volver arriba">
+        <i class="fa fa-chevron-up"></i>
+    </div>
+
+    <script>
+        // ========== INICIALIZAR EMAILJS ==========
+        (function() {
+            emailjs.init('i3FvhnQiQhyU6QeH-'); // Public Key de EmailJS
+        })();
+
+        // ========== INICIALIZAR MAPA ==========
+        var map = L.map('map').setView([20.5858, -75.2417], 13);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        
+        L.marker([20.580207,-75.241298]).addTo(map)
+            .bindPopup('<b>CUBAZON</b><br>Sagua de Tánamo<br>Holguín, Cuba')
+            .openPopup();
+        
+        // ========== FUNCIÓN PARA TOGGLE DE FAQ ==========
+        window.toggleFaq = function(element) {
+            const answer = element.nextElementSibling;
+            const icon = element.querySelector('i');
+            
+            answer.classList.toggle('show');
+            icon.classList.toggle('fa-chevron-down');
+            icon.classList.toggle('fa-chevron-up');
+        };
+        
+        // ========== MANEJAR ENVÍO DEL FORMULARIO CON EMAILJS ==========
+        document.getElementById('contactForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('contactSubmitBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa fa-spinner fa-pulse"></i> Enviando...';
+            
+            // Obtener valores del formulario
+            const name = document.getElementById('contactName').value;
+            const phone = document.getElementById('contactPhone').value;
+            const email = document.getElementById('contactEmail').value;
+            const subjectSelect = document.getElementById('contactSubject').value;
+            const message = document.getElementById('contactMessage').value;
+            
+            // Validar campos requeridos
+            if (!name || !email || !subjectSelect || !message) {
+                Swal.fire('Error', 'Por favor completa todos los campos obligatorios', 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa fa-paper-plane"></i> Enviar mensaje';
+                return;
+            }
+            
+            // Traducir asunto a texto legible
+            let subjectText = '';
+            switch(subjectSelect) {
+                case 'consulta': subjectText = 'Consulta general'; break;
+                case 'pedido': subjectText = 'Problema con mi pedido'; break;
+                case 'pago': subjectText = 'Problema con pago'; break;
+                case 'producto': subjectText = 'Información de producto'; break;
+                case 'sugerencia': subjectText = 'Sugerencia'; break;
+                default: subjectText = 'Otro';
+            }
+            
+            // Preparar parámetros para EmailJS
+            const templateParams = {
+                name: name,
+                email: email,
+                phone: phone || 'No proporcionado',
+                title: subjectText,
+                message: message
+            };
+            
+            try {
+                // Enviar email usando EmailJS
+                const response = await emailjs.send(
+                    'service_ymdrw6t',      // Service ID
+                    'template_2ggh5m1',      // Template ID
+                    templateParams
+                );
+                
+                if (response.status === 200) {
+                    // Mostrar mensaje de éxito con SweetAlert
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Mensaje enviado!',
+                        text: 'Gracias por contactarnos. Te responderemos a la mayor brevedad.',
+                        confirmButtonText: 'Entendido'
+                    });
+                    
+                    this.reset(); // Limpiar formulario
+                } else {
+                    Swal.fire('Error', 'Error al enviar el mensaje. Intente de nuevo.', 'error');
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                Swal.fire('Error', 'Error al enviar el mensaje. Intente de nuevo.', 'error');
+            }
+            
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa fa-paper-plane"></i> Enviar mensaje';
+        });
+
+        // ========== BACK TO TOP ==========
+        window.addEventListener('scroll', function() {
+            const backTop = document.querySelector('.back-top');
+            if (window.scrollY > 300) {
+                backTop.style.display = 'flex';
+            } else {
+                backTop.style.display = 'none';
+            }
+        });
+        
+        document.querySelector('.back-top')?.addEventListener('click', function() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>

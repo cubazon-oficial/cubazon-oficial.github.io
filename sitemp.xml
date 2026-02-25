@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ============================================
+     sitemap.xml - CUBAZON
+     Generado para GitHub Pages
+     Incluye páginas principales y productos dinámicos
+     Los productos se actualizan vía Supabase + script
+============================================ -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+    
+    <!-- ========== PÁGINAS ESTÁTICAS ========== -->
+    <url>
+        <loc>https://cubazon-tienda.github.io/</loc>
+        <lastmod>2026-02-11</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+    </url>
+    
+    <url>
+        <loc>https://cubazon-tienda.github.io/p/cart.html</loc>
+        <lastmod>2026-02-11</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <url>
+        <loc>https://cubazon-tienda.github.io/p/checkout.html</loc>
+        <lastmod>2026-02-11</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
+    <!-- ========== PRODUCTOS (ACTUALIZADO VÍA SCRIPT) ========== -->
+    <!-- ESTAS URLS SE GENERAN DINÁMICAMENTE DESDE SUPABASE -->
+    <!-- INICIO BLOQUE DINÁMICO - NO EDITAR MANUALMENTE -->
+    <!--
+    <url>
+        <loc>https://cubazon-tienda.github.io/producto/1</loc>
+        <lastmod>2026-02-11</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    -->
+    <!-- FIN BLOQUE DINÁMICO -->
+    
+</urlset>
+
+<!-- ============================================
+     SCRIPT DE ACTUALIZACIÓN AUTOMÁTICA
+     Ejecutar diariamente vía GitHub Actions
+============================================ -->
+<!--
+    Para actualizar sitemap.xml automáticamente:
+    1. Conectar a Supabase
+    2. Obtener todos los productos con slug
+    3. Generar URLs
+    4. Reemplazar bloque dinámico
+-->

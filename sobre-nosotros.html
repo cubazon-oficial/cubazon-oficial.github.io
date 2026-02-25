@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sobre Nosotros · CUBAZON</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f2f5;
+            color: #0f1111;
+            line-height: 1.6;
+        }
+        
+        /* ===== HEADER (Copie su header aquí) ===== */
+        #header-wrap {
+            background: #131921;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-header {
+            padding: 10px 20px;
+        }
+        .container.row {
+            max-width: 1500px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header-logo img {
+            height: 50px;
+            width: auto;
+        }
+        /* ... resto de su header ... */
+        
+        /* ===== CONTENEDOR PRINCIPAL ===== */
+        .about-container {
+            max-width: 1200px;
+            margin: 60px auto;
+            padding: 0 20px;
+        }
+        
+        /* ===== HERO SECTION ===== */
+        .about-hero {
+            background: linear-gradient(135deg, #131921 0%, #1a2a3a 100%);
+            border-radius: 24px;
+            padding: 80px 40px;
+            margin-bottom: 60px;
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .about-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 30s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .about-hero h1 {
+            font-size: 52px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .about-hero h1 span {
+            color: #f08804;
+        }
+        
+        .about-hero p {
+            font-size: 20px;
+            max-width: 700px;
+            margin: 0 auto;
+            opacity: 0.9;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .about-hero .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            margin-top: 50px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .hero-stats .stat-item {
+            text-align: center;
+        }
+        
+        .hero-stats .stat-number {
+            font-size: 42px;
+            font-weight: 800;
+            color: #f08804;
+            display: block;
+        }
+        
+        .hero-stats .stat-label {
+            font-size: 16px;
+            opacity: 0.8;
+        }
+        
+        /* ===== SECCIÓN DE HISTORIA ===== */
+        .story-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            margin-bottom: 80px;
+            background: white;
+            border-radius: 24px;
+            padding: 50px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        }
+        
+        .story-content h2 {
+            font-size: 36px;
+            font-weight: 700;
+            color: #131921;
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        .story-content h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 80px;
+            height: 4px;
+            background: #f08804;
+            border-radius: 2px;
+        }
+        
+        .story-content p {
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 16px;
+            line-height: 1.8;
+        }
+        
+        .story-image {
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .story-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+        
+        .story-image:hover img {
+            transform: scale(1.05);
+        }
+        
+        /* ===== SECCIÓN DE MISIÓN Y VISIÓN ===== */
+        .mission-vision {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 80px;
+        }
+        
+        .mission-card, .vision-card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        
+        .mission-card:hover, .vision-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .card-icon {
+            width: 80px;
+            height: 80px;
+            background: #fff6e5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+        }
+        
+        .card-icon i {
+            font-size: 40px;
+            color: #f08804;
+        }
+        
+        .mission-card h3, .vision-card h3 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #131921;
+            margin-bottom: 20px;
+        }
+        
+        .mission-card p, .vision-card p {
+            color: #6c757d;
+            line-height: 1.8;
+        }
+        
+        /* ===== SECCIÓN DE VALORES ===== */
+        .values-section {
+            margin-bottom: 80px;
+        }
+        
+        .values-section h2 {
+            text-align: center;
+            font-size: 36px;
+            font-weight: 700;
+            color: #131921;
+            margin-bottom: 50px;
+        }
+        
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+        
+        .value-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            border: 1px solid #e9ecef;
+        }
+        
+        .value-card:hover {
+            transform: translateY(-5px);
+            border-color: #f08804;
+        }
+        
+        .value-icon {
+            width: 60px;
+            height: 60px;
+            background: #f08804;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 24px;
+        }
+        
+        .value-card h4 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #131921;
+            margin-bottom: 15px;
+        }
+        
+        .value-card p {
+            color: #6c757d;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        /* ===== SECCIÓN DEL EQUIPO ===== */
+        .team-section {
+            margin-bottom: 80px;
+        }
+        
+        .team-section h2 {
+            text-align: center;
+            font-size: 36px;
+            font-weight: 700;
+            color: #131921;
+            margin-bottom: 20px;
+        }
+        
+        .team-section > p {
+            text-align: center;
+            color: #6c757d;
+            max-width: 600px;
+            margin: 0 auto 50px;
+        }
+        
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 40px;
+        }
+        
+        .team-member {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+        }
+        
+        .team-member:hover {
+            transform: translateY(-10px);
+        }
+        
+        .member-photo {
+            width: 120px;
+            height: 120px;
+            background: #e9ecef;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            overflow: hidden;
+            border: 4px solid #f08804;
+        }
+        
+        .member-photo i {
+            font-size: 60px;
+            color: #6c757d;
+            line-height: 120px;
+        }
+        
+        .team-member h4 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #131921;
+            margin-bottom: 5px;
+        }
+        
+        .member-role {
+            color: #f08804;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .member-desc {
+            color: #6c757d;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .member-social {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .member-social a {
+            color: #6c757d;
+            font-size: 18px;
+            transition: color 0.2s;
+        }
+        
+        .member-social a:hover {
+            color: #f08804;
+        }
+        
+        /* ===== CTA FINAL ===== */
+        .about-cta {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 24px;
+            padding: 60px 40px;
+            text-align: center;
+            color: white;
+        }
+        
+        .about-cta h2 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        
+        .about-cta p {
+            font-size: 18px;
+            max-width: 600px;
+            margin: 0 auto 30px;
+            opacity: 0.9;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            padding: 15px 40px;
+            background: #ffd814;
+            color: #0f1111;
+            font-weight: 700;
+            border-radius: 40px;
+            text-decoration: none;
+            transition: all 0.3s;
+            font-size: 18px;
+        }
+        
+        .cta-button:hover {
+            background: #f7ca00;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        
+        /* ===== FOOTER (Copie su footer aquí) ===== */
+        #footer-wrapper {
+            background: #232f3e;
+            color: white;
+            padding: 50px 20px;
+            margin-top: 50px;
+        }
+        .footer-widgets-wrap {
+            max-width: 1500px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+        }
+        /* ... resto de su footer ... */
+        
+        @media (max-width: 768px) {
+            .about-hero h1 {
+                font-size: 36px;
+            }
+            .about-hero .hero-stats {
+                flex-direction: column;
+                gap: 20px;
+            }
+            .story-section {
+                grid-template-columns: 1fr;
+            }
+            .mission-vision {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ===== HEADER (Copie su header exacto aquí) ===== -->
+    <div id="header-wrap">
+        <!-- ... su header ... -->
+    </div>
+
+    <!-- ===== CONTENIDO PRINCIPAL ===== -->
+    <div class="about-container">
+        <!-- HERO SECTION -->
+        <div class="about-hero">
+            <h1>Conoce la historia detrás de <span>CUBAZON</span></h1>
+            <p>Más que una tienda, un compromiso con nuestra comunidad en Sagua de Tánamo.</p>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number">+500</span>
+                    <span class="stat-label">Clientes satisfechos</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">+1,000</span>
+                    <span class="stat-label">Productos vendidos</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">+50</span>
+                    <span class="stat-label">Productos disponibles</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- HISTORIA -->
+        <div class="story-section">
+            <div class="story-content">
+                <h2>Nuestra Historia</h2>
+                <p><strong>CUBAZON</strong> nació en 2024 con una idea clara: llevar la mejor experiencia de compra online a los hogares de Sagua de Tánamo y sus alrededores. Lo que comenzó como un pequeño proyecto para ofrecer productos básicos se ha convertido en una tienda de referencia en la región.</p>
+                <p>Hoy, contamos con un catálogo diverso que incluye ropa, electrónica, artículos para el hogar, accesorios y mucho más. Nuestro objetivo es seguir creciendo y mejorando para ofrecerte siempre lo mejor.</p>
+                <p>Nos enorgullece ser parte de esta comunidad y trabajamos cada día para ganarnos tu confianza. Cada pedido, cada entrega, cada producto que seleccionamos está pensado en ti.</p>
+            </div>
+            <div class="story-image">
+                <!-- Reemplace con una imagen real de su tienda o equipo -->
+                <img src="https://via.placeholder.com/600x400?text=Tienda+CUBAZON" alt="Nuestra tienda">
+            </div>
+        </div>
+
+        <!-- MISIÓN Y VISIÓN -->
+        <div class="mission-vision">
+            <div class="mission-card">
+                <div class="card-icon">
+                    <i class="fa fa-bullseye"></i>
+                </div>
+                <h3>Nuestra Misión</h3>
+                <p>Facilitar el acceso a productos de calidad a los habitantes de Sagua de Tánamo y zonas aledañas, ofreciendo una experiencia de compra online segura, rápida y confiable, con entregas a domicilio y atención personalizada.</p>
+            </div>
+            <div class="vision-card">
+                <div class="card-icon">
+                    <i class="fa fa-eye"></i>
+                </div>
+                <h3>Nuestra Visión</h3>
+                <p>Convertirnos en la tienda online líder del oriente cubano, reconocida por nuestra calidad, variedad de productos y servicio al cliente, contribuyendo al desarrollo del comercio electrónico en la región.</p>
+            </div>
+        </div>
+
+        <!-- VALORES -->
+        <div class="values-section">
+            <h2>Nuestros Valores</h2>
+            <div class="values-grid">
+                <div class="value-card">
+                    <div class="value-icon"><i class="fa fa-handshake-o"></i></div>
+                    <h4>Compromiso</h4>
+                    <p>Cumplimos lo que prometemos. Si decimos que llegará, llega. Si decimos que es de calidad, lo es.</p>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon"><i class="fa fa-heart"></i></div>
+                    <h4>Pasión</h4>
+                    <p>Amamos lo que hacemos y ponemos el corazón en cada pedido, cada empaque y cada entrega.</p>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon"><i class="fa fa-shield"></i></div>
+                    <h4>Confianza</h4>
+                    <p>Protegemos tus datos y garantizamos la seguridad en todas tus transacciones.</p>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon"><i class="fa fa-users"></i></div>
+                    <h4>Comunidad</h4>
+                    <p>Apoyamos el desarrollo local y nos sentimos parte de la comunidad de Sagua de Tánamo.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- EQUIPO -->
+        <div class="team-section">
+            <h2>El Equipo Detrás de CUBAZON</h2>
+            <p>Personas comprometidas que hacen posible que tu pedido llegue a ti.</p>
+            <div class="team-grid">
+                <div class="team-member">
+                    <div class="member-photo">
+                        <i class="fa fa-user-circle"></i>
+                    </div>
+                    <h4>Joshua Pérez</h4>
+                    <div class="member-role">Fundador y Desarrollador</div>
+                    <p class="member-desc">Creador de la plataforma CUBAZON. Apasionado por la tecnología y el comercio electrónico.</p>
+                    <div class="member-social">
+                        <a href="#"><i class="fa fa-facebook"></i></a>
+                        <a href="#"><i class="fa fa-instagram"></i></a>
+                        <a href="#"><i class="fa fa-linkedin"></i></a>
+                    </div>
+                </div>
+                <div class="team-member">
+                    <div class="member-photo">
+                        <i class="fa fa-user-circle"></i>
+                    </div>
+                    <h4>María González</h4>
+                    <div class="member-role">Atención al Cliente</div>
+                    <p class="member-desc">Siempre dispuesta a ayudar y resolver cualquier duda que tengas sobre tus pedidos.</p>
+                    <div class="member-social">
+                        <a href="#"><i class="fa fa-facebook"></i></a>
+                        <a href="#"><i class="fa fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="team-member">
+                    <div class="member-photo">
+                        <i class="fa fa-user-circle"></i>
+                    </div>
+                    <h4>Carlos Rodríguez</h4>
+                    <div class="member-role">Logística y Entregas</div>
+                    <p class="member-desc">Responsable de que tus pedidos lleguen a tiempo y en perfectas condiciones.</p>
+                    <div class="member-social">
+                        <a href="#"><i class="fa fa-facebook"></i></a>
+                        <a href="#"><i class="fa fa-whatsapp"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA FINAL -->
+        <div class="about-cta">
+            <h2>¿Listo para comenzar tu compra?</h2>
+            <p>Explora nuestro catálogo y encuentra lo que necesitas. Estamos aquí para ayudarte.</p>
+            <a href="/index.html" class="cta-button"><i class="fa fa-arrow-left"></i> Ir a la tienda</a>
+        </div>
+    </div>
+
+    <!-- ===== FOOTER (Copie su footer exacto aquí) ===== -->
+    <div id="footer-wrapper">
+        <!-- ... su footer ... -->
+    </div>
+</body>
+</html>

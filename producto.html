@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cargando producto · CUBAZON</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f2f5;
+            color: #0f1111;
+            line-height: 1.5;
+        }
+        #header-wrap {
+            background: #131921;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-header { padding: 10px 20px; }
+        .container.row {
+            max-width: 1500px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header-logo img { height: 50px; width: auto; }
+        .header-right { display: flex; align-items: center; gap: 25px; }
+        .sora-cart { position: relative; }
+        .sora-cart-details {
+            display: flex;
+            align-items: center;
+            color: white;
+            cursor: pointer;
+        }
+        .sora-cart-details:after {
+            content: '\f290';
+            font-family: 'FontAwesome';
+            font-size: 24px;
+            margin-left: 5px;
+        }
+        .simpleCart_quantity {
+            background: #f08804;
+            color: #0f1111;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-left: 5px;
+        }
+        .sora-cart-description {
+            position: absolute;
+            right: 0;
+            top: 40px;
+            width: 350px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            padding: 20px;
+            display: none;
+            z-index: 1000;
+        }
+        .sora-cart:hover .sora-cart-description { display: block; }
+        .header-menu {
+            background: #232f3e;
+            padding: 0 20px;
+        }
+        #main-menu ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+        #main-menu ul li a {
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 0;
+            display: block;
+        }
+        .product-detail-container {
+            max-width: 1500px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .product-detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .main-image {
+            width: 100%;
+            height: 500px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .main-image img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        .product-info { display: flex; flex-direction: column; gap: 20px; }
+        .product-title {
+            font-size: 28px;
+            font-weight: 700;
+            line-height: 1.2;
+            color: #0f1111;
+        }
+        .product-price-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        .product-price {
+            font-size: 32px;
+            font-weight: 700;
+            color: #b12704;
+        }
+        .product-price small {
+            font-size: 16px;
+            font-weight: 400;
+            color: #565959;
+            margin-left: 5px;
+        }
+        .product-original-price {
+            font-size: 16px;
+            color: #6c757d;
+            text-decoration: line-through;
+            margin-left: 10px;
+        }
+        .product-discount {
+            display: inline-block;
+            background: #dc3545;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        .product-stock {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 15px;
+        }
+        .stock-available {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .stock-low {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+        .stock-out {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .product-agotado-large {
+            background: #dc3545;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 700;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s;
+            flex: 1;
+        }
+        .btn-primary {
+            background: #ffd814;
+            color: #0f1111;
+        }
+        .btn-primary:hover { background: #f7ca00; }
+        .btn-secondary {
+            background: #f0f2f5;
+            color: #0f1111;
+        }
+        .btn-secondary:hover { background: #e3e6e9; }
+        .btn-buy-now {
+            background: #ffa41c;
+            color: white;
+        }
+        .btn-buy-now:hover { background: #e68a00; }
+        .product-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .product-description {
+            margin-top: 40px;
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .product-description h2 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .product-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .product-tag {
+            background: #e9ecef;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            color: #495057;
+        }
+        #footer-wrapper {
+            background: #232f3e;
+            color: white;
+            padding: 50px 20px;
+            margin-top: 50px;
+        }
+        .footer-widgets-wrap {
+            max-width: 1500px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+        }
+        .footer a { color: #ddd; }
+        .footer a:hover { color: white; }
+        #sub-footer-wrapper {
+            background: #131921;
+            padding: 20px;
+            text-align: center;
+            color: #ddd;
+        }
+        .back-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #232f3e;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            display: none;
+            transition: all 0.3s;
+            z-index: 99;
+        }
+        .back-top:hover { background: #f08804; }
+        .loading-container {
+            text-align: center;
+            padding: 100px 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .loading-container i {
+            font-size: 64px;
+            color: #009644;
+            margin-bottom: 20px;
+        }
+        .error-container {
+            text-align: center;
+            padding: 100px 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .error-container i {
+            font-size: 64px;
+            color: #dc3545;
+            margin-bottom: 20px;
+        }
+        @media (max-width: 1024px) {
+            .product-detail-grid { grid-template-columns: 1fr; }
+            .main-image { height: 400px; }
+            .product-actions { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div id="outer-wrapper">
+        <!-- HEADER -->
+        <div id="header-wrap">
+            <div class="header-header">
+                <div class="container row">
+                    <div class="header-logo">
+                        <a href="/">
+                            <img src="http://imgfz.com/i/oXOfVlT.png" alt="CUBAZON" style="height: 50px;">
+                        </a>
+                    </div>
+                    <div class="header-right">
+                        <div class="sora-cart">
+                            <div class="sora-cart-details">
+                                <span class="simpleCart_quantity" id="cart-counter">0</span>
+                            </div>
+                            <div class="sora-cart-description">
+                                <div class="simpleCart_items" id="cart-preview">
+                                    <p style="padding: 20px; text-align: center; color: #666;">Tu carrito está vacío</p>
+                                </div>
+                                <div class="sora-cart-buttons-wrap">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+                                        <button onclick="window.cart.vaciar()" style="background: none; border: none; color: #0f1111; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 5px;">
+                                            <i class="fa fa-trash"></i> Vaciar todo
+                                        </button>
+                                        <a href="/p/checkout.html" style="background: #ffd814; padding: 8px 20px; border-radius: 20px; color: #0f1111; font-weight: 600; text-decoration: none;">
+                                            <i class="fa fa-lock"></i> Pagar
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="header-menu">
+                <div class="container row">
+                    <div id="main-menu">
+                        <ul>
+                            <li><a href="/">Inicio</a></li>
+                            <li><a href="#">Ofertas</a></li>
+                            <li><a href="#">Electrónica</a></li>
+                            <li><a href="#">Ropa</a></li>
+                            <li><a href="#">Hogar</a></li>
+                            <li><a href="#">Accesorios</a></li>
+                            <li><a href="/p/cart.html">Mi Carrito</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="product-content" class="product-detail-container">
+            <div id="loadingContainer" class="loading-container">
+                <i class="fa fa-spinner fa-pulse"></i>
+                <h2>Cargando producto...</h2>
+                <p>Por favor espera</p>
+            </div>
+            
+            <div id="errorContainer" class="error-container" style="display: none;">
+                <i class="fa fa-exclamation-triangle"></i>
+                <h2>Producto no encontrado</h2>
+                <p>El producto que buscas no existe o ha sido eliminado.</p>
+                <a href="/" class="btn btn-primary" style="display: inline-block; padding: 12px 30px; text-decoration: none; margin-top: 20px;">
+                    <i class="fa fa-arrow-left"></i> Volver al inicio
+                </a>
+            </div>
+            
+            <div id="productContainer" style="display: none;"></div>
+        </div>
+
+        <!-- FOOTER -->
+        <div id="footer-wrapper">
+            <div class="footer-widgets-wrap">
+                <div class="footer">
+                    <h3 style="color: white; margin-bottom: 20px;">CUBAZON</h3>
+                    <p style="color: #ddd; margin-bottom: 15px;">Tu tienda online de confianza en Sagua de Tánamo.</p>
+                    <p style="color: #ddd;"><i class="fa fa-map-marker"></i> Sagua de Tánamo, Holguín, Cuba</p>
+                </div>
+                <div class="footer">
+                    <h3 style="color: white; margin-bottom: 20px;">Enlaces rápidos</h3>
+                    <ul style="list-style: none;">
+                        <li style="margin-bottom: 10px;"><a href="#">Sobre nosotros</a></li>
+                        <li style="margin-bottom: 10px;"><a href="#">Términos y condiciones</a></li>
+                        <li style="margin-bottom: 10px;"><a href="#">Política de envíos</a></li>
+                        <li style="margin-bottom: 10px;"><a href="#">Contacto</a></li>
+                    </ul>
+                </div>
+                <div class="footer">
+                    <h3 style="color: white; margin-bottom: 20px;">Atención al cliente</h3>
+                    <p style="color: #ddd; margin-bottom: 10px;"><i class="fa fa-phone"></i> +53 56940021</p>
+                    <p style="color: #ddd; margin-bottom: 10px;"><i class="fa fa-envelope"></i> soporte@cubazon.com</p>
+                    <p style="color: #ddd;"><i class="fa fa-whatsapp"></i> +53 56940021</p>
+                </div>
+            </div>
+        </div>
+        <div id="sub-footer-wrapper">
+            <div class="container row">
+                <p>@Copyright 2026 CUBAZON · Diseñado por Des.Joshua_Technology · Todos los derechos reservados</p>
+            </div>
+        </div>
+
+        <div class="back-top" title="Volver arriba">
+            <i class="fa fa-chevron-up"></i>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="module">
+        import { supabase } from '/js/supabase-client.js'
+        import { initCarrito } from '/js/cart.js'
+        
+        const carrito = initCarrito()
+        window.cart = carrito
+        carrito.cargarDeLocalStorage()
+        carrito.actualizarInterfaz()
+        
+        function getProductIdFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search)
+            return urlParams.get('id')
+        }
+
+        async function cargarProducto() {
+            const id = getProductIdFromUrl()
+            
+            if (!id) {
+                document.getElementById('loadingContainer').style.display = 'none'
+                document.getElementById('errorContainer').style.display = 'block'
+                return
+            }
+            
+            try {
+                const { data, error } = await supabase
+                    .from('productos')
+                    .select('*')
+                    .eq('id', id)
+                    .single()
+                
+                if (error || !data) throw error
+                
+                document.getElementById('loadingContainer').style.display = 'none'
+                document.getElementById('productContainer').style.display = 'block'
+                
+                renderizarProducto(data)
+                
+            } catch (error) {
+                document.getElementById('loadingContainer').style.display = 'none'
+                document.getElementById('errorContainer').style.display = 'block'
+            }
+        }
+
+        function renderizarProducto(p) {
+            const container = document.getElementById('productContainer')
+            
+            let stockClass = 'stock-available'
+            let stockText = `✅ Stock disponible: ${p.stock} unidades`
+            
+            if (p.stock <= 0) {
+                stockClass = 'stock-out'
+                stockText = '❌ AGOTADO'
+            } else if (p.stock <= 5) {
+                stockClass = 'stock-low'
+                stockText = `⚠️ Stock bajo: ${p.stock} unidades`
+            }
+            
+            const precioOferta = p.oferta && p.precio_oferta ? p.precio_oferta : null
+            const precioActual = precioOferta || p.precio
+            const descuento = p.oferta && p.precio_oferta ? Math.round(((p.precio - p.precio_oferta) / p.precio) * 100) : 0
+            
+            let accionesHtml = ''
+            
+            if (p.stock <= 0) {
+                accionesHtml = `<div class="product-agotado-large"><i class="fa fa-ban"></i> PRODUCTO AGOTADO</div>`
+            } else {
+                accionesHtml = `
+                    <div class="product-actions">
+                        <button class="btn btn-secondary" onclick="agregarAlCarrito(${p.id})">
+                            <i class="fa fa-shopping-cart"></i> Añadir al carrito
+                        </button>
+                        <button class="btn btn-buy-now" onclick="comprarAhora(${p.id})">
+                            <i class="fa fa-bolt"></i> Comprar ahora
+                        </button>
+                    </div>
+                `
+            }
+            
+            container.innerHTML = `
+                <div class="product-detail-grid">
+                    <div class="main-image">
+                        <img src="${p.imagen_url || '/assets/images/no-image.jpg'}" alt="${p.nombre}" onerror="this.src='/assets/images/no-image.jpg'">
+                    </div>
+                    <div class="product-info">
+                        <h1 class="product-title">${p.nombre}</h1>
+                        <div class="product-price-box">
+                            <span class="product-price">$${precioActual.toFixed(2)} <small>CUP</small></span>
+                            ${precioOferta ? `<span class="product-original-price">$${p.precio.toFixed(2)}</span>` : ''}
+                            ${descuento > 0 ? `<span class="product-discount">-${descuento}%</span>` : ''}
+                            <div>
+                                <span class="product-stock ${stockClass}">
+                                    <i class="fa ${p.stock <= 0 ? 'fa-ban' : (p.stock <= 5 ? 'fa-exclamation-triangle' : 'fa-check-circle')}"></i> 
+                                    ${stockText}
+                                </span>
+                            </div>
+                        </div>
+                        ${accionesHtml}
+                    </div>
+                </div>
+                <div class="product-description">
+                    <h2>Descripción del producto</h2>
+                    <p>${p.descripcion || 'No hay descripción disponible.'}</p>
+                    ${p.etiquetas?.length ? `
+                        <div class="product-tags">
+                            ${p.etiquetas.map(e => `<span class="product-tag">${e}</span>`).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+            `
+        }
+
+        window.agregarAlCarrito = async function(id) {
+            await carrito.agregar(id, 1)
+        }
+
+        window.comprarAhora = async function(id) {
+            const exito = await carrito.agregar(id, 1)
+            if (exito) window.location.href = '/p/checkout.html'
+        }
+
+        cargarProducto()
+
+        window.addEventListener('scroll', function() {
+            const backTop = document.querySelector('.back-top')
+            backTop.style.display = window.scrollY > 300 ? 'flex' : 'none'
+        })
+        
+        document.querySelector('.back-top')?.addEventListener('click', function() {
+            window.scrollTo({ top: 0, behavior: 'smooth' })
+        })
+    </script>
+</body>
+</html>

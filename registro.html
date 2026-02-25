@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear cuenta · CUBAZON</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f2f5;
+            color: #0f1111;
+            line-height: 1.5;
+            padding: 20px;
+        }
+        
+        .register-container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            padding: 40px;
+        }
+        
+        .register-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .register-header img {
+            height: 50px;
+            margin-bottom: 20px;
+        }
+        
+        .register-header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0f1111;
+            margin-bottom: 10px;
+        }
+        
+        .register-header p {
+            color: #6c757d;
+            font-size: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #0f1111;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: #f08804;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(240,136,4,0.1);
+        }
+        
+        .row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #ffd814;
+            color: #0f1111;
+        }
+        
+        .btn-primary:hover {
+            background: #f7ca00;
+        }
+        
+        .btn-secondary {
+            background: #f0f2f5;
+            color: #0f1111;
+        }
+        
+        .btn-secondary:hover {
+            background: #e3e6e9;
+        }
+        
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .btn-info:hover {
+            background: #138496;
+        }
+        
+        .login-link {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid #eee;
+        }
+        
+        .login-link a {
+            color: #007185;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        
+        .login-link a:hover {
+            color: #c7511f;
+            text-decoration: underline;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .password-requirements {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+            font-size: 13px;
+            color: #6c757d;
+        }
+        
+        .password-requirements ul {
+            margin-top: 8px;
+            padding-left: 20px;
+        }
+        
+        .password-requirements li {
+            margin-bottom: 5px;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #6c757d;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .back-link i {
+            margin-right: 5px;
+        }
+        
+        .back-link:hover {
+            color: #0f1111;
+        }
+        
+        /* ===== BOTÓN DE INFORMACIÓN ===== */
+        .info-badge {
+            background: #e7f3ff;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-size: 14px;
+            color: #0f1111;
+        }
+        
+        .info-badge i {
+            color: #17a2b8;
+            margin-right: 8px;
+        }
+        
+        .delivery-section {
+            margin: 20px 0;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .delivery-header {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s;
+        }
+        
+        .delivery-header:hover {
+            background: #e9ecef;
+        }
+        
+        .delivery-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .delivery-header i {
+            color: #17a2b8;
+        }
+        
+        .delivery-content {
+            padding: 20px;
+            border-top: 1px solid #dee2e6;
+            background: white;
+            display: none;
+        }
+        
+        .delivery-content.show {
+            display: block;
+        }
+        
+        .delivery-note {
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 13px;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .delivery-note i {
+            color: #28a745;
+        }
+        
+        @media (max-width: 768px) {
+            .register-container {
+                padding: 30px 20px;
+            }
+            
+            .row-2 {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="register-header">
+            <a href="/">
+                <img src="http://imgfz.com/i/oXOfVlT.png" alt="CUBAZON" style="height: 150px;">
+            </a>
+            <h1>Crear cuenta</h1>
+            <p>Completa tus datos para registrarte</p>
+        </div>
+        
+        <div id="alertMessage" style="display: none;"></div>
+        
+        <form id="registerForm">
+            <div class="form-group">
+                <label><i class="fa fa-user"></i> Nombre y apellidos *</label>
+                <input type="text" id="nombre" class="form-control" placeholder="Ej: Juan Pérez" required>
+            </div>
+            
+            <div class="row-2">
+                <div class="form-group">
+                    <label><i class="fa fa-envelope"></i> Correo electrónico *</label>
+                    <input type="email" id="email" class="form-control" placeholder="correo@ejemplo.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fa fa-phone"></i> Teléfono *</label>
+                    <input type="tel" id="telefono" class="form-control" placeholder="56940021" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fa fa-lock"></i> Contraseña *</label>
+                <input type="password" id="password" class="form-control" placeholder="Mínimo 8 caracteres" required>
+                <div class="password-requirements">
+                    <strong>Requisitos:</strong>
+                    <ul>
+                        <li>Mínimo 8 caracteres</li>
+                        <li>Al menos una mayúscula</li>
+                        <li>Al menos un número</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fa fa-lock"></i> Confirmar contraseña *</label>
+                <input type="password" id="confirmPassword" class="form-control" placeholder="Repite tu contraseña" required>
+            </div>
+            
+            <!-- SECCIÓN DE DATOS DE ENVÍO (OCULTA POR DEFECTO) -->
+            <div class="delivery-section">
+                <div class="delivery-header" onclick="toggleDeliverySection()">
+                    <h3>
+                        <i class="fa fa-truck"></i>
+                        📦 Datos para envío a domicilio (opcional)
+                    </h3>
+                    <i class="fa fa-chevron-down" id="deliveryIcon"></i>
+                </div>
+                <div class="delivery-content" id="deliveryContent">
+                    <div class="info-badge">
+                        <i class="fa fa-info-circle"></i>
+                        Estos datos nos ayudan a preparar tus envíos más rápido. 
+                        Si no los agregas ahora, podrás hacerlo después en "Mi cuenta".
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fa fa-id-card"></i> Carnet/Pasaporte</label>
+                        <input type="text" id="carnet" class="form-control" placeholder="Número de identificación">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fa fa-home"></i> Dirección completa</label>
+                        <input type="text" id="direccion" class="form-control" placeholder="Calle, número, entre calles">
+                    </div>
+                    
+                    <div class="row-2">
+                        <div class="form-group">
+                            <label><i class="fa fa-map-marker"></i> Localidad/Barrio</label>
+                            <input type="text" id="localidad" class="form-control" placeholder="Ej: Sagua, Jobo">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label><i class="fa fa-location-arrow"></i> Referencia</label>
+                            <input type="text" id="referencia" class="form-control" placeholder="Cerca de la escuela, etc.">
+                        </div>
+                    </div>
+                    
+                    <div class="delivery-note">
+                        <i class="fa fa-shield-alt"></i>
+                        <strong>Uso legítimo de tus datos:</strong> Tu información será utilizada única y exclusivamente para procesar y entregar tus pedidos a domicilio. 
+                        CUBAZON garantiza la confidencialidad de tus datos y no los compartirá con terceros sin tu consentimiento. 
+                        Al proporcionar estos datos, nos ayudas a ofrecerte un servicio más rápido y eficiente. ✅
+                    </div>
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                    <input type="checkbox" id="terminos" required style="width: 18px; height: 18px;">
+                    <span style="font-size: 14px;">Acepto los <a href="/terminos.html" target="_blank">términos y condiciones</a> y la <a href="/privacidad.html" target="_blank">política de privacidad</a></span>
+                </label>
+            </div>
+            
+            <button type="submit" class="btn btn-primary" id="registerBtn">
+                <i class="fa fa-user-plus"></i> Crear cuenta
+            </button>
+        </form>
+        
+        <div class="login-link">
+            <p style="margin-bottom: 15px;">¿Ya tienes una cuenta?</p>
+            <a href="/login.html" class="btn btn-secondary" style="display: inline-block; width: auto; padding: 12px 30px; text-decoration: none;">
+                <i class="fa fa-sign-in"></i> Iniciar sesión
+            </a>
+        </div>
+        
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="/" class="back-link">
+                <i class="fa fa-arrow-left"></i> Volver a la tienda
+            </a>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="module">
+        import { auth } from '/js/auth.js'
+        
+        // Función para mostrar/ocultar sección de envío
+        window.toggleDeliverySection = function() {
+            const content = document.getElementById('deliveryContent')
+            const icon = document.getElementById('deliveryIcon')
+            
+            if (content.classList.contains('show')) {
+                content.classList.remove('show')
+                icon.className = 'fa fa-chevron-down'
+            } else {
+                content.classList.add('show')
+                icon.className = 'fa fa-chevron-up'
+            }
+        }
+        
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault()
+            
+            const password = document.getElementById('password').value
+            const confirmPassword = document.getElementById('confirmPassword').value
+            const email = document.getElementById('email').value // ← DEFINIR LA VARIABLE EMAIL
+            
+            // Validar contraseñas
+            if (password !== confirmPassword) {
+                document.getElementById('alertMessage').innerHTML = `
+                    <div class="alert alert-error">
+                        <i class="fa fa-exclamation-circle"></i>
+                        Las contraseñas no coinciden
+                    </div>
+                `
+                document.getElementById('alertMessage').style.display = 'block'
+                return
+            }
+            
+            // Validar requisitos de contraseña
+            if (password.length < 8) {
+                document.getElementById('alertMessage').innerHTML = `
+                    <div class="alert alert-error">
+                        <i class="fa fa-exclamation-circle"></i>
+                        La contraseña debe tener al menos 8 caracteres
+                    </div>
+                `
+                document.getElementById('alertMessage').style.display = 'block'
+                return
+            }
+            
+            const btn = document.getElementById('registerBtn')
+            btn.disabled = true
+            btn.innerHTML = '<i class="fa fa-spinner fa-pulse"></i> Creando cuenta...'
+            
+            const datos = {
+                nombre: document.getElementById('nombre').value,
+                telefono: document.getElementById('telefono').value,
+                direccion: document.getElementById('direccion').value,
+                localidad: document.getElementById('localidad').value,
+                referencia: document.getElementById('referencia').value,
+                carnet: document.getElementById('carnet').value
+            }
+            
+            const resultado = await auth.registrar(
+                email,
+                password,
+                datos
+            )
+            
+            if (resultado.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Cuenta creada!',
+                    html: `
+                        <p>Hemos enviado un correo de confirmación a <strong>${email}</strong>.</p>
+                        <div style="background: #fff3cd; color: #856404; padding: 15px; border-radius: 8px; margin-top: 15px; text-align: left;">
+                            <p><i class="fa fa-exclamation-triangle"></i> <strong>⚠️ IMPORTANTE:</strong></p>
+                            <p>Por favor revisa la carpeta <strong>SPAM</strong> o <strong>CORREO NO DESEADO</strong>.</p>
+                            <p>Si encuentras el mensaje allí, <strong>márcalo como "NO ES SPAM"</strong> para que futuros correos lleguen directamente a tu bandeja de entrada.</p>
+                        </div>
+                    `,
+                    confirmButtonText: 'Entendido'
+                }).then(() => {
+                    window.location.href = '/login.html'
+                })
+            } else {
+                document.getElementById('alertMessage').innerHTML = `
+                    <div class="alert alert-error">
+                        <i class="fa fa-exclamation-circle"></i>
+                        ${resultado.error}
+                    </div>
+                `
+                document.getElementById('alertMessage').style.display = 'block'
+                
+                btn.disabled = false
+                btn.innerHTML = '<i class="fa fa-user-plus"></i> Crear cuenta'
+            }
+        })
+    </script>
+</body>
+</html>
