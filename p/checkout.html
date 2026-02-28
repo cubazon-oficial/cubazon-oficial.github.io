@@ -1023,7 +1023,40 @@
             actualizarTotales()
         }
         
+        // ========== FUNCIÓN PROCESAR PEDIDO MODIFICADA (SOLO ESTO CAMBIA) ==========
         async function procesarPedido() {
+            
+            // ========== VALIDAR AUTENTICACIÓN PRIMERO ==========
+            if (!auth.isAuthenticated()) {
+                const result = await Swal.fire({
+                    icon: 'info',
+                    title: 'Inicia sesión o regístrate',
+                    html: `
+                        <p>Para realizar una compra necesitas tener una cuenta en CUBAZON.</p>
+                        <div style="text-align: left; margin-top: 15px; background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                            <p><i class="fa fa-check-circle" style="color: #28a745;"></i> <strong>Beneficios:</strong></p>
+                            <ul style="list-style: none; padding-left: 0;">
+                                <li style="margin-bottom: 8px;">✅ Seguimiento de tus pedidos</li>
+                                <li style="margin-bottom: 8px;">✅ Pago con saldo CUBAZON</li>
+                                <li style="margin-bottom: 8px;">✅ Datos de envío guardados</li>
+                                <li style="margin-bottom: 8px;">✅ Historial de compras</li>
+                            </ul>
+                        </div>
+                    `,
+                    showCancelButton: true,
+                    confirmButtonText: 'Iniciar sesión',
+                    cancelButtonText: 'Registrarme',
+                    reverseButtons: true
+                });
+                
+                if (result.isConfirmed) {
+                    window.location.href = '/login.html';
+                } else {
+                    window.location.href = '/registro.html';
+                }
+                return;
+            }
+            
             const metodoPago = document.querySelector('input[name="payment_method"]:checked')?.value
             
             if (!metodoPago) {
