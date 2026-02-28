@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagar con QR · CUBAZON</title>
+    
+    <!-- Mismos estilos que transferir.html -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- Librería para escanear QR - CDN estable -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+    
+    <style>
+        /* ===== Mismos estilos que transferir/recibir ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f2f5;
+            color: #0f1111;
+            line-height: 1.5;
+        }
+        
+        /* Header idéntico */
+        #header-wrap {
+            background: #131921;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-header { padding: 10px 20px; }
+        .container.row {
+            max-width: 1500px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header-logo img { height: 50px; width: auto; }
+        .header-right { display: flex; align-items: center; gap: 25px; }
+        .right-menu ul {
+            display: flex;
+            gap: 20px;
+            list-style: none;
+            align-items: center;
+        }
+        .right-menu ul li a {
+            color: white;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .sora-cart { position: relative; }
+        .sora-cart-details {
+            display: flex;
+            align-items: center;
+            color: white;
+            cursor: pointer;
+        }
+        .sora-cart-details:after {
+            content: '\f290';
+            font-family: 'FontAwesome';
+            font-size: 24px;
+            margin-left: 5px;
+        }
+        .simpleCart_quantity {
+            background: #f08804;
+            color: #0f1111;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-left: 5px;
+        }
+        .header-menu {
+            background: #232f3e;
+            padding: 0 20px;
+        }
+        #main-menu ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+        #main-menu ul li a {
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 0;
+            display: block;
+        }
+        
+        /* Contenedor principal */
+        .pagar-container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #0f1111;
+        }
+        .subtitle {
+            color: #6c757d;
+            margin-bottom: 30px;
+        }
+        #reader {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto 20px;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .pago-info {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 20px;
+            border-left: 4px solid #28a745;
+            display: none;
+        }
+        .pago-info h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #0f1111;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .info-label {
+            font-weight: 600;
+            color: #495057;
+        }
+        .info-value {
+            font-weight: 500;
+            color: #0f1111;
+        }
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: #ffd814;
+            color: #0f1111;
+        }
+        .btn-primary:hover {
+            background: #f7ca00;
+        }
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            margin-top: 10px;
+        }
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        .manual-input {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            display: none;
+        }
+        .manual-input input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        /* Footer idéntico */
+        #footer-wrapper {
+            background: #232f3e;
+            color: white;
+            padding: 50px 20px;
+            margin-top: 50px;
+        }
+        .footer-widgets-wrap {
+            max-width: 1500px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+        }
+        #sub-footer-wrapper {
+            background: #131921;
+            padding: 20px;
+            text-align: center;
+            color: #ddd;
+        }
+        
+        @media (max-width: 768px) {
+            .pagar-container {
+                margin: 20px;
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ===== HEADER (idéntico a transferir.html) ===== -->
+    <div id="header-wrap">
+        <div class="header-header">
+            <div class="container row">
+                <div class="header-logo">
+                    <a href="/">
+                        <img src="http://imgfz.com/i/oXOfVlT.png" alt="CUBAZON" style="height: 50px;">
+                    </a>
+                </div>
+                <div class="header-right">
+                    <div class="right-menu">
+                        <ul>
+                            <li><a href="/login.html" id="userMenuLink">
+                                <i class="fa fa-sign-in"></i> 
+                                <span id="userMenuText">Iniciar sesión</span>
+                            </a></li>
+                            <li><a href="/p/cart.html"><i class="fa fa-shopping-cart"></i> <span id="cart-counter" class="simpleCart_quantity">0</span></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="header-menu">
+            <div class="container row">
+                <div id="main-menu">
+                    <ul>
+                        <li><a href="/">Inicio</a></li>
+                        <li><a href="/mi-cuenta.html">Mi Cuenta</a></li>
+                        <li><a href="/transferir.html">Transferir Saldo</a></li>
+                        <li><a href="/recibir.html">Recibir Dinero</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== CONTENIDO PRINCIPAL ===== -->
+    <div class="pagar-container">
+        <h1>📱 Pagar con QR</h1>
+        <p class="subtitle">Escanea el código QR de quien recibirá el pago</p>
+        
+        <div id="loadingIndicator" style="text-align: center; padding: 20px; display: none;">
+            <i class="fa fa-spinner fa-pulse fa-2x"></i>
+            <p>Cargando...</p>
+        </div>
+        
+        <!-- Contenedor para el escáner QR -->
+        <div id="reader"></div>
+        
+        <!-- Botón para ingreso manual (fallback) -->
+        <button class="btn btn-secondary" id="manualBtn" style="display: none;">
+            <i class="fa fa-keyboard-o"></i> Ingresar código manualmente
+        </button>
+        
+        <!-- Formulario de ingreso manual -->
+        <div id="manualInput" class="manual-input">
+            <h4>Ingresa el código QR:</h4>
+            <input type="text" id="codigoManual" placeholder="Ej: REC-ABCD1234...">
+            <button class="btn btn-primary" id="buscarManualBtn">
+                <i class="fa fa-search"></i> Buscar
+            </button>
+        </div>
+        
+        <div id="pagoInfo" class="pago-info">
+            <h3>📋 Detalles del pago</h3>
+            <div class="info-row">
+                <span class="info-label">Pagando a:</span>
+                <span class="info-value" id="receptorNombre">---</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Monto:</span>
+                <span class="info-value" id="montoPago">---</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Concepto:</span>
+                <span class="info-value" id="conceptoPago">---</span>
+            </div>
+            <div style="margin-top: 25px;">
+                <button class="btn btn-primary" id="confirmarPagoBtn">
+                    <i class="fa fa-check-circle"></i> Confirmar pago
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <div id="footer-wrapper">
+        <div class="footer-widgets-wrap">
+            <div class="footer">
+                <h3>CUBAZON</h3>
+                <p>Tu tienda online de confianza en Sagua de Tánamo.</p>
+            </div>
+        </div>
+    </div>
+    <div id="sub-footer-wrapper">
+        <p>@Copyright 2026 CUBAZON</p>
+    </div>
+
+    <script type="module">
+        import { supabase } from '/js/supabase-client.js';
+        import { auth } from '/js/auth.js';
+        import { initCarrito } from '/js/cart.js';
+        
+        // Inicializar carrito
+        const carrito = initCarrito();
+        window.cart = carrito;
+        carrito.cargarDeLocalStorage();
+        carrito.actualizarInterfaz();
+        
+        // Elementos DOM
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const readerDiv = document.getElementById('reader');
+        const pagoInfo = document.getElementById('pagoInfo');
+        const manualBtn = document.getElementById('manualBtn');
+        const manualInput = document.getElementById('manualInput');
+        const codigoManual = document.getElementById('codigoManual');
+        const buscarManualBtn = document.getElementById('buscarManualBtn');
+        let html5QrCode;
+        let peticionActual = null;
+        
+        // ========== ACTUALIZAR MENÚ DE USUARIO ==========
+        function actualizarMenuUsuario() {
+            const userMenuLink = document.getElementById('userMenuLink');
+            const userMenuText = document.getElementById('userMenuText');
+            if (!userMenuLink || !userMenuText) return;
+            
+            if (auth.isAuthenticated()) {
+                const usuario = auth.getUsuario();
+                const nombre = usuario?.nombre_completo || usuario?.email?.split('@')[0] || 'Mi cuenta';
+                userMenuText.textContent = nombre;
+                userMenuLink.href = '/mi-cuenta.html';
+                userMenuLink.innerHTML = `<i class="fa fa-user"></i> ${nombre}`;
+            } else {
+                userMenuText.textContent = 'Iniciar sesión';
+                userMenuLink.href = '/login.html?redirect=/pagar-qr.html';
+                userMenuLink.innerHTML = '<i class="fa fa-sign-in"></i> Iniciar sesión';
+            }
+        }
+        
+        // ========== VERIFICAR AUTENTICACIÓN ==========
+        async function verificarAuth() {
+            loadingIndicator.style.display = 'block';
+            
+            console.log('🔍 Verificando autenticación...');
+            
+            // Intentar obtener usuario 20 veces (4 segundos máximo)
+            for (let i = 0; i < 20; i++) {
+                const usuario = auth.getUsuario();
+                
+                if (usuario) {
+                    console.log('✅ Usuario autenticado:', usuario.email);
+                    loadingIndicator.style.display = 'none';
+                    
+                    // Pequeño retraso para asegurar DOM
+                    setTimeout(() => {
+                        iniciarEscanner();
+                    }, 500);
+                    
+                    return;
+                }
+                
+                console.log(`⏳ Intento ${i+1}/20 - Esperando auth...`);
+                await new Promise(resolve => setTimeout(resolve, 200));
+            }
+            
+            // Verificar directamente con Supabase
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) {
+                    console.log('✅ Usuario recuperado directamente de Supabase');
+                    auth.refreshUsuario();
+                    loadingIndicator.style.display = 'none';
+                    setTimeout(() => {
+                        iniciarEscanner();
+                    }, 500);
+                    return;
+                }
+            } catch (e) {
+                console.log('Error verificando usuario directamente:', e);
+            }
+            
+            loadingIndicator.style.display = 'none';
+            sessionStorage.setItem('redirect_after_login', window.location.pathname);
+            
+            const result = await Swal.fire({
+                title: 'Inicia sesión',
+                text: 'Debes iniciar sesión para pagar con QR',
+                icon: 'info',
+                confirmButtonText: 'Ir a login',
+                showCancelButton: true,
+                cancelButtonText: 'Cancelar',
+                allowOutsideClick: false
+            });
+            
+            if (result.isConfirmed) {
+                window.location.href = '/login.html?redirect=' + encodeURIComponent(window.location.pathname);
+            } else {
+                window.location.href = '/';
+            }
+        }
+        
+        // ========== INICIAR ESCÁNER QR (CON MANEJO DE ERRORES MEJORADO) ==========
+        function iniciarEscanner() {
+            // Verificar que la librería está disponible
+            if (typeof Html5Qrcode === 'undefined') {
+                console.error('❌ Html5Qrcode no está definido');
+                mostrarErrorCamara('No se pudo cargar el escáner QR');
+                return;
+            }
+            
+            // Verificar si el navegador soporta cámaras
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                console.error('❌ Navegador no soporta cámaras');
+                mostrarErrorCamara('Tu navegador no soporta el acceso a cámara');
+                return;
+            }
+            
+            try {
+                html5QrCode = new Html5Qrcode("reader");
+                
+                // Intentar con cámara trasera primero
+                html5QrCode.start(
+                    { facingMode: "environment" },
+                    { 
+                        fps: 10, 
+                        qrbox: { width: 250, height: 250 },
+                        aspectRatio: 1.0
+                    },
+                    onScanSuccess,
+                    onScanError
+                ).catch(err => {
+                    console.error('Error con cámara trasera:', err);
+                    
+                    // Intentar con cualquier cámara disponible
+                    html5QrCode.start(
+                        { facingMode: "user" },
+                        { fps: 10, qrbox: { width: 250, height: 250 } },
+                        onScanSuccess,
+                        onScanError
+                    ).catch(err2 => {
+                        console.error('Error con cualquier cámara:', err2);
+                        mostrarErrorCamara('No se pudo acceder a la cámara');
+                    });
+                });
+                
+            } catch (error) {
+                console.error('Error creando escáner:', error);
+                mostrarErrorCamara('Error al iniciar el escáner');
+            }
+        }
+        
+        function mostrarErrorCamara(mensaje) {
+            readerDiv.innerHTML = `
+                <div style="text-align: center; padding: 30px;">
+                    <i class="fa fa-camera fa-3x" style="color: #dc3545; margin-bottom: 15px;"></i>
+                    <p style="color: #666;">${mensaje}</p>
+                    <button class="btn btn-primary" style="width: auto; margin-top: 15px;" onclick="window.location.reload()">
+                        <i class="fa fa-refresh"></i> Reintentar
+                    </button>
+                </div>
+            `;
+            // Mostrar botón de ingreso manual
+            manualBtn.style.display = 'block';
+        }
+        
+        // ========== AL ESCANEAR UN CÓDIGO ==========
+        async function onScanSuccess(decodedText) {
+            console.log('✅ QR escaneado:', decodedText);
+            
+            // Detener escáner mientras procesamos
+            if (html5QrCode && html5QrCode.isScanning) {
+                try {
+                    await html5QrCode.stop();
+                } catch (e) {
+                    console.log('Error deteniendo escáner:', e);
+                }
+            }
+            
+            await procesarCodigo(decodedText);
+        }
+        
+        async function procesarCodigo(texto) {
+            try {
+                // Extraer código de la URL
+                let codigo = texto;
+                if (texto.includes('?')) {
+                    const url = new URL(texto);
+                    codigo = url.searchParams.get('c');
+                }
+                
+                console.log('🔍 Código extraído:', codigo);
+                
+                if (!codigo) {
+                    Swal.fire('Código inválido', 'El QR escaneado no es válido', 'error');
+                    setTimeout(() => iniciarEscanner(), 1000);
+                    return;
+                }
+                
+                // Buscar petición en BD
+                const { data: peticion, error } = await supabase
+                    .from('peticiones_pago')
+                    .select(`
+                        *,
+                        receptor:auth_users_view!receptor_id(email, nombre_completo)
+                    `)
+                    .eq('codigo', codigo)
+                    .eq('estado', 'activa')
+                    .gt('expira', new Date().toISOString())
+                    .single();
+                
+                if (error || !peticion) {
+                    console.error('Error buscando petición:', error);
+                    Swal.fire('Código inválido o expirado', 'Este código ya no es válido', 'error');
+                    setTimeout(() => iniciarEscanner(), 1000);
+                    return;
+                }
+                
+                console.log('✅ Petición encontrada:', peticion);
+                
+                // Guardar petición y mostrar info
+                peticionActual = peticion;
+                
+                document.getElementById('receptorNombre').textContent = peticion.receptor?.nombre_completo || peticion.receptor?.email || 'Desconocido';
+                
+                if (peticion.monto) {
+                    document.getElementById('montoPago').textContent = `$${peticion.monto} CUP`;
+                } else {
+                    document.getElementById('montoPago').textContent = 'Monto libre (ingrésalo)';
+                }
+                
+                document.getElementById('conceptoPago').textContent = peticion.concepto || 'Sin concepto';
+                
+                pagoInfo.style.display = 'block';
+                manualBtn.style.display = 'none';
+                manualInput.style.display = 'none';
+                
+            } catch (error) {
+                console.error('Error procesando QR:', error);
+                Swal.fire('Error', 'No se pudo procesar el código', 'error');
+                setTimeout(() => iniciarEscanner(), 1000);
+            }
+        }
+        
+        function onScanError(error) {
+            // Solo log, no mostrar errores constantes
+            console.log('Error escaneando:', error);
+        }
+        
+        // ========== INGRESO MANUAL ==========
+        manualBtn.addEventListener('click', () => {
+            if (html5QrCode && html5QrCode.isScanning) {
+                html5QrCode.stop();
+            }
+            readerDiv.style.display = 'none';
+            manualInput.style.display = 'block';
+            manualBtn.style.display = 'none';
+        });
+        
+        buscarManualBtn.addEventListener('click', async () => {
+            const codigo = codigoManual.value.trim();
+            if (!codigo) {
+                Swal.fire('Error', 'Ingresa un código', 'error');
+                return;
+            }
+            await procesarCodigo(codigo);
+        });
+        
+        codigoManual.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                buscarManualBtn.click();
+            }
+        });
+        
+        // ========== CONFIRMAR PAGO ==========
+        document.getElementById('confirmarPagoBtn').addEventListener('click', async () => {
+            if (!peticionActual) {
+                Swal.fire('Error', 'No hay petición activa', 'error');
+                return;
+            }
+            
+            let monto = peticionActual.monto;
+            
+            // Si el monto es libre, preguntar
+            if (!monto) {
+                const { value: montoIngresado } = await Swal.fire({
+                    title: 'Ingresa el monto a pagar',
+                    input: 'number',
+                    inputLabel: 'Monto en CUP',
+                    inputPlaceholder: '100.00',
+                    showCancelButton: true,
+                    inputValidator: (value) => {
+                        if (!value) return 'Debes ingresar un monto';
+                        if (value < 10) return 'El monto mínimo es $10.00';
+                        return null;
+                    }
+                });
+                
+                if (!montoIngresado) return;
+                monto = parseFloat(montoIngresado);
+            }
+            
+            // Confirmar con contraseña
+            const { value: password } = await Swal.fire({
+                title: 'Confirmar pago',
+                html: `
+                    <p>Vas a pagar <strong>$${monto.toFixed(2)}</strong> a:</p>
+                    <p style="font-size: 18px; color: #009644;">${peticionActual.receptor?.email}</p>
+                    <p style="margin-top: 20px;">Confirma tu contraseña:</p>
+                `,
+                icon: 'question',
+                input: 'password',
+                inputLabel: 'Contraseña',
+                inputPlaceholder: '••••••••',
+                showCancelButton: true,
+                confirmButtonText: 'Pagar',
+                cancelButtonText: 'Cancelar'
+            });
+            
+            if (!password) return;
+            
+            try {
+                Swal.fire({
+                    title: 'Procesando pago...',
+                    html: 'Por favor espera',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+                
+                const { data, error } = await supabase
+                    .rpc('transferir_saldo', {
+                        p_receptor_email: peticionActual.receptor.email,
+                        p_monto: monto,
+                        p_concepto: peticionActual.concepto || 'Pago por QR'
+                    });
+                
+                if (error) throw error;
+                
+                if (data.success) {
+                    await supabase
+                        .from('peticiones_pago')
+                        .update({ estado: 'usada' })
+                        .eq('id', peticionActual.id);
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Pago exitoso!',
+                        text: `Se transfirieron $${monto.toFixed(2)} CUP`,
+                        timer: 2000
+                    });
+                    
+                    setTimeout(() => {
+                        window.location.href = '/mi-cuenta.html';
+                    }, 2000);
+                    
+                } else {
+                    throw new Error(data.error || 'Error en la transferencia');
+                }
+                
+            } catch (error) {
+                console.error('Error en pago:', error);
+                Swal.fire('Error', error.message, 'error');
+                setTimeout(() => iniciarEscanner(), 1000);
+            }
+        });
+        
+        // ========== INICIALIZAR ==========
+        actualizarMenuUsuario();
+        auth.onCambio(actualizarMenuUsuario);
+        verificarAuth();
+        
+        // Limpiar al salir
+        window.addEventListener('beforeunload', () => {
+            if (html5QrCode && html5QrCode.isScanning) {
+                try {
+                    html5QrCode.stop();
+                } catch (e) {}
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recibir dinero · CUBAZON</title>
+    
+    <!-- Fuentes y estilos globales (igual que transferir) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        /* ===== Mismos estilos que transferir.html ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f2f5;
+            color: #0f1111;
+            line-height: 1.5;
+        }
+        
+        /* Header idéntico */
+        #header-wrap {
+            background: #131921;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-header { padding: 10px 20px; }
+        .container.row {
+            max-width: 1500px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header-logo img { height: 50px; width: auto; }
+        .header-right { display: flex; align-items: center; gap: 25px; }
+        .right-menu ul {
+            display: flex;
+            gap: 20px;
+            list-style: none;
+            align-items: center;
+        }
+        .right-menu ul li a {
+            color: white;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .sora-cart { position: relative; }
+        .sora-cart-details {
+            display: flex;
+            align-items: center;
+            color: white;
+            cursor: pointer;
+        }
+        .sora-cart-details:after {
+            content: '\f290';
+            font-family: 'FontAwesome';
+            font-size: 24px;
+            margin-left: 5px;
+        }
+        .simpleCart_quantity {
+            background: #f08804;
+            color: #0f1111;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-left: 5px;
+        }
+        .header-menu {
+            background: #232f3e;
+            padding: 0 20px;
+        }
+        #main-menu ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+        #main-menu ul li a {
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 0;
+            display: block;
+        }
+        
+        /* Contenedor principal */
+        .recibir-container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #0f1111;
+        }
+        .subtitle {
+            color: #6c757d;
+            margin-bottom: 30px;
+        }
+        .saldo-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+        .saldo-card h3 {
+            font-size: 14px;
+            font-weight: 400;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+        .saldo-card .saldo-amount {
+            font-size: 32px;
+            font-weight: 700;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #0f1111;
+        }
+        .form-control {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+        .form-control:focus {
+            border-color: #f08804;
+            outline: none;
+        }
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: #ffd814;
+            color: #0f1111;
+        }
+        .btn-primary:hover {
+            background: #f7ca00;
+        }
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .qr-container {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            display: none;
+        }
+        .qr-container h3 {
+            margin-bottom: 15px;
+        }
+        .qr-image {
+            width: 250px;
+            height: 250px;
+            margin: 20px auto;
+            border: 4px solid white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .qr-timer {
+            font-size: 18px;
+            font-weight: 600;
+            color: #dc3545;
+            margin: 10px 0;
+        }
+        .qr-descripcion {
+            color: #6c757d;
+            margin: 10px 0;
+        }
+        
+        /* Footer idéntico */
+        #footer-wrapper {
+            background: #232f3e;
+            color: white;
+            padding: 50px 20px;
+            margin-top: 50px;
+        }
+        .footer-widgets-wrap {
+            max-width: 1500px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+        }
+        #sub-footer-wrapper {
+            background: #131921;
+            padding: 20px;
+            text-align: center;
+            color: #ddd;
+        }
+        
+        @media (max-width: 768px) {
+            .recibir-container {
+                margin: 20px;
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ===== HEADER (idéntico al de transferir) ===== -->
+    <div id="header-wrap">
+        <div class="header-header">
+            <div class="container row">
+                <div class="header-logo">
+                    <a href="/">
+                        <img src="http://imgfz.com/i/oXOfVlT.png" alt="CUBAZON" style="height: 50px;">
+                    </a>
+                </div>
+                <div class="header-right">
+                    <div class="right-menu">
+                        <ul>
+                            <li><a href="/login.html" id="userMenuLink">
+                                <i class="fa fa-sign-in"></i> 
+                                <span id="userMenuText">Iniciar sesión</span>
+                            </a></li>
+                            <li><a href="/p/cart.html"><i class="fa fa-shopping-cart"></i> <span id="cart-counter" class="simpleCart_quantity">0</span></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="header-menu">
+            <div class="container row">
+                <div id="main-menu">
+                    <ul>
+                        <li><a href="/">Inicio</a></li>
+                        <li><a href="/mi-cuenta.html">Mi Cuenta</a></li>
+                        <li><a href="/transferir.html">Transferir Saldo</a></li>
+                        <li><a href="/recibir.html">Recibir Dinero</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== CONTENIDO PRINCIPAL ===== -->
+    <div class="recibir-container">
+        <h1>📲 Recibir dinero</h1>
+        <p class="subtitle">Genera un código QR para que te paguen al instante</p>
+        
+        <div id="loadingIndicator" style="text-align: center; padding: 20px; display: none;">
+            <i class="fa fa-spinner fa-pulse fa-2x"></i>
+            <p>Cargando...</p>
+        </div>
+        
+        <div id="saldoCard" class="saldo-card" style="display: none;">
+            <h3>Tu saldo actual</h3>
+            <div class="saldo-amount" id="saldoDisplay">$0.00</div>
+        </div>
+        
+        <form id="recibirForm" style="display: none;">
+            <div class="form-group">
+                <label>Monto a recibir <span style="font-weight: normal; color: #6c757d;">(opcional)</span></label>
+                <input type="number" id="monto" class="form-control" min="1" step="0.01" placeholder="Deja vacío para cualquier monto">
+            </div>
+            
+            <div class="form-group">
+                <label>Concepto <span style="font-weight: normal; color: #6c757d;">(opcional)</span></label>
+                <input type="text" id="concepto" class="form-control" placeholder="Ej: Pago de producto">
+            </div>
+            
+            <button type="submit" class="btn btn-primary" id="generarQRBtn">
+                <i class="fa fa-qrcode"></i> Generar código QR
+            </button>
+        </form>
+        
+        <div id="qrContainer" class="qr-container">
+            <h3>📌 Escanea este código para recibir el pago</h3>
+            <img id="qrImage" class="qr-image" src="" alt="QR de pago">
+            <div id="qrTimer" class="qr-timer"></div>
+            <p id="qrDescripcion" class="qr-descripcion"></p>
+            <p><i class="fa fa-shield"></i> Código válido por 5 minutos</p>
+            <button class="btn btn-primary" id="generarOtroBtn" style="margin-top: 15px;">
+                <i class="fa fa-refresh"></i> Generar otro QR
+            </button>
+        </div>
+    </div>
+
+    <!-- ===== FOOTER (idéntico) ===== -->
+    <div id="footer-wrapper">
+        <div class="footer-widgets-wrap">
+            <div class="footer">
+                <h3>CUBAZON</h3>
+                <p>Tu tienda online de confianza en Sagua de Tánamo.</p>
+            </div>
+        </div>
+    </div>
+    <div id="sub-footer-wrapper">
+        <p>@Copyright 2026 CUBAZON</p>
+    </div>
+
+    <script type="module">
+        import { supabase } from '/js/supabase-client.js';
+        import { auth } from '/js/auth.js';
+        import { initCarrito } from '/js/cart.js';
+        
+        // Inicializar carrito
+        const carrito = initCarrito();
+        window.cart = carrito;
+        carrito.cargarDeLocalStorage();
+        carrito.actualizarInterfaz();
+        
+        // Elementos DOM
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const saldoCard = document.getElementById('saldoCard');
+        const recibirForm = document.getElementById('recibirForm');
+        const qrContainer = document.getElementById('qrContainer');
+        const generarOtroBtn = document.getElementById('generarOtroBtn');
+        let timerInterval;
+        
+        // ========== ACTUALIZAR MENÚ DE USUARIO ==========
+        function actualizarMenuUsuario() {
+            const userMenuLink = document.getElementById('userMenuLink');
+            const userMenuText = document.getElementById('userMenuText');
+            if (!userMenuLink || !userMenuText) return;
+            
+            if (auth.isAuthenticated()) {
+                const usuario = auth.getUsuario();
+                const nombre = usuario?.nombre_completo || usuario?.email?.split('@')[0] || 'Mi cuenta';
+                userMenuText.textContent = nombre;
+                userMenuLink.href = '/mi-cuenta.html';
+                userMenuLink.innerHTML = `<i class="fa fa-user"></i> ${nombre}`;
+            } else {
+                userMenuText.textContent = 'Iniciar sesión';
+                userMenuLink.href = '/login.html?redirect=/recibir.html';
+                userMenuLink.innerHTML = '<i class="fa fa-sign-in"></i> Iniciar sesión';
+            }
+        }
+        
+        // ========== VERIFICAR AUTENTICACIÓN ==========
+        async function verificarAuth() {
+            loadingIndicator.style.display = 'block';
+            
+            for (let i = 0; i < 10; i++) {
+                if (auth.isAuthenticated()) {
+                    console.log('✅ Usuario autenticado');
+                    loadingIndicator.style.display = 'none';
+                    saldoCard.style.display = 'block';
+                    recibirForm.style.display = 'block';
+                    await cargarSaldo();
+                    return;
+                }
+                console.log('⏳ Esperando auth...', i + 1);
+                await new Promise(resolve => setTimeout(resolve, 200));
+            }
+            
+            loadingIndicator.style.display = 'none';
+            sessionStorage.setItem('redirect_after_login', '/recibir.html');
+            window.location.href = '/login.html?redirect=/recibir.html';
+        }
+        
+        // ========== CARGAR SALDO ==========
+        async function cargarSaldo() {
+            const usuario = auth.getUsuario();
+            if (!usuario) return;
+            
+            const { data, error } = await supabase
+                .from('saldo_usuarios')
+                .select('saldo_actual')
+                .eq('user_id', usuario.id)
+                .single();
+            
+            if (error && error.code !== 'PGRST116') {
+                console.error('Error cargando saldo:', error);
+            }
+            
+            const saldo = data?.saldo_actual || 0;
+            document.getElementById('saldoDisplay').textContent = `$${saldo.toFixed(2)}`;
+        }
+        
+        // ========== GENERAR QR ==========
+        async function generarQR(monto, concepto) {
+            const usuario = auth.getUsuario();
+            
+            // Generar código único
+            const codigo = 'REC-' + Math.random().toString(36).substr(2, 12).toUpperCase() + Date.now().toString(36);
+            
+            // Guardar en base de datos
+            const { error } = await supabase
+                .from('peticiones_pago')
+                .insert({
+                    codigo: codigo,
+                    receptor_id: usuario.id,
+                    monto: monto || null,
+                    concepto: concepto || null,
+                    expira: new Date(Date.now() + 5 * 60000).toISOString(),
+                    estado: 'activa'
+                });
+            
+            if (error) {
+                console.error('Error guardando petición:', error);
+                Swal.fire('Error', 'No se pudo generar el código QR', 'error');
+                return null;
+            }
+            
+            return codigo;
+        }
+        
+        // ========== MOSTRAR QR CON TEMPORIZADOR ==========
+        function mostrarQR(codigo, monto, concepto) {
+            // Construir URL para el QR (ajusta el dominio)
+            const urlPago = `https://cubazon.dpdns.org/pagar-qr.html?c=${codigo}`;
+            
+            // Mostrar QR
+            qrContainer.style.display = 'block';
+            document.getElementById('qrImage').src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(urlPago)}`;
+            
+            let descripcion = '';
+            if (monto) {
+                descripcion = `Recibirás: $${parseFloat(monto).toFixed(2)} CUP`;
+            } else {
+                descripcion = `Puedes recibir cualquier monto`;
+            }
+            if (concepto) descripcion += ` · Concepto: ${concepto}`;
+            document.getElementById('qrDescripcion').textContent = descripcion;
+            
+            // Temporizador de 5 minutos
+            const expira = new Date(Date.now() + 5 * 60000);
+            if (timerInterval) clearInterval(timerInterval);
+            
+            timerInterval = setInterval(() => {
+                const now = new Date();
+                const diff = expira - now;
+                
+                if (diff <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('qrTimer').textContent = '⏰ Código expirado';
+                    document.getElementById('qrTimer').style.color = '#dc3545';
+                    return;
+                }
+                
+                const minutos = Math.floor(diff / 60000);
+                const segundos = Math.floor((diff % 60000) / 1000);
+                document.getElementById('qrTimer').textContent = `⏳ Válido por: ${minutos}:${segundos.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+        
+        // ========== EVENTO DEL FORMULARIO ==========
+        document.getElementById('recibirForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const monto = document.getElementById('monto').value;
+            const concepto = document.getElementById('concepto').value;
+            const btn = document.getElementById('generarQRBtn');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa fa-spinner fa-pulse"></i> Generando...';
+            
+            try {
+                const codigo = await generarQR(monto, concepto);
+                if (codigo) {
+                    mostrarQR(codigo, monto, concepto);
+                }
+            } catch (error) {
+                console.error(error);
+                Swal.fire('Error', 'Ocurrió un error al generar el QR', 'error');
+            }
+            
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa fa-qrcode"></i> Generar código QR';
+        });
+        
+        // ========== GENERAR OTRO QR ==========
+        generarOtroBtn.addEventListener('click', () => {
+            qrContainer.style.display = 'none';
+            if (timerInterval) clearInterval(timerInterval);
+            document.getElementById('recibirForm').reset();
+        });
+        
+        // ========== INICIALIZAR ==========
+        actualizarMenuUsuario();
+        auth.onCambio(actualizarMenuUsuario);
+        verificarAuth();
+    </script>
+</body>
+</html>

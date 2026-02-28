@@ -857,6 +857,70 @@
             }
         };
         
+        // ========== NUEVO: HISTORIAL DE TRANSFERENCIAS ==========
+        window.historialTransferencias = async function() {
+            const usuario = auth.getUsuario();
+            
+            try {
+                const { data, error } = await supabase
+                    .from('transferencias_saldo')
+                    .select(`
+                        *,
+                        emisor:auth_users_view!emisor_id(email, nombre_completo),
+                        receptor:auth_users_view!receptor_id(email, nombre_completo)
+                    `)
+                    .or(`emisor_id.eq.${usuario.id},receptor_id.eq.${usuario.id}`)
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                if (!data || data.length === 0) {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Sin transferencias',
+                        text: 'Aún no has realizado ni recibido transferencias',
+                        confirmButtonText: 'Entendido'
+                    });
+                    return;
+                }
+                
+                let html = '<div style="max-height: 400px; overflow-y: auto;">';
+                html += '<table style="width:100%; border-collapse:collapse;">';
+                html += '<tr><th>Fecha</th><th>Tipo</th><th>Contacto</th><th>Monto</th><th>Concepto</th></tr>';
+                
+                data.forEach(t => {
+                    const fecha = new Date(t.created_at).toLocaleDateString('es-ES');
+                    const esEmisor = t.emisor_id === usuario.id;
+                    
+                    const tipo = esEmisor ? 'Enviado' : 'Recibido';
+                    const contacto = esEmisor ? t.receptor?.email : t.emisor?.email;
+                    const signo = esEmisor ? '-' : '+';
+                    const color = esEmisor ? '#dc3545' : '#28a745';
+                    
+                    html += `<tr style="border-bottom:1px solid #dee2e6;">`;
+                    html += `<td style="padding:10px;">${fecha}</td>`;
+                    html += `<td style="padding:10px;">${tipo}</td>`;
+                    html += `<td style="padding:10px;">${contacto || 'N/A'}</td>`;
+                    html += `<td style="padding:10px; color: ${color}; font-weight:600;">${signo}$${t.monto.toFixed(2)}</td>`;
+                    html += `<td style="padding:10px;">${t.concepto || '—'}</td>`;
+                    html += `</tr>`;
+                });
+                
+                html += '</table></div>';
+                
+                Swal.fire({
+                    title: 'Historial de transferencias',
+                    html: html,
+                    width: '800px',
+                    confirmButtonText: 'Cerrar'
+                });
+                
+            } catch (error) {
+                console.error('Error cargando transferencias:', error);
+                Swal.fire('Error', 'No se pudo cargar el historial', 'error');
+            }
+        };
+        
         // ========== CARGAR SALDO ACTUAL ==========
         async function cargarSaldoActual() {
             const usuario = auth.getUsuario();
@@ -925,6 +989,9 @@
                         </a>
                         <a href="#" class="btn-balance" onclick="window.historialSaldo()">
                             <i class="fa fa-history"></i> Historial
+                        </a>
+                        <a href="#" class="btn-balance" onclick="window.historialTransferencias()">
+                            <i class="fa fa-exchange"></i> Transferencias
                         </a>
                     </div>
                 </div>
@@ -1533,7 +1600,6 @@
             
             if (formValues) {
                 try {
-                    // Si es principal, quitar principal de las demás
                     if (formValues.es_principal) {
                         await supabase
                             .from('direcciones')
@@ -1561,7 +1627,6 @@
             }
         };
         
-        // ========== NUEVA FUNCIÓN: EDITAR DIRECCIÓN ==========
         window.editarDireccion = async function(id) {
             const direccion = direcciones.find(d => d.id === id);
             if (!direccion) {
@@ -1605,7 +1670,6 @@
             
             if (formValues) {
                 try {
-                    // Si se marca como principal, quitar principal de las demás
                     if (formValues.es_principal) {
                         await supabase
                             .from('direcciones')
@@ -1640,7 +1704,6 @@
             }
         };
         
-        // ========== NUEVA FUNCIÓN: HACER PRINCIPAL ==========
         window.hacerPrincipal = async function(id) {
             const result = await Swal.fire({
                 title: '¿Establecer como principal?',
@@ -1653,13 +1716,11 @@
             
             if (result.isConfirmed) {
                 try {
-                    // Quitar principal de todas las direcciones del usuario
                     await supabase
                         .from('direcciones')
                         .update({ es_principal: false })
                         .eq('usuario_id', auth.getUsuario().id);
                     
-                    // Establecer esta como principal
                     const { error } = await supabase
                         .from('direcciones')
                         .update({ es_principal: true })
@@ -1685,7 +1746,6 @@
             }
         };
         
-        // ========== NUEVA FUNCIÓN: ELIMINAR CUENTA (DARSE DE BAJA) ==========
         window.eliminarCuenta = async function() {
             const result = await Swal.fire({
                 title: '¿Eliminar tu cuenta?',
@@ -1710,7 +1770,6 @@
                     const password = result.value;
                     const usuario = auth.getUsuario();
                     
-                    // Verificar contraseña
                     const { error: signInError } = await supabase.auth.signInWithPassword({
                         email: usuario.email,
                         password: password
@@ -1720,41 +1779,34 @@
                         throw new Error('Contraseña incorrecta');
                     }
                     
-                    // 1. Eliminar direcciones
                     await supabase
                         .from('direcciones')
                         .delete()
                         .eq('usuario_id', usuario.id);
                     
-                    // 2. Eliminar historial de saldo
                     await supabase
                         .from('historial_saldo')
                         .delete()
                         .eq('user_id', usuario.id);
                     
-                    // 3. Eliminar saldo
                     await supabase
                         .from('saldo_usuarios')
                         .delete()
                         .eq('user_id', usuario.id);
                     
-                    // 4. Eliminar solicitudes de recarga
                     await supabase
                         .from('solicitudes_recarga')
                         .delete()
                         .eq('user_id', usuario.id);
                     
-                    // 5. Eliminar el perfil
                     await supabase
                         .from('perfiles')
                         .delete()
                         .eq('id', usuario.id);
                     
-                    // 6. Finalmente, eliminar el usuario de auth
                     const { error: deleteError } = await supabase.auth.admin.deleteUser(usuario.id);
                     
                     if (deleteError) {
-                        // Si no tiene permisos de admin, al menos cerrar sesión
                         await auth.cerrarSesion();
                     } else {
                         await auth.cerrarSesion();

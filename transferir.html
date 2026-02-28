@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale-1.0">
+    <title>Transferir Saldo · CUBAZON</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f2f5;
+            color: #0f1111;
+            line-height: 1.5;
+        }
+        
+        /* ===== HEADER ===== */
+        #header-wrap {
+            background: #131921;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-header {
+            padding: 10px 20px;
+        }
+        .container.row {
+            max-width: 1500px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header-logo img {
+            height: 50px;
+            width: auto;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+        .right-menu ul {
+            display: flex;
+            gap: 20px;
+            list-style: none;
+            align-items: center;
+        }
+        .right-menu ul li a {
+            color: white;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .sora-cart {
+            position: relative;
+        }
+        .sora-cart-details {
+            display: flex;
+            align-items: center;
+            color: white;
+            cursor: pointer;
+        }
+        .sora-cart-details:after {
+            content: '\f290';
+            font-family: 'FontAwesome';
+            font-size: 24px;
+            margin-left: 5px;
+        }
+        .simpleCart_quantity {
+            background: #f08804;
+            color: #0f1111;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-left: 5px;
+        }
+        .header-menu {
+            background: #232f3e;
+            padding: 0 20px;
+        }
+        #main-menu ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+        #main-menu ul li a {
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 0;
+            display: block;
+        }
+        
+        /* ===== CONTENIDO PRINCIPAL ===== */
+        .transfer-container {
+            max-width: 500px;
+            margin: 50px auto;
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #0f1111;
+        }
+        .subtitle {
+            color: #6c757d;
+            margin-bottom: 30px;
+        }
+        .saldo-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+        .saldo-card h3 {
+            font-size: 14px;
+            font-weight: 400;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+        .saldo-card .saldo-amount {
+            font-size: 32px;
+            font-weight: 700;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #0f1111;
+        }
+        .form-control {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+        .form-control:focus {
+            border-color: #f08804;
+            outline: none;
+        }
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: #ffd814;
+            color: #0f1111;
+        }
+        .btn-primary:hover {
+            background: #f7ca00;
+        }
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .security-box {
+            background: #f8f9fa;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 25px 0;
+            font-size: 14px;
+        }
+        .security-box i {
+            color: #28a745;
+            margin-right: 8px;
+        }
+        .result-message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        .result-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .result-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        /* ===== FOOTER ===== */
+        #footer-wrapper {
+            background: #232f3e;
+            color: white;
+            padding: 50px 20px;
+            margin-top: 50px;
+        }
+        .footer-widgets-wrap {
+            max-width: 1500px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+        }
+        #sub-footer-wrapper {
+            background: #131921;
+            padding: 20px;
+            text-align: center;
+            color: #ddd;
+        }
+        
+        @media (max-width: 768px) {
+            .transfer-container {
+                margin: 20px;
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ===== HEADER ===== -->
+    <div id="header-wrap">
+        <div class="header-header">
+            <div class="container row">
+                <div class="header-logo">
+                    <a href="/">
+                        <img src="http://imgfz.com/i/oXOfVlT.png" alt="CUBAZON" style="height: 50px;">
+                    </a>
+                </div>
+                <div class="header-right">
+                    <div class="right-menu">
+                        <ul>
+                            <li><a href="/login.html" id="userMenuLink">
+                                <i class="fa fa-sign-in"></i> 
+                                <span id="userMenuText">Iniciar sesión</span>
+                            </a></li>
+                            <li><a href="/p/cart.html"><i class="fa fa-shopping-cart"></i> <span id="cart-counter" class="simpleCart_quantity">0</span></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="header-menu">
+            <div class="container row">
+                <div id="main-menu">
+                    <ul>
+                        <li><a href="/">Inicio</a></li>
+                        <li><a href="/mi-cuenta.html">Mi Cuenta</a></li>
+                        <li><a href="/transferir.html">Transferir Saldo</a></li>
+                        <li><a href="/recibir.html">Recibir Dinero</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== CONTENIDO PRINCIPAL ===== -->
+    <div class="transfer-container">
+        <h1>💰 Transferir Saldo</h1>
+        <p class="subtitle">Envía saldo a otro usuario de CUBAZON</p>
+        
+        <div id="loadingIndicator" style="text-align: center; padding: 20px; display: none;">
+            <i class="fa fa-spinner fa-pulse fa-2x"></i>
+            <p>Cargando...</p>
+        </div>
+        
+        <div id="saldoCard" class="saldo-card" style="display: none;">
+            <h3>Tu saldo disponible</h3>
+            <div class="saldo-amount" id="saldoDisplay">$0.00</div>
+        </div>
+        
+        <form id="transferForm" style="display: none;">
+            <div class="form-group">
+                <label><i class="fa fa-envelope"></i> Email del destinatario *</label>
+                <input type="email" id="receptorEmail" class="form-control" placeholder="correo@ejemplo.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fa fa-dollar"></i> Monto a transferir *</label>
+                <input type="number" id="monto" class="form-control" min="10" step="0.01" placeholder="100.00" required>
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fa fa-pencil"></i> Concepto (opcional)</label>
+                <input type="text" id="concepto" class="form-control" placeholder="Ej: Pago de producto">
+            </div>
+            
+            <div class="security-box">
+                <i class="fa fa-shield-alt"></i>
+                <strong>Límite diario: $5,000 CUP</strong> · Esta transferencia es inmediata e irreversible.
+            </div>
+            
+            <button type="submit" class="btn btn-primary" id="transferBtn">
+                <i class="fa fa-exchange"></i> Transferir
+            </button>
+        </form>
+        
+        <div id="resultMessage" class="result-message"></div>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <div id="footer-wrapper">
+        <div class="footer-widgets-wrap">
+            <div class="footer">
+                <h3>CUBAZON</h3>
+                <p>Tu tienda online de confianza en Sagua de Tánamo.</p>
+            </div>
+        </div>
+    </div>
+    <div id="sub-footer-wrapper">
+        <p>@Copyright 2026 CUBAZON</p>
+    </div>
+
+    <script type="module">
+        import { supabase } from '/js/supabase-client.js';
+        import { auth } from '/js/auth.js';
+        import { initCarrito } from '/js/cart.js';
+        
+        // Inicializar EmailJS
+        (function() {
+            emailjs.init('i3FvhnQiQhyU6QeH-');
+        })();
+        
+        // Inicializar carrito
+        const carrito = initCarrito();
+        window.cart = carrito;
+        carrito.cargarDeLocalStorage();
+        carrito.actualizarInterfaz();
+        
+        // Elementos del DOM
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const saldoCard = document.getElementById('saldoCard');
+        const transferForm = document.getElementById('transferForm');
+        
+        // ========== ACTUALIZAR MENÚ DE USUARIO ==========
+        function actualizarMenuUsuario() {
+            const userMenuLink = document.getElementById('userMenuLink');
+            const userMenuText = document.getElementById('userMenuText');
+            
+            if (!userMenuLink || !userMenuText) return;
+            
+            if (auth.isAuthenticated()) {
+                const usuario = auth.getUsuario();
+                const nombre = usuario?.nombre || 'Mi cuenta';
+                userMenuText.textContent = nombre;
+                userMenuLink.href = '/mi-cuenta.html';
+                userMenuLink.innerHTML = `<i class="fa fa-user"></i> ${nombre}`;
+            } else {
+                userMenuText.textContent = 'Iniciar sesión';
+                userMenuLink.href = '/login.html?redirect=/transferir.html';
+                userMenuLink.innerHTML = '<i class="fa fa-sign-in"></i> Iniciar sesión';
+            }
+        }
+        
+        // ========== VERIFICAR AUTENTICACIÓN ==========
+        async function verificarAuth() {
+            loadingIndicator.style.display = 'block';
+            
+            for (let i = 0; i < 10; i++) {
+                if (auth.isAuthenticated()) {
+                    console.log('✅ Usuario autenticado');
+                    loadingIndicator.style.display = 'none';
+                    saldoCard.style.display = 'block';
+                    transferForm.style.display = 'block';
+                    await cargarSaldo();
+                    return;
+                }
+                console.log('⏳ Esperando auth...', i + 1);
+                await new Promise(resolve => setTimeout(resolve, 200));
+            }
+            
+            loadingIndicator.style.display = 'none';
+            sessionStorage.setItem('redirect_after_login', '/transferir.html');
+            window.location.href = '/login.html?redirect=/transferir.html';
+        }
+        
+        // ========== CARGAR SALDO ==========
+        async function cargarSaldo() {
+            const usuario = auth.getUsuario();
+            if (!usuario) return;
+            
+            const { data, error } = await supabase
+                .from('saldo_usuarios')
+                .select('saldo_actual')
+                .eq('user_id', usuario.id)
+                .single();
+            
+            if (error && error.code !== 'PGRST116') {
+                console.error('Error cargando saldo:', error);
+            }
+            
+            const saldo = data?.saldo_actual || 0;
+            document.getElementById('saldoDisplay').textContent = `$${saldo.toFixed(2)}`;
+        }
+        
+        // ========== MANEJAR TRANSFERENCIA ==========
+        document.getElementById('transferForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const receptorEmail = document.getElementById('receptorEmail').value;
+            const monto = parseFloat(document.getElementById('monto').value);
+            const concepto = document.getElementById('concepto').value;
+            const btn = document.getElementById('transferBtn');
+            const resultDiv = document.getElementById('resultMessage');
+            const usuario = auth.getUsuario();
+            
+            if (!receptorEmail || !monto || monto < 10) {
+                Swal.fire('Error', 'Monto mínimo: $10.00', 'error');
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa fa-spinner fa-pulse"></i> Procesando...';
+            resultDiv.style.display = 'none';
+            
+            try {
+                const { value: password } = await Swal.fire({
+                    title: 'Confirmar transferencia',
+                    html: `
+                        <p>Transferirás <strong>$${monto.toFixed(2)}</strong> a:</p>
+                        <p style="font-size: 18px; color: #009644;">${receptorEmail}</p>
+                        <p style="margin-top: 20px;">Confirma tu contraseña:</p>
+                    `,
+                    icon: 'question',
+                    input: 'password',
+                    inputLabel: 'Contraseña',
+                    inputPlaceholder: '••••••••',
+                    showCancelButton: true,
+                    confirmButtonText: 'Confirmar',
+                    cancelButtonText: 'Cancelar'
+                });
+                
+                if (!password) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa fa-exchange"></i> Transferir';
+                    return;
+                }
+                
+                const { data, error } = await supabase
+                    .rpc('transferir_saldo', {
+                        p_receptor_email: receptorEmail,
+                        p_monto: monto,
+                        p_concepto: concepto || null
+                    });
+                
+                if (error) throw error;
+                
+                if (data.success) {
+                    
+                    // Enviar notificaciones
+                    try {
+                        await emailjs.send(
+                            'service_ymdrw6t',
+                            'template_adf77ku',
+                            {
+                                to_name: receptorEmail.split('@')[0],
+                                to_email: receptorEmail,
+                                from_name: usuario.nombre || 'Usuario',
+                                from_email: usuario.email,
+                                amount: monto.toFixed(2),
+                                concept: concepto || 'Sin concepto',
+                                date: new Date().toLocaleString('es-ES'),
+                                new_balance: 'Consultar en Mi Cuenta'
+                            }
+                        );
+                        
+                        await emailjs.send(
+                            'service_ymdrw6t',
+                            'template_adf77ku',
+                            {
+                                to_name: usuario.nombre || 'Usuario',
+                                to_email: usuario.email,
+                                from_name: 'CUBAZON',
+                                from_email: 'cubazon.oficial@gmail.com',
+                                amount: monto.toFixed(2),
+                                concept: concepto || 'Sin concepto',
+                                date: new Date().toLocaleString('es-ES'),
+                                new_balance: `$${data.nuevo_saldo.toFixed(2)}`
+                            }
+                        );
+                    } catch (emailError) {
+                        console.error('Error enviando notificación:', emailError);
+                    }
+                    
+                    resultDiv.className = 'result-message result-success';
+                    resultDiv.innerHTML = `
+                        <i class="fa fa-check-circle"></i>
+                        <strong>¡Transferencia exitosa!</strong><br>
+                        Se transfirieron $${data.monto.toFixed(2)} a ${data.receptor}<br>
+                        Tu nuevo saldo: $${data.nuevo_saldo.toFixed(2)}
+                    `;
+                    resultDiv.style.display = 'block';
+                    
+                    await cargarSaldo();
+                    document.getElementById('transferForm').reset();
+                } else {
+                    throw new Error(data.error);
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                resultDiv.className = 'result-message result-error';
+                resultDiv.innerHTML = `
+                    <i class="fa fa-exclamation-circle"></i>
+                    <strong>Error:</strong> ${error.message}
+                `;
+                resultDiv.style.display = 'block';
+            }
+            
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa fa-exchange"></i> Transferir';
+        });
+        
+        // ========== INICIALIZAR ==========
+        actualizarMenuUsuario();
+        auth.onCambio(actualizarMenuUsuario);
+        verificarAuth();
+    </script>
+</body>
+</html>

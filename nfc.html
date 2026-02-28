@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pago NFC · CUBAZON</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .nfc-container {
+            max-width: 500px;
+            width: 100%;
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            animation: slideUp 0.5s ease;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .nfc-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .nfc-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 50px;
+            box-shadow: 0 10px 20px rgba(102,126,234,0.3);
+        }
+        .product-card {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border: 2px solid #e9ecef;
+        }
+        .product-image {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            border-radius: 12px;
+            background: white;
+            padding: 10px;
+        }
+        .product-info {
+            flex: 1;
+        }
+        .product-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        .product-price {
+            font-size: 28px;
+            font-weight: 700;
+            color: #b12704;
+        }
+        .auth-section {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 12px;
+        }
+        .btn-primary {
+            background: #ffd814;
+            color: #0f1111;
+        }
+        .btn-primary:hover {
+            background: #f7ca00;
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background: #f0f2f5;
+            color: #0f1111;
+        }
+        .btn-secondary:hover {
+            background: #e3e6e9;
+        }
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #218838;
+        }
+        .biometric-prompt {
+            background: #e8f5e9;
+            border: 2px dashed #28a745;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            margin: 20px 0;
+            display: none;
+        }
+        .biometric-prompt i {
+            font-size: 48px;
+            color: #28a745;
+            margin-bottom: 10px;
+        }
+        .security-note {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+        }
+        .loading i {
+            font-size: 40px;
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="nfc-container">
+        <div class="nfc-header">
+            <div class="nfc-icon">
+                <i class="fa fa-wifi"></i>
+            </div>
+            <h1>Pago por aproximación</h1>
+            <p style="color: #6c757d;">Acercaste tu teléfono a una pegatina NFC</p>
+        </div>
+        
+        <div id="loadingIndicator" class="loading">
+            <i class="fa fa-spinner fa-pulse"></i>
+            <p>Verificando producto...</p>
+        </div>
+        
+        <div id="productCard" style="display: none;"></div>
+        
+        <div id="authSection" style="display: none;"></div>
+        
+        <div id="biometricPrompt" class="biometric-prompt">
+            <i class="fa fa-fingerprint"></i>
+            <h3>Confirmación biométrica</h3>
+            <p>Usa tu huella digital para confirmar el pago</p>
+        </div>
+        
+        <div id="resultMessage" class="security-note" style="display: none;"></div>
+    </div>
+
+    <script type="module">
+        import { supabase } from '/js/supabase-client.js';
+        import { auth } from '/js/auth.js';
+        
+        // Obtener código de la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const codigo = window.location.pathname.split('/').pop() || urlParams.get('c');
+        
+        let productoActual = null;
+        let pegatinaActual = null;
+        
+        async function cargarProducto() {
+            if (!codigo) {
+                mostrarError('Código de pegatina no válido');
+                return;
+            }
+            
+            try {
+                // Buscar pegatina
+                const { data: pegatina, error } = await supabase
+                    .from('pegatinas_nfc')
+                    .select('*, productos(*)')
+                    .eq('codigo', codigo)
+                    .eq('activa', true)
+                    .single();
+                
+                if (error || !pegatina) {
+                    mostrarError('Pegatina no encontrada o inactiva');
+                    return;
+                }
+                
+                pegatinaActual = pegatina;
+                productoActual = pegatina.productos;
+                
+                // Registrar escaneo
+                await supabase
+                    .from('historial_nfc')
+                    .insert({
+                        pegatina_id: pegatina.id,
+                        usuario_id: auth.getUsuario()?.id || null,
+                        ip_address: null, // Se puede obtener con un servicio
+                        user_agent: navigator.userAgent
+                    });
+                
+                // Actualizar contador
+                await supabase
+                    .from('pegatinas_nfc')
+                    .update({ 
+                        ultimo_uso: new Date(),
+                        usos_total: pegatina.usos_total + 1
+                    })
+                    .eq('id', pegatina.id);
+                
+                mostrarProducto();
+                
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarError('Error al cargar el producto');
+            }
+        }
+        
+        function mostrarProducto() {
+            document.getElementById('loadingIndicator').style.display = 'none';
+            
+            const productCard = document.getElementById('productCard');
+            productCard.style.display = 'block';
+            productCard.innerHTML = `
+                <div class="product-card">
+                    <img src="${productoActual.imagen_url || '/assets/images/no-image.jpg'}" 
+                         class="product-image" 
+                         onerror="this.src='/assets/images/no-image.jpg'">
+                    <div class="product-info">
+                        <div class="product-name">${productoActual.nombre}</div>
+                        <div class="product-price">$${productoActual.precio.toFixed(2)} CUP</div>
+                    </div>
+                </div>
+            `;
+            
+            const authSection = document.getElementById('authSection');
+            
+            if (auth.isAuthenticated()) {
+                authSection.innerHTML = `
+                    <button class="btn btn-success" onclick="iniciarPago()">
+                        <i class="fa fa-credit-card"></i> Pagar con saldo CUBAZON
+                    </button>
+                    <p style="text-align: center; margin: 15px 0; color: #6c757d;">
+                        <i class="fa fa-lock"></i> Saldo disponible: $${auth.getUsuario()?.saldo || 0}
+                    </p>
+                `;
+            } else {
+                authSection.innerHTML = `
+                    <p style="margin-bottom: 20px;">Para continuar, inicia sesión o regístrate:</p>
+                    <button class="btn btn-primary" onclick="window.location.href='/login.html?redirect=/nfc/${codigo}'">
+                        <i class="fa fa-sign-in"></i> Iniciar sesión
+                    </button>
+                    <button class="btn btn-secondary" onclick="window.location.href='/registro.html?redirect=/nfc/${codigo}'">
+                        <i class="fa fa-user-plus"></i> Registrarme
+                    </button>
+                `;
+            }
+            
+            authSection.style.display = 'block';
+        }
+        
+        window.iniciarPago = async function() {
+            document.getElementById('biometricPrompt').style.display = 'block';
+            
+            // Simular verificación biométrica
+            setTimeout(async () => {
+                try {
+                    const usuario = auth.getUsuario();
+                    
+                    // Verificar saldo
+                    const { data: saldo } = await supabase
+                        .from('saldo_usuarios')
+                        .select('saldo_actual')
+                        .eq('user_id', usuario.id)
+                        .single();
+                    
+                    if (!saldo || saldo.saldo_actual < productoActual.precio) {
+                        throw new Error('Saldo insuficiente');
+                    }
+                    
+                    // Procesar pago (crear pedido y descontar saldo)
+                    const pedido = {
+                        items: [{
+                            id: String(productoActual.id),
+                            nombre: productoActual.nombre,
+                            precio: productoActual.precio,
+                            cantidad: 1,
+                            subtotal: productoActual.precio,
+                            opciones: { nfc: true, codigo_pegatina: codigo }
+                        }],
+                        subtotal: productoActual.precio,
+                        envio: 0,
+                        total: productoActual.precio,
+                        cliente: {
+                            nombre: usuario.nombre,
+                            email: usuario.email,
+                            telefono: usuario.telefono || ''
+                        },
+                        metodo_pago: 'saldo_nfc',
+                        created_at: new Date().toISOString()
+                    };
+                    
+                    const { data, error } = await supabase
+                        .from('pedidos')
+                        .insert([pedido])
+                        .select()
+                        .single();
+                    
+                    if (error) throw error;
+                    
+                    // Descontar saldo
+                    await supabase
+                        .from('saldo_usuarios')
+                        .update({ saldo_actual: saldo.saldo_actual - productoActual.precio })
+                        .eq('user_id', usuario.id);
+                    
+                    // Registrar en historial
+                    await supabase
+                        .from('historial_saldo')
+                        .insert({
+                            user_id: usuario.id,
+                            tipo: 'compra_nfc',
+                            monto: -productoActual.precio,
+                            saldo_anterior: saldo.saldo_actual,
+                            saldo_nuevo: saldo.saldo_actual - productoActual.precio,
+                            descripcion: `Compra NFC: ${productoActual.nombre}`
+                        });
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Pago exitoso!',
+                        html: `
+                            <p>Has comprado:</p>
+                            <p><strong>${productoActual.nombre}</strong></p>
+                            <p>Total: $${productoActual.precio.toFixed(2)} CUP</p>
+                        `,
+                        confirmButtonText: 'Continuar'
+                    }).then(() => {
+                        window.location.href = '/';
+                    });
+                    
+                } catch (error) {
+                    Swal.fire('Error', error.message, 'error');
+                    document.getElementById('biometricPrompt').style.display = 'none';
+                }
+            }, 2000);
+        };
+        
+        function mostrarError(mensaje) {
+            document.getElementById('loadingIndicator').style.display = 'none';
+            const resultMsg = document.getElementById('resultMessage');
+            resultMsg.style.display = 'block';
+            resultMsg.innerHTML = `
+                <i class="fa fa-exclamation-triangle"></i>
+                <strong>Error:</strong> ${mensaje}
+            `;
+        }
+        
+        // Inicializar
+        cargarProducto();
+    </script>
+</body>
+</html>
