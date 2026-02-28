@@ -516,15 +516,18 @@
             const usuario = auth.getUsuario();
             if (!usuario) return;
             
+            // Cancelar suscripción anterior si existe
             if (subscription) {
                 subscription.unsubscribe();
             }
             
+            // Obtener saldo inicial
             const saldoInicial = parseFloat(document.getElementById('saldoDisplay').textContent.replace('$', ''));
             const montoObjetivo = montoEsperado ? saldoInicial + montoEsperado : null;
             
             console.log('🎧 Escuchando cambios en saldo...', { saldoInicial, montoObjetivo });
             
+            // Suscribirse a cambios en saldo_usuarios
             subscription = supabase
                 .channel('saldo-changes')
                 .on(
@@ -541,19 +544,23 @@
                         const nuevoSaldo = payload.new.saldo_actual;
                         document.getElementById('saldoDisplay').textContent = `$${nuevoSaldo.toFixed(2)}`;
                         
+                        // Verificar si ya se pagó
                         if (montoEsperado) {
                             const aumento = nuevoSaldo - saldoInicial;
                             
-                            if (aumento >= montoEsperado - 0.01) {
+                            if (aumento >= montoEsperado - 0.01) { // Tolerancia por decimales
                                 console.log('✅ PAGO RECIBIDO!');
                                 
+                                // Marcar petición como pagada
                                 await supabase
                                     .from('peticiones_pago')
                                     .update({ estado: 'pagada' })
                                     .eq('id', peticionId);
                                 
+                                // Actualizar UI
                                 mostrarPagoRecibido(montoEsperado);
                                 
+                                // Cancelar suscripción
                                 subscription.unsubscribe();
                             }
                         }
@@ -578,14 +585,17 @@
             if (concepto) descripcion += ` · Concepto: ${concepto}`;
             document.getElementById('qrDescripcion').textContent = descripcion;
             
+            // Reiniciar estado
             estadoPago.className = 'estado-pago pendiente';
             estadoPago.innerHTML = '⏳ Esperando pago...';
             estadoPago.style.display = 'block';
             saldoCard.classList.remove('pagado');
             mainContainer.classList.remove('pagado');
             
+            // Iniciar escucha de saldo
             escucharSaldo(peticionId, monto ? parseFloat(monto) : null);
             
+            // Temporizador de 5 minutos
             const expira = new Date(Date.now() + 5 * 60000);
             if (timerInterval) clearInterval(timerInterval);
             
@@ -599,6 +609,7 @@
                     document.getElementById('qrTimer').style.color = '#dc3545';
                     estadoPago.innerHTML = '❌ Código expirado';
                     
+                    // Cancelar suscripción
                     if (subscription) {
                         subscription.unsubscribe();
                     }
