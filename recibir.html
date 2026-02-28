@@ -384,7 +384,7 @@
         const generarOtroBtn = document.getElementById('generarOtroBtn');
         const notificacionSound = document.getElementById('notificacionSound');
         let timerInterval;
-        let subscription = null;
+        let pollingInterval = null;
         let peticionActiva = null;
         
         // ========== REPRODUCIR SONIDO ==========
@@ -511,62 +511,94 @@
             return { codigo, id: data.id };
         }
         
-        // ========== ESCUCHAR CAMBIOS EN EL SALDO ==========
+        // ========== FUNCIÓN AUXILIAR PARA PROCESAR PAGO ==========
+        async function procesarPagoRecibido(peticionId, monto) {
+            // Marcar petición como pagada
+            await supabase
+                .from('peticiones_pago')
+                .update({ estado: 'pagada' })
+                .eq('id', peticionId);
+            
+            // Actualizar UI
+            mostrarPagoRecibido(monto);
+            
+            // Detener polling
+            clearInterval(pollingInterval);
+            pollingInterval = null;
+        }
+        
+        // ========== ESCUCHAR CAMBIOS EN EL SALDO (VERSIÓN QUE MANEJA NULL) ==========
         function escucharSaldo(peticionId, montoEsperado) {
             const usuario = auth.getUsuario();
             if (!usuario) return;
             
-            // Cancelar suscripción anterior si existe
-            if (subscription) {
-                subscription.unsubscribe();
+            // Cancelar polling anterior si existe
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
             }
             
             // Obtener saldo inicial
             const saldoInicial = parseFloat(document.getElementById('saldoDisplay').textContent.replace('$', ''));
-            const montoObjetivo = montoEsperado ? saldoInicial + montoEsperado : null;
             
-            console.log('🎧 Escuchando cambios en saldo...', { saldoInicial, montoObjetivo });
+            console.log('🎧 Iniciando polling cada 2 segundos...', { 
+                saldoInicial, 
+                montoEsperado: montoEsperado || 'CUALQUIER MONTO'
+            });
             
-            // Suscribirse a cambios en saldo_usuarios
-            subscription = supabase
-                .channel('saldo-changes')
-                .on(
-                    'postgres_changes',
-                    {
-                        event: 'UPDATE',
-                        schema: 'public',
-                        table: 'saldo_usuarios',
-                        filter: `user_id=eq.${usuario.id}`
-                    },
-                    async (payload) => {
-                        console.log('💰 Saldo actualizado:', payload.new);
-                        
-                        const nuevoSaldo = payload.new.saldo_actual;
+            // Polling cada 2 segundos
+            pollingInterval = setInterval(async () => {
+                try {
+                    // Consultar saldo actual
+                    const { data, error } = await supabase
+                        .from('saldo_usuarios')
+                        .select('saldo_actual')
+                        .eq('user_id', usuario.id)
+                        .single();
+                    
+                    if (error) {
+                        console.error('Error consultando saldo:', error);
+                        return;
+                    }
+                    
+                    const nuevoSaldo = data.saldo_actual;
+                    const saldoActualDisplay = parseFloat(document.getElementById('saldoDisplay').textContent.replace('$', ''));
+                    
+                    // Si el saldo cambió
+                    if (Math.abs(nuevoSaldo - saldoActualDisplay) > 0.01) {
+                        console.log('💰 Saldo detectado por polling:', nuevoSaldo);
                         document.getElementById('saldoDisplay').textContent = `$${nuevoSaldo.toFixed(2)}`;
                         
-                        // Verificar si ya se pagó
-                        if (montoEsperado) {
-                            const aumento = nuevoSaldo - saldoInicial;
+                        // Calcular aumento
+                        const aumento = nuevoSaldo - saldoInicial;
+                        
+                        // CASO 1: Hay monto específico
+                        if (montoEsperado !== null && montoEsperado !== undefined) {
+                            console.log('📊 Comparación (monto específico):', {
+                                aumento: aumento.toFixed(2),
+                                montoEsperado: montoEsperado.toFixed(2),
+                                diferencia: (aumento - montoEsperado).toFixed(2)
+                            });
                             
-                            if (aumento >= montoEsperado - 0.01) { // Tolerancia por decimales
-                                console.log('✅ PAGO RECIBIDO!');
-                                
-                                // Marcar petición como pagada
-                                await supabase
-                                    .from('peticiones_pago')
-                                    .update({ estado: 'pagada' })
-                                    .eq('id', peticionId);
-                                
-                                // Actualizar UI
-                                mostrarPagoRecibido(montoEsperado);
-                                
-                                // Cancelar suscripción
-                                subscription.unsubscribe();
+                            if (Math.abs(aumento - montoEsperado) < 0.02) {
+                                console.log('✅ ¡PAGO RECIBIDO (monto exacto)!');
+                                await procesarPagoRecibido(peticionId, montoEsperado);
+                            }
+                        } 
+                        // CASO 2: QR libre (cualquier monto)
+                        else {
+                            console.log('📊 QR libre - aumento detectado:', aumento.toFixed(2));
+                            
+                            // Si aumentó el saldo, es un pago (cualquier monto)
+                            if (aumento > 0.01) {
+                                console.log('✅ ¡PAGO RECIBIDO (monto libre)!');
+                                await procesarPagoRecibido(peticionId, aumento);
                             }
                         }
                     }
-                )
-                .subscribe();
+                } catch (e) {
+                    console.error('Error en polling:', e);
+                }
+            }, 2000); // Cada 2 segundos
         }
         
         // ========== MOSTRAR QR CON TEMPORIZADOR ==========
@@ -592,7 +624,7 @@
             saldoCard.classList.remove('pagado');
             mainContainer.classList.remove('pagado');
             
-            // Iniciar escucha de saldo
+            // Iniciar escucha de saldo (POLLING)
             escucharSaldo(peticionId, monto ? parseFloat(monto) : null);
             
             // Temporizador de 5 minutos
@@ -609,9 +641,10 @@
                     document.getElementById('qrTimer').style.color = '#dc3545';
                     estadoPago.innerHTML = '❌ Código expirado';
                     
-                    // Cancelar suscripción
-                    if (subscription) {
-                        subscription.unsubscribe();
+                    // Detener polling
+                    if (pollingInterval) {
+                        clearInterval(pollingInterval);
+                        pollingInterval = null;
                     }
                     return;
                 }
@@ -652,8 +685,9 @@
             qrContainer.style.display = 'none';
             estadoPago.style.display = 'none';
             if (timerInterval) clearInterval(timerInterval);
-            if (subscription) {
-                subscription.unsubscribe();
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+                pollingInterval = null;
             }
             document.getElementById('recibirForm').reset();
         });
