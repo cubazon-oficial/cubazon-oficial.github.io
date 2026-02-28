@@ -55,6 +55,73 @@
             color: #0f1111;
         }
         
+        /* ===== ACCIONES RÁPIDAS ===== */
+        .quick-actions {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .quick-action-card {
+            flex: 1;
+            min-width: 200px;
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            cursor: pointer;
+            text-decoration: none;
+            color: #0f1111;
+        }
+        
+        .quick-action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-color: #f08804;
+        }
+        
+        .quick-action-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+        
+        .quick-action-icon.transfer {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .quick-action-icon.receive {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .quick-action-icon.pay {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+        
+        .quick-action-content h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .quick-action-content p {
+            color: #6c757d;
+            font-size: 14px;
+        }
+        
         /* ===== SALDO EN CUP ===== */
         .balance-card {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -652,6 +719,9 @@
             .account-grid {
                 grid-template-columns: 1fr;
             }
+            .quick-actions {
+                flex-direction: column;
+            }
         }
         
         @media (max-width: 768px) {
@@ -857,7 +927,7 @@
             }
         };
         
-        // ========== NUEVO: HISTORIAL DE TRANSFERENCIAS ==========
+        // ========== HISTORIAL DE TRANSFERENCIAS ==========
         window.historialTransferencias = async function() {
             const usuario = auth.getUsuario();
             
@@ -972,6 +1042,39 @@
                     </button>
                 </div>
                 
+                <!-- ACCIONES RÁPIDAS (NUEVO) -->
+                <div class="quick-actions">
+                    <a href="/transferir.html" class="quick-action-card">
+                        <div class="quick-action-icon transfer">
+                            <i class="fa fa-exchange"></i>
+                        </div>
+                        <div class="quick-action-content">
+                            <h3>Transferir saldo</h3>
+                            <p>Envía dinero a otros usuarios</p>
+                        </div>
+                    </a>
+                    
+                    <a href="/recibir.html" class="quick-action-card">
+                        <div class="quick-action-icon receive">
+                            <i class="fa fa-qrcode"></i>
+                        </div>
+                        <div class="quick-action-content">
+                            <h3>Recibir dinero</h3>
+                            <p>Genera un código QR para recibir pagos</p>
+                        </div>
+                    </a>
+                    
+                    <a href="/pagar-qr.html" class="quick-action-card">
+                        <div class="quick-action-icon pay">
+                            <i class="fa fa-camera"></i>
+                        </div>
+                        <div class="quick-action-content">
+                            <h3>Pagar con QR</h3>
+                            <p>Escanea y paga al instante</p>
+                        </div>
+                    </a>
+                </div>
+                
                 <!-- TARJETA DE SALDO -->
                 <div class="balance-card">
                     <div class="balance-icon">
@@ -1003,7 +1106,7 @@
                             <div class="user-avatar">
                                 <i class="fa fa-user"></i>
                             </div>
-                            <div class="user-name">${usuario.nombre || 'Usuario'}</div>
+                            <div class="user-name">${usuario.nombre_completo || usuario.email?.split('@')[0] || 'Usuario'}</div>
                             <div class="user-email">${usuario.email}</div>
                         </div>
                         
@@ -1083,7 +1186,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>Nombre completo</label>
-                            <input type="text" class="form-control" value="${usuario.nombre || ''}" readonly disabled>
+                            <input type="text" class="form-control" value="${usuario.nombre_completo || ''}" readonly disabled>
                         </div>
                         <div class="form-group">
                             <label>Email</label>
@@ -1278,11 +1381,11 @@
                             </div>
                         </div>
                         
-                        <div class="order-actions">
-                            <button class="btn btn-primary" onclick="window.verDetallePedido('${p.id}')">
-                                <i class="fa fa-eye"></i> Ver detalles completos
+                        <div style="display: flex; gap: 10px; margin-top: 15px;">
+                            <button class="btn btn-primary" style="flex: 1;" onclick="window.verDetallePedido('${p.id}')">
+                                <i class="fa fa-eye"></i> Ver detalles
                             </button>
-                            <button class="btn btn-secondary" onclick="window.comprarDeNuevo('${p.id}')">
+                            <button class="btn btn-secondary" style="flex: 1;" onclick="window.comprarDeNuevo('${p.id}')">
                                 <i class="fa fa-repeat"></i> Comprar de nuevo
                             </button>
                         </div>
@@ -1521,7 +1624,7 @@
             const { value: formValues } = await Swal.fire({
                 title: 'Editar perfil',
                 html: `
-                    <input type="text" id="nombre" class="swal2-input" placeholder="Nombre completo" value="${usuario.nombre || ''}">
+                    <input type="text" id="nombre" class="swal2-input" placeholder="Nombre completo" value="${usuario.nombre_completo || ''}">
                     <input type="tel" id="telefono" class="swal2-input" placeholder="Teléfono" value="${usuario.telefono || ''}">
                     <input type="text" id="direccion" class="swal2-input" placeholder="Dirección" value="${usuario.direccion || ''}">
                     <input type="text" id="localidad" class="swal2-input" placeholder="Localidad" value="${usuario.localidad || ''}">
@@ -1534,7 +1637,7 @@
                 cancelButtonText: 'Cancelar',
                 preConfirm: () => {
                     return {
-                        nombre: document.getElementById('nombre').value,
+                        nombre_completo: document.getElementById('nombre').value,
                         telefono: document.getElementById('telefono').value,
                         direccion: document.getElementById('direccion').value,
                         localidad: document.getElementById('localidad').value,

@@ -5,14 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recibir dinero · CUBAZON</title>
     
-    <!-- Fuentes y estilos globales (igual que transferir) -->
+    <!-- Mismos estilos -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
-        /* ===== Mismos estilos que transferir.html ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
@@ -98,6 +97,11 @@
             border-radius: 16px;
             padding: 40px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+        .recibir-container.pagado {
+            background: #f0fff0;
+            box-shadow: 0 0 30px #28a745;
         }
         h1 {
             font-size: 28px;
@@ -115,6 +119,16 @@
             padding: 20px;
             border-radius: 12px;
             margin-bottom: 30px;
+            transition: all 0.3s;
+        }
+        .saldo-card.pagado {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
         }
         .saldo-card h3 {
             font-size: 14px;
@@ -196,8 +210,31 @@
             color: #6c757d;
             margin: 10px 0;
         }
+        .estado-pago {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            display: none;
+        }
+        .estado-pago.pendiente {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+        .estado-pago.pagado {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
         
-        /* Footer idéntico */
+        /* Footer */
         #footer-wrapper {
             background: #232f3e;
             color: white;
@@ -227,7 +264,12 @@
     </style>
 </head>
 <body>
-    <!-- ===== HEADER (idéntico al de transferir) ===== -->
+    <!-- Audio para notificación -->
+    <audio id="notificacionSound" preload="auto">
+        <source src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- ===== HEADER ===== -->
     <div id="header-wrap">
         <div class="header-header">
             <div class="container row">
@@ -264,7 +306,7 @@
     </div>
 
     <!-- ===== CONTENIDO PRINCIPAL ===== -->
-    <div class="recibir-container">
+    <div class="recibir-container" id="mainContainer">
         <h1>📲 Recibir dinero</h1>
         <p class="subtitle">Genera un código QR para que te paguen al instante</p>
         
@@ -273,12 +315,12 @@
             <p>Cargando...</p>
         </div>
         
-        <div id="saldoCard" class="saldo-card" style="display: none;">
+        <div id="saldoCard" class="saldo-card">
             <h3>Tu saldo actual</h3>
             <div class="saldo-amount" id="saldoDisplay">$0.00</div>
         </div>
         
-        <form id="recibirForm" style="display: none;">
+        <form id="recibirForm">
             <div class="form-group">
                 <label>Monto a recibir <span style="font-weight: normal; color: #6c757d;">(opcional)</span></label>
                 <input type="number" id="monto" class="form-control" min="1" step="0.01" placeholder="Deja vacío para cualquier monto">
@@ -299,14 +341,16 @@
             <img id="qrImage" class="qr-image" src="" alt="QR de pago">
             <div id="qrTimer" class="qr-timer"></div>
             <p id="qrDescripcion" class="qr-descripcion"></p>
-            <p><i class="fa fa-shield"></i> Código válido por 5 minutos</p>
+            <div id="estadoPago" class="estado-pago pendiente">
+                ⏳ Esperando pago...
+            </div>
             <button class="btn btn-primary" id="generarOtroBtn" style="margin-top: 15px;">
                 <i class="fa fa-refresh"></i> Generar otro QR
             </button>
         </div>
     </div>
 
-    <!-- ===== FOOTER (idéntico) ===== -->
+    <!-- ===== FOOTER ===== -->
     <div id="footer-wrapper">
         <div class="footer-widgets-wrap">
             <div class="footer">
@@ -333,10 +377,54 @@
         // Elementos DOM
         const loadingIndicator = document.getElementById('loadingIndicator');
         const saldoCard = document.getElementById('saldoCard');
+        const mainContainer = document.getElementById('mainContainer');
         const recibirForm = document.getElementById('recibirForm');
         const qrContainer = document.getElementById('qrContainer');
+        const estadoPago = document.getElementById('estadoPago');
         const generarOtroBtn = document.getElementById('generarOtroBtn');
+        const notificacionSound = document.getElementById('notificacionSound');
         let timerInterval;
+        let subscription = null;
+        let peticionActiva = null;
+        
+        // ========== REPRODUCIR SONIDO ==========
+        function reproducirSonido() {
+            try {
+                notificacionSound.play().catch(e => console.log('Error reproduciendo sonido:', e));
+            } catch (e) {
+                console.log('Error con audio:', e);
+            }
+        }
+        
+        // ========== MOSTRAR NOTIFICACIÓN ==========
+        function mostrarPagoRecibido(monto) {
+            // Reproducir sonido
+            reproducirSonido();
+            
+            // Actualizar UI
+            estadoPago.className = 'estado-pago pagado';
+            estadoPago.innerHTML = '🎉 ¡PAGO RECIBIDO! 🎉';
+            saldoCard.classList.add('pagado');
+            mainContainer.classList.add('pagado');
+            
+            // SweetAlert
+            Swal.fire({
+                icon: 'success',
+                title: '¡Pago recibido!',
+                text: `Se acreditaron $${monto.toFixed(2)} CUP`,
+                timer: 5000,
+                showConfirmButton: true,
+                confirmButtonText: 'Ver mi saldo'
+            });
+            
+            // Vibración si es móvil
+            if (navigator.vibrate) {
+                navigator.vibrate([500, 200, 500]);
+            }
+            
+            // Detener temporizador
+            if (timerInterval) clearInterval(timerInterval);
+        }
         
         // ========== ACTUALIZAR MENÚ DE USUARIO ==========
         function actualizarMenuUsuario() {
@@ -361,16 +449,13 @@
         async function verificarAuth() {
             loadingIndicator.style.display = 'block';
             
-            for (let i = 0; i < 10; i++) {
+            for (let i = 0; i < 20; i++) {
                 if (auth.isAuthenticated()) {
                     console.log('✅ Usuario autenticado');
                     loadingIndicator.style.display = 'none';
-                    saldoCard.style.display = 'block';
-                    recibirForm.style.display = 'block';
                     await cargarSaldo();
                     return;
                 }
-                console.log('⏳ Esperando auth...', i + 1);
                 await new Promise(resolve => setTimeout(resolve, 200));
             }
             
@@ -402,11 +487,9 @@
         async function generarQR(monto, concepto) {
             const usuario = auth.getUsuario();
             
-            // Generar código único
             const codigo = 'REC-' + Math.random().toString(36).substr(2, 12).toUpperCase() + Date.now().toString(36);
             
-            // Guardar en base de datos
-            const { error } = await supabase
+            const { data, error } = await supabase
                 .from('peticiones_pago')
                 .insert({
                     codigo: codigo,
@@ -415,7 +498,9 @@
                     concepto: concepto || null,
                     expira: new Date(Date.now() + 5 * 60000).toISOString(),
                     estado: 'activa'
-                });
+                })
+                .select()
+                .single();
             
             if (error) {
                 console.error('Error guardando petición:', error);
@@ -423,15 +508,64 @@
                 return null;
             }
             
-            return codigo;
+            return { codigo, id: data.id };
+        }
+        
+        // ========== ESCUCHAR CAMBIOS EN EL SALDO ==========
+        function escucharSaldo(peticionId, montoEsperado) {
+            const usuario = auth.getUsuario();
+            if (!usuario) return;
+            
+            if (subscription) {
+                subscription.unsubscribe();
+            }
+            
+            const saldoInicial = parseFloat(document.getElementById('saldoDisplay').textContent.replace('$', ''));
+            const montoObjetivo = montoEsperado ? saldoInicial + montoEsperado : null;
+            
+            console.log('🎧 Escuchando cambios en saldo...', { saldoInicial, montoObjetivo });
+            
+            subscription = supabase
+                .channel('saldo-changes')
+                .on(
+                    'postgres_changes',
+                    {
+                        event: 'UPDATE',
+                        schema: 'public',
+                        table: 'saldo_usuarios',
+                        filter: `user_id=eq.${usuario.id}`
+                    },
+                    async (payload) => {
+                        console.log('💰 Saldo actualizado:', payload.new);
+                        
+                        const nuevoSaldo = payload.new.saldo_actual;
+                        document.getElementById('saldoDisplay').textContent = `$${nuevoSaldo.toFixed(2)}`;
+                        
+                        if (montoEsperado) {
+                            const aumento = nuevoSaldo - saldoInicial;
+                            
+                            if (aumento >= montoEsperado - 0.01) {
+                                console.log('✅ PAGO RECIBIDO!');
+                                
+                                await supabase
+                                    .from('peticiones_pago')
+                                    .update({ estado: 'pagada' })
+                                    .eq('id', peticionId);
+                                
+                                mostrarPagoRecibido(montoEsperado);
+                                
+                                subscription.unsubscribe();
+                            }
+                        }
+                    }
+                )
+                .subscribe();
         }
         
         // ========== MOSTRAR QR CON TEMPORIZADOR ==========
-        function mostrarQR(codigo, monto, concepto) {
-            // Construir URL para el QR (ajusta el dominio)
-            const urlPago = `https://cubazon.dpdns.org/pagar-qr.html?c=${codigo}`;
+        function mostrarQR(codigo, monto, concepto, peticionId) {
+            const urlPago = `${window.location.origin}/pagar-qr.html?c=${codigo}`;
             
-            // Mostrar QR
             qrContainer.style.display = 'block';
             document.getElementById('qrImage').src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(urlPago)}`;
             
@@ -444,7 +578,14 @@
             if (concepto) descripcion += ` · Concepto: ${concepto}`;
             document.getElementById('qrDescripcion').textContent = descripcion;
             
-            // Temporizador de 5 minutos
+            estadoPago.className = 'estado-pago pendiente';
+            estadoPago.innerHTML = '⏳ Esperando pago...';
+            estadoPago.style.display = 'block';
+            saldoCard.classList.remove('pagado');
+            mainContainer.classList.remove('pagado');
+            
+            escucharSaldo(peticionId, monto ? parseFloat(monto) : null);
+            
             const expira = new Date(Date.now() + 5 * 60000);
             if (timerInterval) clearInterval(timerInterval);
             
@@ -456,6 +597,11 @@
                     clearInterval(timerInterval);
                     document.getElementById('qrTimer').textContent = '⏰ Código expirado';
                     document.getElementById('qrTimer').style.color = '#dc3545';
+                    estadoPago.innerHTML = '❌ Código expirado';
+                    
+                    if (subscription) {
+                        subscription.unsubscribe();
+                    }
                     return;
                 }
                 
@@ -477,9 +623,9 @@
             btn.innerHTML = '<i class="fa fa-spinner fa-pulse"></i> Generando...';
             
             try {
-                const codigo = await generarQR(monto, concepto);
-                if (codigo) {
-                    mostrarQR(codigo, monto, concepto);
+                const resultado = await generarQR(monto, concepto);
+                if (resultado) {
+                    mostrarQR(resultado.codigo, monto, concepto, resultado.id);
                 }
             } catch (error) {
                 console.error(error);
@@ -493,7 +639,11 @@
         // ========== GENERAR OTRO QR ==========
         generarOtroBtn.addEventListener('click', () => {
             qrContainer.style.display = 'none';
+            estadoPago.style.display = 'none';
             if (timerInterval) clearInterval(timerInterval);
+            if (subscription) {
+                subscription.unsubscribe();
+            }
             document.getElementById('recibirForm').reset();
         });
         

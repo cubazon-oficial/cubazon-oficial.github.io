@@ -10,8 +10,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
-    <!-- EmailJS SDK -->
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <!-- EmailJS SDK ELIMINADO -->
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -337,10 +336,7 @@
         import { auth } from '/js/auth.js';
         import { initCarrito } from '/js/cart.js';
         
-        // Inicializar EmailJS
-        (function() {
-            emailjs.init('i3FvhnQiQhyU6QeH-');
-        })();
+        // ===== EMAILJS ELIMINADO =====
         
         // Inicializar carrito
         const carrito = initCarrito();
@@ -362,7 +358,7 @@
             
             if (auth.isAuthenticated()) {
                 const usuario = auth.getUsuario();
-                const nombre = usuario?.nombre || 'Mi cuenta';
+                const nombre = usuario?.nombre_completo || usuario?.email?.split('@')[0] || 'Mi cuenta';
                 userMenuText.textContent = nombre;
                 userMenuLink.href = '/mi-cuenta.html';
                 userMenuLink.innerHTML = `<i class="fa fa-user"></i> ${nombre}`;
@@ -468,40 +464,7 @@
                 
                 if (data.success) {
                     
-                    // Enviar notificaciones
-                    try {
-                        await emailjs.send(
-                            'service_ymdrw6t',
-                            'template_adf77ku',
-                            {
-                                to_name: receptorEmail.split('@')[0],
-                                to_email: receptorEmail,
-                                from_name: usuario.nombre || 'Usuario',
-                                from_email: usuario.email,
-                                amount: monto.toFixed(2),
-                                concept: concepto || 'Sin concepto',
-                                date: new Date().toLocaleString('es-ES'),
-                                new_balance: 'Consultar en Mi Cuenta'
-                            }
-                        );
-                        
-                        await emailjs.send(
-                            'service_ymdrw6t',
-                            'template_adf77ku',
-                            {
-                                to_name: usuario.nombre || 'Usuario',
-                                to_email: usuario.email,
-                                from_name: 'CUBAZON',
-                                from_email: 'cubazon.oficial@gmail.com',
-                                amount: monto.toFixed(2),
-                                concept: concepto || 'Sin concepto',
-                                date: new Date().toLocaleString('es-ES'),
-                                new_balance: `$${data.nuevo_saldo.toFixed(2)}`
-                            }
-                        );
-                    } catch (emailError) {
-                        console.error('Error enviando notificación:', emailError);
-                    }
+                    // ===== NOTIFICACIONES POR EMAIL ELIMINADAS =====
                     
                     resultDiv.className = 'result-message result-success';
                     resultDiv.innerHTML = `
