@@ -329,6 +329,7 @@
         
         // Elementos DOM
         const loadingIndicator = document.getElementById('loadingIndicator');
+        const readerDiv = document.getElementById('reader');
         const pagoInfo = document.getElementById('pagoInfo');
         const manualBtn = document.getElementById('manualBtn');
         const manualInput = document.getElementById('manualInput');
@@ -398,17 +399,36 @@
                 return;
             }
             
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                console.error('❌ Navegador no soporta cámaras');
+                mostrarErrorCamara('Tu navegador no soporta el acceso a cámara');
+                return;
+            }
+            
             try {
                 html5QrCode = new Html5Qrcode("reader");
                 
                 html5QrCode.start(
                     { facingMode: "environment" },
-                    { fps: 10, qrbox: { width: 250, height: 250 } },
+                    { 
+                        fps: 10, 
+                        qrbox: { width: 250, height: 250 },
+                        aspectRatio: 1.0
+                    },
                     onScanSuccess,
                     onScanError
                 ).catch(err => {
-                    console.error('Error con cámara:', err);
-                    mostrarErrorCamara('No se pudo acceder a la cámara');
+                    console.error('Error con cámara trasera:', err);
+                    
+                    html5QrCode.start(
+                        { facingMode: "user" },
+                        { fps: 10, qrbox: { width: 250, height: 250 } },
+                        onScanSuccess,
+                        onScanError
+                    ).catch(err2 => {
+                        console.error('Error con cualquier cámara:', err2);
+                        mostrarErrorCamara('No se pudo acceder a la cámara');
+                    });
                 });
                 
             } catch (error) {
@@ -430,9 +450,18 @@
             manualBtn.style.display = 'block';
         }
         
-        // ========== AL ESCANEAR ==========
+        // ========== AL ESCANEAR UN CÓDIGO ==========
         async function onScanSuccess(decodedText) {
-            if (html5QrCode?.isScanning) await html5QrCode.stop();
+            console.log('✅ QR escaneado:', decodedText);
+            
+            if (html5QrCode && html5QrCode.isScanning) {
+                try {
+                    await html5QrCode.stop();
+                } catch (e) {
+                    console.log('Error deteniendo escáner:', e);
+                }
+            }
+            
             await procesarCodigo(decodedText);
         }
         
@@ -440,31 +469,125 @@
             console.log('Error escaneando:', error);
         }
         
-        // ========== PROCESAR CÓDIGO ==========
+        // ========== PROCESAR CÓDIGO (VERSIÓN CORREGIDA) ==========
         async function procesarCodigo(texto) {
             try {
-                let codigo = texto.includes('?') ? new URL(texto).searchParams.get('c') : texto;
-                if (!codigo) throw new Error('Código inválido');
+                console.log('📥 Texto recibido:', texto);
                 
-                const ahora = new Date().toISOString();
+                let codigo = texto;
                 
-                const { data: peticion } = await supabase
-                    .from('peticiones_pago')
-                    .select('*, receptor:auth_users_view!receptor_id(email, nombre_completo)')
-                    .eq('codigo', codigo)
-                    .eq('estado', 'activa')
-                    .gt('expira', ahora)
-                    .maybeSingle();
-                
-                if (!peticion) {
-                    Swal.fire('Código inválido o expirado', '', 'error');
-                    return setTimeout(() => iniciarEscanner(), 1000);
+                // CASO 1: Es una URL completa (http://...)
+                if (texto.startsWith('http')) {
+                    try {
+                        const url = new URL(texto);
+                        codigo = url.searchParams.get('c');
+                        console.log('🔍 URL detectada, código extraído:', codigo);
+                    } catch (e) {
+                        console.log('No es una URL válida, tratando como código directo');
+                    }
                 }
                 
+                // CASO 2: Tiene formato REC-XXXX (nuestro formato)
+                if (!codigo && texto.includes('REC-')) {
+                    const match = texto.match(/REC-[A-Z0-9]+/i);
+                    if (match) {
+                        codigo = match[0];
+                        console.log('🔍 Formato REC detectado:', codigo);
+                    }
+                }
+                
+                // CASO 3: Limpiar espacios y caracteres extraños
+                if (codigo) {
+                    codigo = codigo.trim().replace(/\s+/g, '');
+                } else {
+                    codigo = texto.trim().replace(/\s+/g, '');
+                }
+                
+                console.log('🔍 Código final a buscar:', codigo);
+                
+                if (!codigo || codigo.length < 10) {
+                    Swal.fire('Código inválido', 'El código escaneado no es válido', 'error');
+                    setTimeout(() => iniciarEscanner(), 1000);
+                    return;
+                }
+                
+                const ahora = new Date();
+                const ahoraISO = ahora.toISOString();
+                
+                console.log('⏰ Buscando en BD...');
+                
+                // Buscar petición en BD
+                const { data: peticion, error } = await supabase
+                    .from('peticiones_pago')
+                    .select('*')
+                    .eq('codigo', codigo)
+                    .eq('estado', 'activa')
+                    .gt('expira', ahoraISO)
+                    .maybeSingle();
+                
+                if (error) {
+                    console.error('❌ Error en la consulta:', error);
+                    Swal.fire('Error', 'Error al buscar el código', 'error');
+                    setTimeout(() => iniciarEscanner(), 1000);
+                    return;
+                }
+                
+                console.log('📦 Resultado búsqueda:', peticion);
+                
+                if (!peticion) {
+                    // Intentar búsqueda sin filtro de expiración para diagnóstico
+                    const { data: existe } = await supabase
+                        .from('peticiones_pago')
+                        .select('codigo, estado, expira')
+                        .eq('codigo', codigo)
+                        .maybeSingle();
+                    
+                    if (existe) {
+                        console.log('⚠️ Código encontrado pero no activo o expirado:', existe);
+                        
+                        if (existe.estado !== 'activa') {
+                            Swal.fire('Código usado', 'Este código ya fue utilizado', 'error');
+                        } else {
+                            const expiraDate = new Date(existe.expira);
+                            if (expiraDate < ahora) {
+                                Swal.fire('Código expirado', 'Este código ya no es válido (expirado)', 'error');
+                            } else {
+                                Swal.fire('Código inválido', 'No se pudo procesar el código', 'error');
+                            }
+                        }
+                    } else {
+                        console.log('❌ Código no encontrado en BD');
+                        Swal.fire('Código inválido', 'Este código no existe', 'error');
+                    }
+                    
+                    setTimeout(() => iniciarEscanner(), 1000);
+                    return;
+                }
+                
+                // Buscar datos del receptor
+                let receptorData = { email: 'Desconocido', nombre_completo: 'Usuario' };
+                
+                try {
+                    const { data: receptor } = await supabase
+                        .from('auth_users_view')
+                        .select('email, nombre_completo')
+                        .eq('id', peticion.receptor_id)
+                        .maybeSingle();
+                    
+                    if (receptor) {
+                        receptorData = receptor;
+                    }
+                } catch (e) {
+                    console.log('Error obteniendo receptor:', e);
+                }
+                
+                peticion.receptor = receptorData;
                 peticionActual = peticion;
                 
-                document.getElementById('receptorNombre').textContent = peticion.receptor?.nombre_completo || peticion.receptor?.email;
-                document.getElementById('montoPago').textContent = peticion.monto ? `$${peticion.monto} CUP` : 'Monto libre';
+                console.log('✅ Petición válida:', peticion);
+                
+                document.getElementById('receptorNombre').textContent = peticion.receptor?.nombre_completo || peticion.receptor?.email || 'Desconocido';
+                document.getElementById('montoPago').textContent = peticion.monto ? `$${peticion.monto} CUP` : 'Monto libre (ingrésalo)';
                 document.getElementById('conceptoPago').textContent = peticion.concepto || 'Sin concepto';
                 
                 pagoInfo.style.display = 'block';
@@ -472,7 +595,7 @@
                 manualInput.style.display = 'none';
                 
             } catch (error) {
-                console.error(error);
+                console.error('Error procesando QR:', error);
                 Swal.fire('Error', 'No se pudo procesar el código', 'error');
                 setTimeout(() => iniciarEscanner(), 1000);
             }
@@ -480,50 +603,99 @@
         
         // ========== INGRESO MANUAL ==========
         manualBtn.addEventListener('click', () => {
-            html5QrCode?.stop();
+            if (html5QrCode && html5QrCode.isScanning) {
+                html5QrCode.stop();
+            }
             readerDiv.style.display = 'none';
             manualInput.style.display = 'block';
             manualBtn.style.display = 'none';
         });
         
-        buscarManualBtn.addEventListener('click', () => procesarCodigo(codigoManual.value.trim()));
-        codigoManual.addEventListener('keypress', (e) => e.key === 'Enter' && buscarManualBtn.click());
+        buscarManualBtn.addEventListener('click', async () => {
+            const codigo = codigoManual.value.trim();
+            if (!codigo) {
+                Swal.fire('Error', 'Ingresa un código', 'error');
+                return;
+            }
+            await procesarCodigo(codigo);
+        });
+        
+        codigoManual.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                buscarManualBtn.click();
+            }
+        });
         
         // ========== CONFIRMAR PAGO ==========
         document.getElementById('confirmarPagoBtn').addEventListener('click', async () => {
-            if (!peticionActual) return;
+            if (!peticionActual) {
+                Swal.fire('Error', 'No hay petición activa', 'error');
+                return;
+            }
             
             let monto = peticionActual.monto;
             
             if (!monto) {
-                const { value } = await Swal.fire({
-                    title: 'Ingresa el monto',
+                const { value: montoIngresado } = await Swal.fire({
+                    title: 'Ingresa el monto a pagar',
                     input: 'number',
-                    inputValidator: (v) => !v || v < 10 ? 'Monto mínimo $10' : null
+                    inputLabel: 'Monto en CUP',
+                    inputPlaceholder: '100.00',
+                    showCancelButton: true,
+                    inputValidator: (value) => {
+                        if (!value) return 'Debes ingresar un monto';
+                        if (value < 10) return 'El monto mínimo es $10.00';
+                        return null;
+                    }
                 });
-                if (!value) return;
-                monto = parseFloat(value);
+                
+                if (!montoIngresado) return;
+                monto = parseFloat(montoIngresado);
+            }
+            
+            const receptorEmail = peticionActual.receptor?.email;
+            if (!receptorEmail || receptorEmail === 'Desconocido') {
+                Swal.fire('Error', 'No se pudo identificar al receptor', 'error');
+                return;
             }
             
             const usuario = auth.getUsuario();
-            if (!usuario) return Swal.fire('Error', 'No autenticado', 'error');
+            if (!usuario) {
+                Swal.fire('Error', 'No estás autenticado', 'error');
+                return;
+            }
             
             const { value: password } = await Swal.fire({
                 title: 'Confirmar pago',
-                html: `<p>Vas a pagar <strong>$${monto.toFixed(2)}</strong></p>`,
+                html: `
+                    <p>Vas a pagar <strong>$${monto.toFixed(2)}</strong> a:</p>
+                    <p style="font-size: 18px; color: #009644;">${receptorEmail}</p>
+                    <p style="margin-top: 20px;">Confirma tu contraseña:</p>
+                `,
                 icon: 'question',
                 input: 'password',
-                showCancelButton: true
+                inputLabel: 'Contraseña',
+                inputPlaceholder: '••••••••',
+                showCancelButton: true,
+                confirmButtonText: 'Pagar',
+                cancelButtonText: 'Cancelar'
             });
             
             if (!password) return;
             
             try {
-                Swal.fire({ title: 'Procesando...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                Swal.fire({
+                    title: 'Procesando pago...',
+                    html: 'Por favor espera',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
                 
                 const { data, error } = await supabase
                     .rpc('transferir_saldo', {
-                        p_receptor_email: peticionActual.receptor.email,
+                        p_receptor_email: receptorEmail,
                         p_monto: monto,
                         p_concepto: peticionActual.concepto || 'Pago por QR'
                     });
@@ -531,7 +703,10 @@
                 if (error) throw error;
                 
                 if (data?.success) {
-                    await supabase.from('peticiones_pago').update({ estado: 'usada' }).eq('id', peticionActual.id);
+                    await supabase
+                        .from('peticiones_pago')
+                        .update({ estado: 'usada' })
+                        .eq('id', peticionActual.id);
                     
                     Swal.fire({
                         icon: 'success',
@@ -540,12 +715,16 @@
                         timer: 2000
                     });
                     
-                    setTimeout(() => window.location.href = '/mi-cuenta.html', 2000);
+                    setTimeout(() => {
+                        window.location.href = '/mi-cuenta.html';
+                    }, 2000);
+                    
                 } else {
-                    throw new Error(data?.error);
+                    throw new Error(data?.error || 'Error en la transferencia');
                 }
                 
             } catch (error) {
+                console.error('Error en pago:', error);
                 Swal.fire('Error', error.message, 'error');
                 setTimeout(() => iniciarEscanner(), 1000);
             }
@@ -556,7 +735,13 @@
         auth.onCambio(actualizarMenuUsuario);
         verificarAuth();
         
-        window.addEventListener('beforeunload', () => html5QrCode?.stop());
+        window.addEventListener('beforeunload', () => {
+            if (html5QrCode && html5QrCode.isScanning) {
+                try {
+                    html5QrCode.stop();
+                } catch (e) {}
+            }
+        });
     </script>
 </body>
 </html>
