@@ -340,4 +340,14 @@
     tfoot {
         display: table-footer-group;
     }
+    
+    /* ===== CORRECCIONES PARA IMPRESIÓN ===== */
+    .sora-cart-description .cart-preview-item-quantity span,
+    .sora-cart-description .cart-preview-item-price,
+    .sora-cart-description .simpleCart_total,
+    .sora-cart-description .cart-preview-total span {
+        color: #000000 !important;
+        background: transparent !important;
+        border: none !important;
+    }
 }
