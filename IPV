@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>⚡ NEBULA POS · RESPONSIVE CUP</title>
+  <!-- fonts & base -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&family=Orbitron:wght@400;600;800&display=swap" rel="stylesheet">
+  <!-- jsPDF library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      background: radial-gradient(ellipse at 40% 40%, #0a0f1f, #010101 90%);
+      font-family: 'Inter', sans-serif;
+      color: #eef5ff;
+      padding: 0.8rem;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      position: relative;
+    }
+
+    /* partículas de fondo */
+    body::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url('data:image/svg+xml;utf8,<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="glow" cx="30%" cy="40%" r="70%"><stop offset="0%" stop-color="%23ffffff" stop-opacity="0.3"/><stop offset="100%" stop-color="%23ffffff" stop-opacity="0"/></radialGradient></defs><rect width="100%" height="100%" fill="url(%23glow)"/><circle cx="15%" cy="20%" r="1.5" fill="%23b0c4ff" opacity="0.7"/><circle cx="80%" cy="15%" r="2" fill="%23a0b0ff" opacity="0.8"/><circle cx="45%" cy="85%" r="1.8" fill="%23c0d0ff" opacity="0.6"/><circle cx="92%" cy="70%" r="1.2" fill="%23d0e0ff" opacity="0.9"/><circle cx="7%" cy="65%" r="1" fill="%23ffffff" opacity="0.5"/><circle cx="60%" cy="40%" r="1.2" fill="%238098ff" opacity="0.8"/></svg>');
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .dashboard {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 1400px;
+      backdrop-filter: blur(12px);
+      background: rgba(6, 10, 25, 0.45);
+      border: 1px solid rgba(250, 200, 50, 0.25);
+      border-radius: 2rem;
+      padding: 1.2rem;
+      box-shadow: 0 30px 50px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 215, 0, 0.2) inset, 0 0 30px rgba(255, 200, 50, 0.3);
+    }
+
+    h1, h2, h3 {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      background: linear-gradient(130deg, #ffd966, #ffb347, #ff8c42);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 10px #ffaa3370;
+    }
+
+    h1 {
+      font-size: clamp(1.5rem, 5vw, 2.5rem);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    
+    h1 span {
+      font-size: clamp(0.7rem, 3vw, 1rem);
+      background: rgba(255, 200, 50, 0.15);
+      padding: 0.2rem 1rem;
+      border-radius: 40px;
+      border: 1px solid #f90;
+      color: #ffe484;
+      -webkit-text-fill-color: #ffe484;
+      font-weight: 400;
+    }
+
+    /* Layout responsivo: columna en móvil, fila en desktop */
+    .grid-main {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.2rem;
+      margin-top: 1rem;
+    }
+
+    @media (min-width: 900px) {
+      .grid-main {
+        grid-template-columns: 1.5fr 1fr;
+      }
+    }
+
+    /* Panel izquierdo - Inventario */
+    .inventory-panel {
+      background: rgba(0, 5, 20, 0.6);
+      backdrop-filter: blur(8px);
+      border: 1px solid #f9a826;
+      border-radius: 1.5rem;
+      padding: 1rem;
+      box-shadow: 0 15px 35px rgba(250, 150, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      height: fit-content;
+      max-height: 70vh;
+    }
+
+    @media (min-width: 900px) {
+      .inventory-panel {
+        max-height: 80vh;
+      }
+    }
+
+    .header-neon {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #ffb800;
+      padding-bottom: 0.8rem;
+      margin-bottom: 1rem;
+      flex-shrink: 0;
+    }
+    
+    .header-neon h2 {
+      font-size: clamp(1.1rem, 4vw, 1.5rem);
+    }
+    
+    .badge-quantity {
+      background: #0e1a2f;
+      border-radius: 40px;
+      padding: 0.3rem 1rem;
+      border: 1px solid #f90;
+      color: #ffe28a;
+      font-weight: 600;
+      font-size: clamp(0.7rem, 3vw, 0.9rem);
+      box-shadow: 0 0 12px #ffaa33;
+      white-space: nowrap;
+    }
+
+    /* Tabla con scroll */
+    .table-container {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: auto;
+      border-radius: 1rem;
+      background: #03061733;
+      margin-bottom: 1rem;
+      min-height: 200px;
+      max-height: 400px;
+      scrollbar-width: thin;
+      scrollbar-color: #ffaa33 #1f2e42;
+    }
+
+    @media (min-width: 900px) {
+      .table-container {
+        max-height: 500px;
+      }
+    }
+
+    .table-container::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .table-container::-webkit-scrollbar-track {
+      background: #1f2e42;
+      border-radius: 10px;
+    }
+    .table-container::-webkit-scrollbar-thumb {
+      background: #ffaa33;
+      border-radius: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 600px;
+    }
+    
+    th {
+      font-family: 'Orbitron', sans-serif;
+      background: #0b1a30;
+      color: #ffdb9d;
+      font-weight: 600;
+      font-size: clamp(0.7rem, 2.5vw, 0.85rem);
+      padding: 0.8rem 0.3rem;
+      border-bottom: 2px solid #f90;
+      text-transform: uppercase;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    
+    td {
+      padding: 0.6rem 0.3rem;
+      border-bottom: 1px solid #4d3f1a;
+      color: #f0f0ff;
+      font-size: clamp(0.7rem, 2.5vw, 0.8rem);
+    }
+    
+    .product-name { 
+      font-weight: 600; 
+      color: #ffe49e;
+      max-width: 150px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    
+    .money { 
+      font-family: 'Orbitron', monospace; 
+      font-weight: 600; 
+      color: #ffdb8b;
+      white-space: nowrap;
+    }
+    
+    .stock-value { 
+      font-weight: 700; 
+      background: #1f2e42; 
+      padding: 0.2rem 0.5rem; 
+      border-radius: 20px; 
+      display: inline-block; 
+      border: 1px solid #f90;
+      font-size: clamp(0.65rem, 2.5vw, 0.75rem);
+    }
+
+    /* Controles compactos para móvil */
+    .sell-control {
+      display: flex;
+      gap: 2px;
+      align-items: center;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+    
+    .sell-control input {
+      width: 40px;
+      background: #0b1424;
+      border: 1px solid #f9a826;
+      border-radius: 30px;
+      padding: 0.2rem 0.1rem;
+      color: white;
+      font-weight: 600;
+      text-align: center;
+      font-size: 0.7rem;
+    }
+    
+    .btn-sell, .btn-edit, .btn-adjust, .btn-delete {
+      background: transparent;
+      border: 1.5px solid;
+      padding: 0.25rem 0.4rem;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 0.6rem;
+      cursor: pointer;
+      min-width: 35px;
+      white-space: nowrap;
+    }
+    
+    .btn-sell { border-color: #ffb800; color: #ffd966; }
+    .btn-edit { border-color: #5f9eff; color: #a0c8ff; }
+    .btn-adjust { border-color: #4caf50; color: #a5d6a5; }
+    .btn-delete { border-color: #ff6b6b; color: #ffa7a7; }
+
+    /* Formulario añadir producto */
+    .add-product-section {
+      flex-shrink: 0;
+    }
+    
+    .add-product-section h3 {
+      margin: 0.3rem 0;
+      font-size: clamp(0.9rem, 4vw, 1.1rem);
+    }
+    
+    .add-product-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr 0.8fr;
+      gap: 0.3rem;
+      background: #0d1b2f;
+      padding: 0.8rem;
+      border-radius: 1.5rem;
+      border: 1px solid #f9a826;
+    }
+    
+    .add-product-form input {
+      background: #021024;
+      border: 1px solid #f9a826;
+      border-radius: 40px;
+      padding: 0.5rem 0.3rem;
+      color: white;
+      font-weight: 500;
+      font-size: 0.7rem;
+      text-align: center;
+      min-width: 0;
+    }
+    
+    .btn-add {
+      background: linear-gradient(130deg, #b45f06, #e68a2e);
+      border: none;
+      border-radius: 40px;
+      font-weight: 800;
+      color: white;
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      cursor: pointer;
+      border: 1px solid #ffcc66;
+      padding: 0.5rem 0.2rem;
+      white-space: nowrap;
+    }
+
+    /* Panel derecho - Estadísticas mejorado */
+    .stats-panel {
+      background: rgba(0, 5, 20, 0.7);
+      backdrop-filter: blur(8px);
+      border: 1px solid #ffaa33;
+      border-radius: 1.5rem;
+      padding: 1rem;
+      box-shadow: 0 15px 35px #a35400b5;
+    }
+    
+    .stats-panel h2 {
+      font-size: clamp(1.2rem, 5vw, 1.8rem);
+      margin-bottom: 0.8rem;
+    }
+
+    /* Grid de 2 columnas para estadísticas */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.8rem;
+      margin-bottom: 1rem;
+    }
+    
+    .stat-card {
+      background: #0d102bbb;
+      border-radius: 1.2rem;
+      padding: 0.8rem 0.5rem;
+      border: 1px solid #ffb347;
+      box-shadow: 0 0 12px #ff8c42;
+    }
+    
+    .stat-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      color: #ffdca8;
+      letter-spacing: 1px;
+    }
+    
+    .stat-number {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(1rem, 4vw, 1.6rem);
+      font-weight: 800;
+      background: linear-gradient(120deg, #fff2d0, #ffcf9a);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.2;
+      word-break: break-word;
+    }
+    
+    .stat-detail {
+      font-size: 0.6rem;
+      color: #ffd58c;
+      margin-top: 3px;
+      border-top: 1px dashed #b26500;
+      padding-top: 3px;
+    }
+
+    /* Log de ventas */
+    .log-section {
+      background: #060c1b;
+      border-radius: 1.5rem;
+      padding: 0.8rem;
+      border: 1px solid #ffaa33;
+      margin: 0.8rem 0;
+    }
+    
+    .log-title {
+      font-family: 'Orbitron', sans-serif;
+      color: #ffd58c;
+      font-size: 0.9rem;
+      margin-bottom: 0.3rem;
+    }
+    
+    .sales-log {
+      max-height: 120px;
+      overflow-y: auto;
+      font-size: 0.75rem;
+      list-style: none;
+      scrollbar-width: thin;
+    }
+    
+    .sales-log li {
+      padding: 0.3rem 0;
+      border-bottom: 1px solid #7f551a;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Botones de acción */
+    .action-buttons {
+      display: flex;
+      gap: 0.8rem;
+      justify-content: flex-end;
+      margin: 0.8rem 0;
+      flex-wrap: wrap;
+    }
+    
+    .btn-pdf, .btn-reset {
+      font-family: 'Orbitron', sans-serif;
+      background: transparent;
+      border: 1.5px solid;
+      padding: 0.5rem 1rem;
+      border-radius: 40px;
+      font-weight: 700;
+      font-size: 0.7rem;
+      cursor: pointer;
+      box-shadow: 0 0 8px currentColor;
+      flex: 1 1 auto;
+      min-width: 120px;
+    }
+    
+    .btn-pdf { border-color: #4ef; color: #7ff5ff; }
+    .btn-reset { border-color: #ff7b7b; color: #ffa7a7; }
+
+    .footnote {
+      text-align: right;
+      font-size: 0.65rem;
+      opacity: 0.7;
+      border-top: 1px solid #cc8b2f;
+      padding-top: 0.5rem;
+    }
+
+    .cup-flag {
+      display: inline-block;
+      margin-left: 5px;
+      font-size: 1rem;
+      filter: drop-shadow(0 0 4px gold);
+    }
+  </style>
+</head>
+<body>
+<div class="dashboard">
+  <h1>✦ NEBULA · iPV <span>🇨🇺 responsive</span></h1>
+
+  <div class="grid-main">
+    <!-- COLUMNA IZQUIERDA: inventario -->
+    <div class="inventory-panel">
+      <div class="header-neon">
+        <h2>⍟ inventario activo <span class="cup-flag">🇨🇺</span></h2>
+        <div class="badge-quantity" id="totalProductsBadge">0 ítems</div>
+      </div>
+
+      <!-- Tabla con scroll -->
+      <div class="table-container">
+        <table id="productTable">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Precio</th>
+              <th>Coste</th>
+              <th>Inv.</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="productTableBody"></tbody>
+        </table>
+      </div>
+
+      <!-- Añadir producto -->
+      <div class="add-product-section">
+        <h3>➕ añadir</h3>
+        <div class="add-product-form">
+          <input type="text" id="newName" placeholder="nombre">
+          <input type="number" id="newPrice" placeholder="precio" step="1" min="0">
+          <input type="number" id="newCost" placeholder="coste" step="1" min="0">
+          <input type="number" id="newStock" placeholder="uds" min="1" value="10">
+          <button class="btn-add" id="addProductBtn">CREAR</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- COLUMNA DERECHA: estadísticas completas -->
+    <div class="stats-panel">
+      <h2>📊 resumen ventas</h2>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Ingresos</div>
+          <div class="stat-number" id="totalRevenue">0 CUP</div>
+          <div class="stat-detail" id="totalUnitsSold">0 unidades</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Ganancia</div>
+          <div class="stat-number" id="totalProfit">0 CUP</div>
+          <div class="stat-detail" id="profitMargin">margen 0%</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Valor inventario</div>
+          <div class="stat-number" id="inventoryValue">0 CUP</div>
+          <div class="stat-detail">a precio de coste</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Faltante (COGS)</div>
+          <div class="stat-number" id="missingInventoryValue">0 CUP</div>
+          <div class="stat-detail">coste de lo vendido</div>
+        </div>
+      </div>
+
+      <!-- Productos vendidos recientemente -->
+      <div class="log-section">
+        <div class="log-title">📋 últimos productos vendidos</div>
+        <ul class="sales-log" id="salesLogList">
+          <li style="opacity:0.6;">— sin ventas —</li>
+        </ul>
+      </div>
+
+      <!-- Totales y subtotales adicionales -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin: 0.5rem 0; font-size: 0.8rem;">
+        <div style="background: rgba(255,200,100,0.1); padding: 0.5rem; border-radius: 1rem;">
+          <div>Subtotal ventas</div>
+          <strong id="subtotalDisplay">0 CUP</strong>
+        </div>
+        <div style="background: rgba(100,200,255,0.1); padding: 0.5rem; border-radius: 1rem;">
+          <div>Total productos</div>
+          <strong id="totalProductsDisplay">0</strong>
+        </div>
+      </div>
+
+      <!-- Botones -->
+      <div class="action-buttons">
+        <button class="btn-pdf" id="downloadPdfBtn">📥 PDF</button>
+        <button class="btn-reset" id="resetSalesBtn">🔄 RESET</button>
+      </div>
+
+      <div class="footnote">
+        <span id="validationMsg">⚖️ cuadre exacto</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    const { jsPDF } = window.jspdf;
+
+    let products = [];
+    let sales = [];
+
+    const sampleProducts = [
+      { name: '🍚 Arroz 1 kg', price: 650, cost: 520, stock: 25 },
+      { name: '🫘 Frijoles 1 kg', price: 830, cost: 660, stock: 18 },
+      { name: '🍗 Pollo 10 lbs', price: 4250, cost: 3400, stock: 6 },
+      { name: '🍗 Picadillo Pollo 1lb', price: 310, cost: 240, stock: 30 },
+      { name: '🍖 Jamonada 1lb', price: 320, cost: 250, stock: 22 },
+      { name: '🪔 Aceite 900 ml', price: 1000, cost: 800, stock: 14 },
+      { name: '🍞 Harina Sublime 1 lb', price: 240, cost: 170, stock: 40 },
+      { name: '🍙 Azúcar 1 lb', price: 270, cost: 190, stock: 45 },
+      { name: '🥤 Refresco lata (SANTA)', price: 270, cost: 200, stock: 50 },
+      { name: '🍅 Pasta de Puré', price: 480, cost: 360, stock: 27 },
+      { name: '🥛 Leche en polvo', price: 1000, cost: 820, stock: 12 },
+      { name: '🥛 Leche sabores', price: 1100, cost: 860, stock: 9 },
+      { name: '🫑 Sazón Fresco', price: 60, cost: 40, stock: 100 }
+    ];
+
+    function loadSamples() {
+      for (let p of sampleProducts) {
+        products.push({
+          id: Date.now() + Math.random() * 1000,
+          name: p.name,
+          priceCents: p.price,
+          costCents: p.cost,
+          stock: p.stock
+        });
+      }
+    }
+    loadSamples();
+
+    function computeDailyStats() {
+      let totalRevenue = 0, totalCostSold = 0, totalUnits = 0;
+      for (let sale of sales) {
+        totalRevenue += sale.revenue;
+        totalCostSold += sale.cost;
+        totalUnits += sale.qty;
+      }
+      let inventoryValue = products.reduce((acc, p) => acc + (p.stock * p.costCents), 0);
+      return {
+        revenue: totalRevenue,
+        costSold: totalCostSold,
+        units: totalUnits,
+        inventoryValue: inventoryValue,
+        profit: totalRevenue - totalCostSold
+      };
+    }
+
+    function removeZeroStockProducts() {
+      products = products.filter(p => p.stock > 0);
+    }
+
+    function renderAll() {
+      removeZeroStockProducts();
+      const stats = computeDailyStats();
+
+      // Tabla de productos
+      const tbody = document.getElementById('productTableBody');
+      tbody.innerHTML = '';
+      products.forEach(prod => {
+        tbody.innerHTML += `<tr>
+          <td class="product-name" title="${prod.name}">${prod.name.length > 15 ? prod.name.substr(0,12)+'…' : prod.name}</td>
+          <td class="money">${prod.priceCents}</td>
+          <td class="money">${prod.costCents}</td>
+          <td><span class="stock-value">${prod.stock}</span></td>
+          <td><div class="sell-control">
+            <input type="number" min="1" max="${prod.stock}" value="1" id="qty-${prod.id}">
+            <button class="btn-sell" data-id="${prod.id}">V</button>
+            <button class="btn-edit" data-id="${prod.id}">✎</button>
+            <button class="btn-adjust" data-id="${prod.id}">📦</button>
+            <button class="btn-delete" data-id="${prod.id}">🗑️</button>
+          </div></td>
+        </tr>`;
+      });
+
+      // Actualizar todos los totales y subtotales
+      document.getElementById('totalProductsBadge').innerText = products.length + ' ítems';
+      document.getElementById('totalRevenue').innerText = stats.revenue + ' CUP';
+      document.getElementById('totalUnitsSold').innerText = stats.units + ' uds';
+      document.getElementById('totalProfit').innerText = stats.profit + ' CUP';
+      
+      const margin = stats.revenue > 0 ? ((stats.profit / stats.revenue)*100).toFixed(1) : '0.0';
+      document.getElementById('profitMargin').innerText = `margen ${margin}%`;
+      
+      document.getElementById('inventoryValue').innerText = stats.inventoryValue + ' CUP';
+      document.getElementById('missingInventoryValue').innerText = stats.costSold + ' CUP';
+      
+      // Subtotales adicionales
+      document.getElementById('subtotalDisplay').innerText = stats.revenue + ' CUP';
+      document.getElementById('totalProductsDisplay').innerText = products.length;
+
+      // Log de ventas
+      const logList = document.getElementById('salesLogList');
+      logList.innerHTML = '';
+      if (sales.length === 0) {
+        logList.innerHTML = '<li style="opacity:0.6;">— sin ventas —</li>';
+      } else {
+        sales.slice(-8).reverse().forEach(s => {
+          logList.innerHTML += `<li><span>${s.qty} × ${s.name.substring(0,12)}</span> <span class="log-money">${s.revenue} CUP</span></li>`;
+        });
+      }
+
+      document.getElementById('validationMsg').innerHTML = `🧪 faltante = ${stats.costSold} CUP`;
+    }
+
+    // Funciones de negocio
+    function sellProduct(id, qty) {
+      const prod = products.find(p => p.id == id);
+      if (!prod) return;
+      if (qty < 1) qty = 1;
+      if (prod.stock < qty) { alert(`Stock: ${prod.stock}`); return; }
+      sales.push({
+        id: Date.now()+Math.random(),
+        productId: id,
+        name: prod.name,
+        qty,
+        revenue: prod.priceCents * qty,
+        cost: prod.costCents * qty
+      });
+      prod.stock -= qty;
+      renderAll();
+    }
+
+    function addProduct(name, priceStr, costStr, stockStr) {
+      if (!name.trim()) return alert('Nombre requerido');
+      const price = parseInt(priceStr), cost = parseInt(costStr), stock = parseInt(stockStr);
+      if (isNaN(price)||price<0||isNaN(cost)||cost<0||isNaN(stock)||stock<1) 
+        return alert('Valores inválidos');
+      products.push({
+        id: Date.now()+Math.random()*10000,
+        name: name.trim(),
+        priceCents: price,
+        costCents: cost,
+        stock
+      });
+      renderAll();
+      document.getElementById('newName').value = '';
+      document.getElementById('newPrice').value = '';
+      document.getElementById('newCost').value = '';
+      document.getElementById('newStock').value = '10';
+    }
+
+    function editProduct(id) {
+      const p = products.find(p => p.id == id);
+      if (!p) return;
+      let np = prompt('Nuevo precio:', p.priceCents);
+      if (np && !isNaN(parseInt(np)) && parseInt(np) >= 0) p.priceCents = parseInt(np);
+      let nc = prompt('Nuevo coste:', p.costCents);
+      if (nc && !isNaN(parseInt(nc)) && parseInt(nc) >= 0) p.costCents = parseInt(nc);
+      renderAll();
+    }
+
+    function adjustInventory(id) {
+      const p = products.find(p => p.id == id);
+      if (!p) return;
+      let newStock = prompt(`Nuevo inventario para ${p.name}:`, p.stock);
+      if (newStock !== null) {
+        let stockInt = parseInt(newStock);
+        if (!isNaN(stockInt) && stockInt >= 0) {
+          p.stock = stockInt;
+          renderAll();
+        }
+      }
+    }
+
+    function deleteProduct(id) {
+      const p = products.find(p => p.id == id);
+      if (p && confirm(`Eliminar ${p.name}?`)) {
+        products = products.filter(p => p.id != id);
+        renderAll();
+      }
+    }
+
+    function resetSales() {
+      if (confirm('Resetear todas las ventas?')) {
+        sales = [];
+        renderAll();
+      }
+    }
+
+    function downloadPDF() {
+      const doc = new jsPDF();
+      const stats = computeDailyStats();
+      const today = new Date().toLocaleDateString('es-CU');
+      
+      doc.setFontSize(16);
+      doc.setTextColor(255,140,0);
+      doc.text('NEBULA POS · Reporte CUP', 14,20);
+      doc.setFontSize(8);
+      doc.text(`Fecha: ${today}`, 14,28);
+      
+      doc.autoTable({
+        startY: 32,
+        head: [['Producto', 'Precio', 'Coste', 'Inventario']],
+        body: products.map(p => [p.name, p.priceCents, p.costCents, p.stock]),
+        theme: 'grid',
+        headStyles: { fillColor: [255,140,0] }
+      });
+      
+      let y = doc.lastAutoTable.finalY + 8;
+      doc.text(`Ingresos: ${stats.revenue} CUP`, 14, y);
+      doc.text(`Ganancia: ${stats.profit} CUP`, 14, y+5);
+      doc.text(`Faltante: ${stats.costSold} CUP`, 14, y+10);
+      doc.text(`Unidades vendidas: ${stats.units}`, 14, y+15);
+      
+      doc.save(`inventario_${today}.pdf`);
+    }
+
+    // Event listeners
+    document.addEventListener('click', e => {
+      if (e.target.classList.contains('btn-sell')) {
+        const id = e.target.dataset.id;
+        const qty = parseInt(document.getElementById('qty-'+id)?.value) || 1;
+        sellProduct(id, qty);
+      } else if (e.target.classList.contains('btn-edit')) {
+        editProduct(e.target.dataset.id);
+      } else if (e.target.classList.contains('btn-adjust')) {
+        adjustInventory(e.target.dataset.id);
+      } else if (e.target.classList.contains('btn-delete')) {
+        deleteProduct(e.target.dataset.id);
+      }
+    });
+
+    document.getElementById('addProductBtn').addEventListener('click', () => {
+      addProduct(
+        document.getElementById('newName').value,
+        document.getElementById('newPrice').value,
+        document.getElementById('newCost').value,
+        document.getElementById('newStock').value
+      );
+    });
+
+    document.getElementById('resetSalesBtn').addEventListener('click', resetSales);
+    document.getElementById('downloadPdfBtn').addEventListener('click', downloadPDF);
+
+    // Enter en formulario
+    document.querySelectorAll('.add-product-form input').forEach(i => {
+      i.addEventListener('keypress', e => {
+        if (e.key === 'Enter') document.getElementById('addProductBtn').click();
+      });
+    });
+
+    renderAll();
+  })();
+</script>
+</body>
+</html>
