@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>Mi Lista de Deseos · CUBAZON</title>
     
     <!-- Fonts -->
@@ -11,7 +11,6 @@
     
     <!-- SweetAlert2 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
         * {
@@ -19,123 +18,357 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #f0f2f5;
-            color: #0f1111;
+
+        :root {
+            --amazon-bg: #eaeded;
+            --amazon-header: #131921;
+            --amazon-nav: #232f3e;
+            --amazon-orange: #f08804;
+            --amazon-orange-dark: #f7ca00;
+            --amazon-yellow: #ffd814;
+            --amazon-yellow-dark: #f7ca00;
+            --amazon-blue: #007185;
+            --amazon-blue-dark: #c7511f;
+            --amazon-price: #b12704;
+            --amazon-text: #0f1111;
+            --amazon-text-light: #565959;
+            --amazon-border: #ddd;
+            --amazon-card: #ffffff;
+            --amazon-success: #007600;
+            --amazon-danger: #dc3545;
+            --amazon-warning: #856404;
+        }
+
+        html, body {
+            overflow-x: hidden !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: var(--amazon-bg);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--amazon-text);
             line-height: 1.5;
         }
-        
-        /* ===== HEADER (Copie su header aquí) ===== */
+
+        /* ===== HEADER MEJORADO (IGUAL QUE INDEX) ===== */
         #header-wrap {
-            background: #131921;
+            background: var(--amazon-header);
             color: white;
             position: sticky;
             top: 0;
             z-index: 100;
+            width: 100%;
         }
-        
+
         .header-header {
             padding: 10px 20px;
+            width: 100%;
         }
-        
+
         .container.row {
             max-width: 1500px;
             margin: 0 auto;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            width: 100%;
         }
-        
+
         .header-logo img {
             height: 50px;
             width: auto;
         }
-        
+
         .header-right {
             display: flex;
             align-items: center;
-            gap: 25px;
-        }
-        
-        .top-bar-social ul {
-            display: flex;
             gap: 15px;
-            list-style: none;
         }
-        
-        .top-bar-social ul li a {
+
+        /* Botón iniciar sesión */
+        .login-btn {
             color: white;
-            font-size: 18px;
-        }
-        
-        .right-menu ul {
-            display: flex;
-            gap: 20px;
-            list-style: none;
-            align-items: center;
-        }
-        
-        .right-menu ul li a {
-            color: white;
+            text-decoration: none;
             font-size: 14px;
+            font-weight: 500;
             display: flex;
             align-items: center;
             gap: 5px;
+            padding: 5px 10px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 20px;
+            transition: all 0.2s;
+            white-space: nowrap;
         }
-        
+
+        .login-btn:hover {
+            border-color: var(--amazon-orange);
+            color: var(--amazon-orange);
+        }
+
+        .login-btn i {
+            font-size: 16px;
+        }
+
+        /* Carrito */
         .sora-cart {
             position: relative;
         }
-        
+
         .sora-cart-details {
             display: flex;
             align-items: center;
             color: white;
             cursor: pointer;
+            transition: color 0.2s;
+            position: relative;
         }
-        
+
+        .sora-cart-details:hover {
+            color: var(--amazon-orange);
+        }
+
         .sora-cart-details:after {
             content: '\f290';
             font-family: 'FontAwesome';
             font-size: 24px;
-            margin-left: 5px;
         }
-        
+
         .simpleCart_quantity {
-            background: #f08804;
-            color: #0f1111;
+            background: var(--amazon-orange);
+            color: var(--amazon-header);
             font-weight: 700;
-            padding: 2px 8px;
+            padding: 2px 6px;
             border-radius: 20px;
+            font-size: 12px;
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            min-width: 20px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sora-cart-description {
+            position: absolute;
+            right: 0;
+            top: 40px;
+            width: 350px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.2);
+            padding: 15px;
+            display: none;
+            z-index: 1000;
+        }
+
+        .sora-cart:hover .sora-cart-description {
+            display: block;
+        }
+
+        /* Preview carrito mejorado (scroll productos + footer fijo) */
+        .simpleCart_items {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+
+        .cart-preview-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-preview-item img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            background: #f8f9fa;
+        }
+
+        .cart-preview-item-details {
+            flex: 1;
+        }
+
+        .cart-preview-item-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--amazon-text);
+            margin-bottom: 4px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .cart-preview-item-price {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--amazon-price);
+        }
+
+        .cart-preview-item-quantity {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 5px;
+        }
+
+        .cart-preview-quantity-btn {
+            width: 24px;
+            height: 24px;
+            background: #f0f2f5;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .cart-preview-quantity-btn:hover {
+            background: var(--amazon-yellow);
+            border-color: var(--amazon-orange);
+        }
+
+        .cart-preview-quantity-number {
+            font-weight: 600;
+            min-width: 35px;
+            text-align: center;
+            font-size: 16px;
+            color: #0f1111;
+            background: #ffffff;
+            padding: 4px 0;
+            border-radius: 4px;
+            display: inline-block;
+            border: 1px solid #d0d0d0;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .cart-preview-item-remove {
+            color: var(--amazon-text-light);
+            cursor: pointer;
+            font-size: 16px;
+            transition: color 0.2s;
             margin-left: 5px;
         }
-        
-        .header-menu {
-            background: #232f3e;
-            padding: 0 20px;
+
+        .cart-preview-item-remove:hover {
+            color: var(--amazon-danger);
         }
-        
+
+        .cart-preview-subtotal {
+            font-size: 13px;
+            color: #565959;
+            text-align: right;
+            margin-top: -5px;
+            margin-bottom: 10px;
+            border-bottom: 1px dashed #ddd;
+            padding-bottom: 5px;
+        }
+
+        .cart-preview-footer {
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+            margin-top: 10px;
+            background: white;
+        }
+
+        .cart-preview-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .cart-preview-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .cart-preview-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .cart-preview-btn-primary {
+            background: var(--amazon-yellow);
+            color: var(--amazon-text);
+        }
+
+        .cart-preview-btn-primary:hover {
+            background: var(--amazon-yellow-dark);
+        }
+
+        .cart-preview-btn-secondary {
+            background: #f0f2f5;
+            color: var(--amazon-text);
+        }
+
+        .cart-preview-btn-secondary:hover {
+            background: #e0e2e5;
+        }
+
+        /* Menú principal */
+        .header-menu {
+            background: var(--amazon-nav);
+            padding: 0 20px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .header-menu::-webkit-scrollbar {
+            display: none;
+        }
+
         #main-menu ul {
             display: flex;
             list-style: none;
             gap: 20px;
+            padding: 8px 0;
+            margin: 0;
+            white-space: nowrap;
         }
-        
+
         #main-menu ul li a {
             color: white;
             font-size: 14px;
             font-weight: 500;
-            padding: 8px 0;
+            padding: 5px 0;
             display: block;
+            transition: color 0.2s;
+            text-decoration: none;
         }
-        
+
+        #main-menu ul li a:hover {
+            color: var(--amazon-orange);
+        }
+
         /* ===== CONTENEDOR PRINCIPAL ===== */
         .wishlist-container {
-            max-width: 1200px;
+            max-width: 1500px;
             margin: 40px auto;
             padding: 0 20px;
+            width: 100%;
         }
         
         .wishlist-header {
@@ -154,14 +387,14 @@
         .wishlist-header h1 {
             font-size: 28px;
             font-weight: 700;
-            color: #0f1111;
+            color: var(--amazon-text);
             display: flex;
             align-items: center;
             gap: 10px;
         }
         
         .wishlist-header h1 i {
-            color: #dc3545;
+            color: var(--amazon-danger);
         }
         
         .wishlist-count {
@@ -175,13 +408,14 @@
         
         /* ===== GRID DE PRODUCTOS ===== */
         .products-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
+            display: grid !important;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+            gap: 25px !important;
+            width: 100% !important;
         }
         
         .product-card {
-            background: white;
+            background: var(--amazon-card);
             border-radius: 8px;
             padding: 20px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
@@ -189,6 +423,7 @@
             display: flex;
             flex-direction: column;
             position: relative;
+            border: 1px solid var(--amazon-border);
         }
         
         .product-card:hover {
@@ -198,9 +433,12 @@
         
         .product-image {
             width: 100%;
-            height: 250px;
+            aspect-ratio: 1/1;
             object-fit: contain;
             margin-bottom: 15px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            cursor: pointer;
         }
         
         .product-title {
@@ -213,29 +451,32 @@
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
+            color: var(--amazon-text);
+            text-decoration: none;
         }
         
         .product-price {
             font-size: 24px;
             font-weight: 700;
-            color: #b12704;
+            color: var(--amazon-price);
             margin: 10px 0;
         }
         
         .product-stock {
             font-size: 12px;
-            color: #007600;
+            color: var(--amazon-success);
             margin-bottom: 15px;
         }
         
         .product-agotado {
-            background: #dc3545;
+            background: var(--amazon-danger);
             color: white;
             padding: 8px 12px;
             border-radius: 4px;
             font-size: 14px;
             font-weight: 600;
             text-align: center;
+            margin: 10px 0;
         }
         
         /* ===== BOTÓN DE ELIMINAR DE LISTA ===== */
@@ -253,25 +494,25 @@
             justify-content: center;
             cursor: pointer;
             transition: all 0.2s;
-            color: #dc3545;
+            color: var(--amazon-danger);
             z-index: 10;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         
         .remove-wishlist:hover {
-            background: #dc3545;
+            background: var(--amazon-danger);
             color: white;
             transform: scale(1.1);
         }
         
         .btn-add-cart {
-            background: #ffd814;
+            background: var(--amazon-yellow);
             border: none;
             border-radius: 20px;
             padding: 12px 20px;
             font-size: 14px;
             font-weight: 600;
-            color: #0f1111;
+            color: var(--amazon-text);
             cursor: pointer;
             transition: all 0.2s;
             margin-top: auto;
@@ -282,10 +523,10 @@
         }
         
         .btn-add-cart:hover {
-            background: #f7ca00;
+            background: var(--amazon-yellow-dark);
         }
         
-        /* ===== VACÍO ===== */
+        /* ===== VACÍO / NO AUTENTICADO ===== */
         .empty-wishlist {
             text-align: center;
             padding: 80px 20px;
@@ -302,7 +543,7 @@
         
         .empty-wishlist h2 {
             margin-bottom: 15px;
-            color: #0f1111;
+            color: var(--amazon-text);
         }
         
         .empty-wishlist p {
@@ -313,8 +554,8 @@
         .btn {
             display: inline-block;
             padding: 14px 35px;
-            background: #ffd814;
-            color: #0f1111;
+            background: var(--amazon-yellow);
+            color: var(--amazon-text);
             font-weight: 600;
             border-radius: 40px;
             text-decoration: none;
@@ -322,7 +563,7 @@
         }
         
         .btn:hover {
-            background: #f7ca00;
+            background: var(--amazon-yellow-dark);
             transform: translateY(-2px);
         }
         
@@ -335,85 +576,244 @@
         
         .loading i {
             font-size: 48px;
-            color: #009644;
+            color: var(--amazon-success);
             margin-bottom: 20px;
         }
         
-        /* ===== FOOTER (Copie su footer aquí) ===== */
+        /* ===== FOOTER (IGUAL QUE INDEX) ===== */
         #footer-wrapper {
-            background: #232f3e;
+            background: var(--amazon-nav);
             color: white;
             padding: 50px 20px;
             margin-top: 50px;
+            width: 100%;
         }
-        
+
         .footer-widgets-wrap {
             max-width: 1500px;
             margin: 0 auto;
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 40px;
+            width: 100%;
         }
-        
+
         .footer a {
             color: #ddd;
+            text-decoration: none;
+            transition: color 0.2s;
         }
-        
+
         .footer a:hover {
             color: white;
         }
-        
+
         #sub-footer-wrapper {
-            background: #131921;
+            background: var(--amazon-header);
             padding: 20px;
             text-align: center;
             color: #ddd;
+            font-size: 14px;
         }
-        
-        @media (max-width: 768px) {
+
+        /* ===== BOTÓN VOLVER ARRIBA ===== */
+        .back-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--amazon-nav);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            display: none;
+            transition: all 0.2s;
+            z-index: 99;
+            border: none;
+        }
+
+        .back-top:hover {
+            background: var(--amazon-orange);
+        }
+
+        /* ===== MEDIA QUERIES ===== */
+        @media screen and (max-width: 1024px) {
+            .footer-widgets-wrap {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            /* Header móvil */
+            .header-logo img {
+                height: 35px !important;
+            }
+            
+            .login-btn span {
+                display: none !important;
+            }
+            
+            .login-btn {
+                padding: 5px !important;
+                border-radius: 50% !important;
+            }
+            
+            .login-btn i {
+                font-size: 18px !important;
+                margin: 0 !important;
+            }
+            
+            /* Carrito móvil */
+            .sora-cart-description {
+                position: fixed !important;
+                top: auto !important;
+                bottom: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                border-radius: 20px 20px 0 0 !important;
+                max-height: 80vh !important;
+                overflow-y: auto !important;
+                padding: 20px !important;
+            }
+            
+            /* Wishlist header */
             .wishlist-header {
                 flex-direction: column;
                 text-align: center;
+                padding: 20px;
             }
+            
+            .wishlist-header h1 {
+                font-size: 24px;
+            }
+            
+            /* Grid productos - 2 columnas en móvil */
             .products-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 10px !important;
+            }
+            
+            .product-card {
+                padding: 10px !important;
+            }
+            
+            .product-image {
+                height: 120px !important;
+            }
+            
+            .product-title {
+                font-size: 13px !important;
+                height: 36px !important;
+                -webkit-line-clamp: 2;
+            }
+            
+            .product-price {
+                font-size: 16px !important;
+                margin: 5px 0 !important;
+            }
+            
+            .btn-add-cart {
+                padding: 8px 10px !important;
+                font-size: 12px !important;
+            }
+            
+            .remove-wishlist {
+                width: 30px !important;
+                height: 30px !important;
+                top: 8px !important;
+                right: 8px !important;
+            }
+            
+            .remove-wishlist i {
+                font-size: 14px !important;
+            }
+            
+            /* Footer */
+            .footer-widgets-wrap {
+                grid-template-columns: 1fr !important;
+                gap: 25px !important;
+                text-align: center !important;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .product-image {
+                height: 100px !important;
+            }
+            
+            .product-title {
+                font-size: 12px !important;
+                height: 32px !important;
+            }
+            
+            .product-price {
+                font-size: 14px !important;
+            }
+            
+            .btn-add-cart {
+                padding: 6px 8px !important;
+                font-size: 11px !important;
             }
         }
     </style>
 </head>
 <body>
-    <!-- ===== HEADER (Copie su header exacto aquí) ===== -->
+    <!-- ===== HEADER MEJORADO (IGUAL QUE INDEX) ===== -->
     <div id="header-wrap">
         <div class="header-header">
             <div class="container row">
                 <div class="header-logo">
                     <a href="/">
-                        <img src="http://imgfz.com/i/oXOfVlT.png" alt="CUBAZON" style="height: 50px;">
+                        <img src="http://imgfz.com/i/oXOfVlT.png" alt="CUBAZON">
                     </a>
                 </div>
+                
                 <div class="header-right">
-                    <div class="top-bar-social">
-                        <ul>
-                            <li><a href="#"><i class="fa fa-facebook"></i></a></li>
-                            <li><a href="#"><i class="fa fa-instagram"></i></a></li>
-                            <li><a href="#"><i class="fa fa-twitter"></i></a></li>
-                        </ul>
-                    </div>
-                    <div class="right-menu">
-                        <ul>
-                            <li><a href="/login.html" id="userMenuLink">Iniciar sesión</a></li>
-                            <li><a href="#"><i class="fa fa-phone"></i> +53 51234567</a></li>
-                            <li><a href="#"><i class="fa fa-envelope"></i> soporte@cubazon.com</a></li>
-                        </ul>
-                    </div>
+                    <!-- BOTÓN INICIAR SESIÓN -->
+                    <a href="/login.html" class="login-btn" id="loginBtnHeader">
+                        <i class="fa fa-user"></i>
+                        <span>Iniciar sesión</span>
+                    </a>
+                    
+                    <!-- CARRITO CON ESTRUCTURA CORREGIDA -->
                     <div class="sora-cart">
                         <div class="sora-cart-details">
                             <span class="simpleCart_quantity" id="cart-counter">0</span>
+                        </div>
+                        <div class="sora-cart-description" id="cart-preview">
+                            <!-- Contenedor de productos con scroll -->
+                            <div class="simpleCart_items"></div>
+                            
+                            <!-- Footer fijo con total y botones -->
+                            <div class="cart-preview-footer">
+                                <div class="cart-preview-total">
+                                    <span>Total:</span>
+                                    <span id="cart-preview-total-amount">$0.00 CUP</span>
+                                </div>
+                                <div class="cart-preview-buttons">
+                                    <a href="/p/cart.html" class="cart-preview-btn cart-preview-btn-primary" style="background: #007185; color: white;">
+                                        <i class="fa fa-eye"></i> Ver Carrito
+                                    </a>
+                                    <button onclick="vaciarCarrito()" class="cart-preview-btn cart-preview-btn-secondary">
+                                        <i class="fa fa-trash"></i> Vaciar
+                                    </button>
+                                    <a href="/p/checkout.html" class="cart-preview-btn cart-preview-btn-primary">
+                                        <i class="fa fa-lock"></i> Pagar
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        
         <div class="header-menu">
             <div class="container row">
                 <div id="main-menu">
@@ -423,10 +823,8 @@
                         <li><a href="/categoria.html?cat=Electrónica">Electrónica</a></li>
                         <li><a href="/categoria.html?cat=Ropa">Ropa</a></li>
                         <li><a href="/categoria.html?cat=Hogar">Hogar</a></li>
-                        <li><a href="/categoria.html?cat=Accesorios">Accesorios</a></li>
                         <li><a href="/buscar.html"><i class="fa fa-search"></i> Buscar</a></li>
                         <li><a href="/lista-deseos.html"><i class="fa fa-heart"></i> Mi Lista</a></li>
-                        <li><a href="/p/cart.html">Mi Carrito</a></li>
                     </ul>
                 </div>
             </div>
@@ -473,7 +871,7 @@
         </div>
     </div>
 
-    <!-- ===== FOOTER (Copie su footer aquí) ===== -->
+    <!-- ===== FOOTER (IGUAL QUE INDEX) ===== -->
     <div id="footer-wrapper">
         <div class="footer-widgets-wrap">
             <div class="footer">
@@ -499,11 +897,15 @@
         </div>
     </div>
     <div id="sub-footer-wrapper">
-        <div class="container row">
-            <p>@Copyright 2026 CUBAZON · Diseñado por Des.Joshua_Technology · Todos los derechos reservados</p>
-        </div>
+        <p>© 2026 CUBAZON · Diseñado por Des.Joshua_Technology</p>
     </div>
 
+    <div class="back-top" title="Volver arriba">
+        <i class="fa fa-chevron-up"></i>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <script type="module">
         import { supabase } from '/js/supabase-client.js'
         import { auth } from '/js/auth.js'
@@ -513,6 +915,9 @@
         window.cart = carrito
         carrito.cargarDeLocalStorage()
         carrito.actualizarInterfaz()
+
+        // Función global para vaciar carrito (usada en el preview)
+        window.vaciarCarrito = () => carrito.vaciar();
 
         // ========== VERIFICAR AUTENTICACIÓN AUTOMÁTICAMENTE ==========
         async function verificarYcargar() {
@@ -704,24 +1109,38 @@
 
         // ========== ACTUALIZAR MENÚ DE USUARIO ==========
         function actualizarMenuUsuario() {
-            const userMenuLink = document.getElementById('userMenuLink')
-            if (!userMenuLink) return
+            const loginBtn = document.getElementById('loginBtnHeader');
+            if (!loginBtn) return;
             
             if (auth.isAuthenticated()) {
-                const usuario = auth.getUsuario()
-                const nombre = usuario?.nombre || 'Mi cuenta'
-                userMenuLink.innerHTML = `<i class="fa fa-user"></i> ${nombre}`
-                userMenuLink.href = '/mi-cuenta.html'
+                const usuario = auth.getUsuario();
+                const inicial = usuario?.nombre?.charAt(0).toUpperCase() || 'U';
+                loginBtn.innerHTML = `<i class="fa fa-user"></i><span>${inicial}</span>`;
+                loginBtn.href = '/mi-cuenta.html';
             } else {
-                userMenuLink.innerHTML = '<i class="fa fa-sign-in"></i> Iniciar sesión'
-                userMenuLink.href = '/login.html'
+                loginBtn.innerHTML = '<i class="fa fa-sign-in"></i><span>Iniciar sesión</span>';
+                loginBtn.href = '/login.html';
             }
         }
 
         // ========== INICIALIZAR ==========
         verificarYcargar()
-        setTimeout(actualizarMenuUsuario, 500)
+        actualizarMenuUsuario()
         auth.onCambio(actualizarMenuUsuario)
+
+        // Back to top
+        window.addEventListener('scroll', function() {
+            const backTop = document.querySelector('.back-top')
+            if (window.scrollY > 300) {
+                backTop.style.display = 'flex'
+            } else {
+                backTop.style.display = 'none'
+            }
+        })
+        
+        document.querySelector('.back-top')?.addEventListener('click', function() {
+            window.scrollTo({ top: 0, behavior: 'smooth' })
+        })
     </script>
 </body>
 </html>
