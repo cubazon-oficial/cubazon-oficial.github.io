@@ -1156,78 +1156,78 @@ h1, h2, h3, h4, h5, h6 {
         }).join('')
     }
 
-    async function cargarOfertas() {
-        const { data, error } = await supabase
-            .from('productos')
-            .select('*')
-            .eq('oferta', true)
-            .limit(4)
-        
-        if (error) {
-            console.error('Error cargando ofertas:', error)
-            return
-        }
-        
-        const container = document.getElementById('hot-posts-container')
-        if (!container) return
-        
-        container.innerHTML = data.map(producto => {
-            const enLista = listaDeseosUsuario.includes(producto.id);
-            
-            if (producto.stock <= 0) {
-                return `
-                    <div class="product-card">
-                        <div class="wishlist-btn ${enLista ? 'active' : ''}" 
-                             onclick="toggleWishlist(${producto.id})"
-                             title="${enLista ? 'Quitar de lista de deseos' : 'Agregar a lista de deseos'}">
-                            <i class="fa ${enLista ? 'fa-heart' : 'fa-heart-o'}"></i>
-                        </div>
-                        <a href="/producto.html?id=${producto.id}" style="text-decoration: none; color: inherit;">
-                            <img src="${producto.imagen_url || '/assets/images/no-image.jpg'}" 
-                                 alt="${producto.nombre}" 
-                                 class="product-image"
-                                 style="height: 180px;"
-                                 onerror="this.src='/assets/images/no-image.jpg'">
-                            <h3 class="product-title">${producto.nombre}</h3>
-                        </a>
-                        <div class="product-price">
-                            $${producto.precio_oferta || producto.precio} CUP
-                        </div>
-                        <div style="margin: 15px 0;">
-                            <span class="product-agotado" style="display: block; width: 100%;">
-                                <i class="fa fa-ban"></i> AGOTADO
-                            </span>
-                        </div>
-                    </div>
-                `
-            } else {
-                return `
-                    <div class="product-card">
-                        <div class="wishlist-btn ${enLista ? 'active' : ''}" 
-                             onclick="toggleWishlist(${producto.id})"
-                             title="${enLista ? 'Quitar de lista de deseos' : 'Agregar a lista de deseos'}">
-                            <i class="fa ${enLista ? 'fa-heart' : 'fa-heart-o'}"></i>
-                        </div>
-                        <a href="/producto.html?id=${producto.id}" style="text-decoration: none; color: inherit;">
-                            <img src="${producto.imagen_url || '/assets/images/no-image.jpg'}" 
-                                 alt="${producto.nombre}" 
-                                 class="product-image"
-                                 style="height: 180px;"
-                                 onerror="this.src='/assets/images/no-image.jpg'">
-                            <h3 class="product-title">${producto.nombre}</h3>
-                        </a>
-                        <div class="product-price">
-                            $${producto.precio_oferta || producto.precio} CUP
-                        </div>
-                        <button class="btn-add-cart" 
-                                onclick="window.cart.agregar('${producto.id}', 1, {})">
-                            <i class="fa fa-shopping-cart"></i> Comprar
-                        </button>
-                    </div>
-                `
-            }
-        }).join('')
+  async function cargarOfertas() {
+    const { data, error } = await supabase
+        .from('productos')
+        .select('*')
+        .eq('oferta_del_dia', true) // ← ESTA ES LA ÚNICA LÍNEA QUE CAMBIAS
+        .limit(4)
+    
+    if (error) {
+        console.error('Error cargando ofertas:', error)
+        return
     }
+    
+    const container = document.getElementById('hot-posts-container')
+    if (!container) return
+    
+    container.innerHTML = data.map(producto => {
+        const enLista = listaDeseosUsuario.includes(producto.id);
+        
+        if (producto.stock <= 0) {
+            return `
+                <div class="product-card">
+                    <div class="wishlist-btn ${enLista ? 'active' : ''}" 
+                         onclick="toggleWishlist(${producto.id})"
+                         title="${enLista ? 'Quitar de lista de deseos' : 'Agregar a lista de deseos'}">
+                        <i class="fa ${enLista ? 'fa-heart' : 'fa-heart-o'}"></i>
+                    </div>
+                    <a href="/producto.html?id=${producto.id}" style="text-decoration: none; color: inherit;">
+                        <img src="${producto.imagen_url || '/assets/images/no-image.jpg'}" 
+                             alt="${producto.nombre}" 
+                             class="product-image"
+                             style="height: 180px;"
+                             onerror="this.src='/assets/images/no-image.jpg'">
+                        <h3 class="product-title">${producto.nombre}</h3>
+                    </a>
+                    <div class="product-price">
+                        $${producto.precio_oferta || producto.precio} CUP
+                    </div>
+                    <div style="margin: 15px 0;">
+                        <span class="product-agotado" style="display: block; width: 100%;">
+                            <i class="fa fa-ban"></i> AGOTADO
+                        </span>
+                    </div>
+                </div>
+            `
+        } else {
+            return `
+                <div class="product-card">
+                    <div class="wishlist-btn ${enLista ? 'active' : ''}" 
+                         onclick="toggleWishlist(${producto.id})"
+                         title="${enLista ? 'Quitar de lista de deseos' : 'Agregar a lista de deseos'}">
+                        <i class="fa ${enLista ? 'fa-heart' : 'fa-heart-o'}"></i>
+                    </div>
+                    <a href="/producto.html?id=${producto.id}" style="text-decoration: none; color: inherit;">
+                        <img src="${producto.imagen_url || '/assets/images/no-image.jpg'}" 
+                             alt="${producto.nombre}" 
+                             class="product-image"
+                             style="height: 180px;"
+                             onerror="this.src='/assets/images/no-image.jpg'">
+                        <h3 class="product-title">${producto.nombre}</h3>
+                    </a>
+                    <div class="product-price">
+                        $${producto.precio_oferta || producto.precio} CUP
+                    </div>
+                    <button class="btn-add-cart" 
+                            onclick="window.cart.agregar('${producto.id}', 1, {})">
+                        <i class="fa fa-shopping-cart"></i> Comprar
+                    </button>
+                </div>
+            `
+        }
+    }).join('')
+}
 
     async function cargarConsumibles() {
         const { data, error } = await supabase

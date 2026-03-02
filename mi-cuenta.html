@@ -927,8 +927,8 @@
             }
         };
         
-        // ========== HISTORIAL DE TRANSFERENCIAS ==========
-        window.historialTransferencias = async function() {
+        // ========== NUEVA FUNCIÓN: HISTORIAL DE TRANSACCIONES (ÚLTIMAS 10) ==========
+        window.verUltimasTransacciones = async function() {
             const usuario = auth.getUsuario();
             
             try {
@@ -940,14 +940,15 @@
                         receptor:auth_users_view!receptor_id(email, nombre_completo)
                     `)
                     .or(`emisor_id.eq.${usuario.id},receptor_id.eq.${usuario.id}`)
-                    .order('created_at', { ascending: false });
+                    .order('created_at', { ascending: false })
+                    .limit(10); // 👈 SOLO LAS ÚLTIMAS 10
                 
                 if (error) throw error;
                 
                 if (!data || data.length === 0) {
                     Swal.fire({
                         icon: 'info',
-                        title: 'Sin transferencias',
+                        title: 'Sin transacciones',
                         text: 'Aún no has realizado ni recibido transferencias',
                         confirmButtonText: 'Entendido'
                     });
@@ -959,7 +960,14 @@
                 html += '<tr><th>Fecha</th><th>Tipo</th><th>Contacto</th><th>Monto</th><th>Concepto</th></tr>';
                 
                 data.forEach(t => {
-                    const fecha = new Date(t.created_at).toLocaleDateString('es-ES');
+                    const fecha = new Date(t.created_at).toLocaleDateString('es-ES', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    
                     const esEmisor = t.emisor_id === usuario.id;
                     
                     const tipo = esEmisor ? 'Enviado' : 'Recibido';
@@ -977,16 +985,17 @@
                 });
                 
                 html += '</table></div>';
+                html += '<p style="text-align:center; margin-top:15px; color:#6c757d; font-size:12px;">Mostrando las últimas 10 transacciones</p>';
                 
                 Swal.fire({
-                    title: 'Historial de transferencias',
+                    title: 'Últimas transacciones',
                     html: html,
                     width: '800px',
                     confirmButtonText: 'Cerrar'
                 });
                 
             } catch (error) {
-                console.error('Error cargando transferencias:', error);
+                console.error('Error cargando transacciones:', error);
                 Swal.fire('Error', 'No se pudo cargar el historial', 'error');
             }
         };
@@ -1042,7 +1051,7 @@
                     </button>
                 </div>
                 
-                <!-- ACCIONES RÁPIDAS (NUEVO) -->
+                <!-- ACCIONES RÁPIDAS -->
                 <div class="quick-actions">
                     <a href="/transferir.html" class="quick-action-card">
                         <div class="quick-action-icon transfer">
@@ -1093,8 +1102,8 @@
                         <a href="#" class="btn-balance" onclick="window.historialSaldo()">
                             <i class="fa fa-history"></i> Historial
                         </a>
-                        <a href="#" class="btn-balance" onclick="window.historialTransferencias()">
-                            <i class="fa fa-exchange"></i> Transferencias
+                        <a href="#" class="btn-balance" onclick="window.verUltimasTransacciones()">
+                            <i class="fa fa-clock-o"></i> Últimas 10
                         </a>
                     </div>
                 </div>

@@ -819,8 +819,8 @@
                 let productosFiltradosPorCat = []
                 
                 if (cat.toLowerCase() === 'ofertas') {
-                    productosFiltradosPorCat = data.filter(p => p.oferta === true)
-                } else {
+    productosFiltradosPorCat = data.filter(p => p.oferta_del_dia === true) // ← CORREGIDO
+} else {
                     // Buscar en el array de etiquetas
                     productosFiltradosPorCat = data.filter(p => 
                         p.etiquetas && p.etiquetas.some(et => 
@@ -853,9 +853,10 @@
             )
             
             // Filtro solo ofertas
-            if (filtrosActivos.soloOfertas) {
-                productos = productos.filter(p => p.oferta === true)
-            }
+           // Filtro solo ofertas
+if (filtrosActivos.soloOfertas) {
+    productos = productos.filter(p => p.oferta_del_dia === true) // ← CORREGIDO
+}
             
             // Filtro solo productos en stock
             if (filtrosActivos.soloStock) {
