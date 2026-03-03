@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-  <title>⚡ NEBULA POS · IPV GANANCIAS</title>
+  <title>⚡ NEBULA POS · IPV TOTALES + GANANCIAS</title>
   <!-- fonts & base -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -225,29 +225,6 @@
       font-size: 0.65rem;
     }
 
-    .ganancias-footer {
-      background: #0d1b2f;
-      border-radius: 1rem;
-      padding: 0.6rem 1rem;
-      border: 1px solid #ffaa33;
-      margin: 0.5rem 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.9rem;
-      flex-shrink: 0;
-    }
-    
-    .ganancia-neta {
-      color: #a5d6a5;
-      font-weight: 700;
-    }
-    
-    .porcentaje {
-      color: #ffd966;
-      font-weight: 700;
-    }
-
     .add-product-panel {
       background: #0d1b2f;
       border-radius: 1rem;
@@ -315,7 +292,6 @@
     .btn-reset-cero { border-color: #ffaa33; color: #ffd966; }
     .btn-reset-todo { border-color: #ff7b7b; color: #ffa7a7; }
 
-    /* Panel derecho simplificado */
     .movimientos-panel {
       background: rgba(0, 5, 20, 0.7);
       backdrop-filter: blur(8px);
@@ -410,7 +386,7 @@
 </head>
 <body>
 <div class="dashboard">
-  <h1>✦ NEBULA · IPV GANANCIAS <span>🇨🇺 pass: 00000</span></h1>
+  <h1>✦ NEBULA · IPV TOTALES <span>🇨🇺 pass: 00000</span></h1>
 
   <div class="grid-main">
     <div class="inventory-panel">
@@ -447,12 +423,6 @@
         </table>
       </div>
 
-      <!-- Footer de ganancias netas -->
-      <div class="ganancias-footer" id="gananciasFooter">
-        <span>Ganancias Netas: <span class="ganancia-neta" id="gananciaNeta">0.00 CUP</span></span>
-        <span>Porcentaje: <span class="porcentaje" id="porcentajeGanancia">0.00%</span></span>
-      </div>
-
       <div class="add-product-panel">
         <input type="text" id="newProductName" placeholder="Nombre del nuevo producto">
         <button class="btn-add-product" id="addProductBtn">➕ AÑADIR PRODUCTO</button>
@@ -466,7 +436,6 @@
       </div>
     </div>
 
-    <!-- Panel derecho solo con movimientos -->
     <div class="movimientos-panel">
       <h2>📋 últimos movimientos</h2>
       <div class="log-section">
@@ -485,7 +454,7 @@
 <script>
   (function() {
     const { jsPDF } = window.jspdf;
-    const STORAGE_KEY = 'nebula_ipv_ganancias';
+    const STORAGE_KEY = 'nebula_ipv_totales';
     const RESET_PASSWORD = '00000';
 
     let products = [];
@@ -798,10 +767,50 @@
         tbody.appendChild(tr);
       });
 
-      // Calcular ganancias
+      // ===== FILA DE TOTALES (suma de todas las columnas) =====
+      const totalRow = document.createElement('tr');
+      totalRow.className = 'total-row';
+      totalRow.innerHTML = `
+        <td></td>
+        <td><strong>TOTALES</strong></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>${formatNumber(products.reduce((sum, p) => sum + p.saldoInicialCant, 0))}</td>
+        <td>${formatNumber(products.reduce((sum, p) => sum + p.saldoInicialImp, 0))}</td>
+        <td>${formatNumber(products.reduce((sum, p) => sum + p.entradaCant, 0))}</td>
+        <td>${formatNumber(products.reduce((sum, p) => sum + p.entradaImp, 0))}</td>
+        <td>${formatNumber(products.reduce((sum, p) => sum + p.salidaCant, 0))}</td>
+        <td></td> <!-- Precio no se suma -->
+        <td>${formatNumber(products.reduce((sum, p) => sum + p.ventaCant, 0))}</td>
+        <td>${formatNumber(products.reduce((sum, p) => sum + p.ventaImp, 0))}</td>
+        <td>${formatNumber(products.reduce((sum, p) => sum + p.saldoFinalCant, 0))}</td>
+        <td>${formatNumber(products.reduce((sum, p) => sum + p.saldoFinalImp, 0))}</td>
+      `;
+      tbody.appendChild(totalRow);
+
+      // ===== FILA DE GANANCIAS NETAS =====
       const ganancias = calcularGanancias();
-      document.getElementById('gananciaNeta').innerText = ganancias.ganancia.toFixed(2) + ' CUP';
-      document.getElementById('porcentajeGanancia').innerText = ganancias.porcentaje.toFixed(2) + '%';
+      const gananciaRow = document.createElement('tr');
+      gananciaRow.className = 'ganancia-row';
+      gananciaRow.innerHTML = `
+        <td></td>
+        <td><strong>GANANCIAS NETAS</strong></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>${ganancias.ganancia.toFixed(2)} CUP</td>
+        <td>PORCENTAJE</td>
+        <td>${ganancias.porcentaje.toFixed(2)}%</td>
+      `;
+      tbody.appendChild(gananciaRow);
 
       // Actualizar badge
       document.getElementById('totalProductsBadge').innerText = products.length + ' productos';
@@ -947,23 +956,25 @@
         ]);
       });
 
+      // Fila de totales
+      tableRows.push([
+        '', 'TOTALES', '', '', '',
+        formatNumber(products.reduce((sum, p) => sum + p.saldoInicialCant, 0)),
+        formatNumber(products.reduce((sum, p) => sum + p.saldoInicialImp, 0)),
+        formatNumber(products.reduce((sum, p) => sum + p.entradaCant, 0)),
+        formatNumber(products.reduce((sum, p) => sum + p.entradaImp, 0)),
+        formatNumber(products.reduce((sum, p) => sum + p.salidaCant, 0)),
+        '',
+        formatNumber(products.reduce((sum, p) => sum + p.ventaCant, 0)),
+        formatNumber(products.reduce((sum, p) => sum + p.ventaImp, 0)),
+        formatNumber(products.reduce((sum, p) => sum + p.saldoFinalCant, 0)),
+        formatNumber(products.reduce((sum, p) => sum + p.saldoFinalImp, 0))
+      ]);
+
       // Fila de ganancias netas
       tableRows.push([
-        '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''
-      ]);
-      tableRows.push([
-        'GANANCIAS NETAS',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
+        '', 'GANANCIAS NETAS', '', '', '',
+        '', '', '', '', '', '', '',
         ganancias.ganancia.toFixed(2) + ' CUP',
         'PORCENTAJE',
         ganancias.porcentaje.toFixed(2) + '%'
@@ -1006,7 +1017,7 @@
         margin: { left: 5, right: 5 }
       });
 
-      doc.save(`IPV_GANANCIAS_${now.toISOString().slice(0,10)}.pdf`);
+      doc.save(`IPV_TOTALES_${now.toISOString().slice(0,10)}.pdf`);
     }
 
     // ========== INICIALIZACIÓN ==========
