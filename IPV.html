@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-  <title>⚡ NEBULA POS · RESPONSIVE CUP</title>
+  <title>⚡ NEBULA POS · IPV GANANCIAS</title>
   <!-- fonts & base -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -30,7 +30,6 @@
       position: relative;
     }
 
-    /* partículas de fondo */
     body::before {
       content: '';
       position: absolute;
@@ -44,7 +43,7 @@
       position: relative;
       z-index: 10;
       width: 100%;
-      max-width: 1400px;
+      max-width: 1600px;
       backdrop-filter: blur(12px);
       background: rgba(6, 10, 25, 0.45);
       border: 1px solid rgba(250, 200, 50, 0.25);
@@ -84,7 +83,6 @@
       font-weight: 400;
     }
 
-    /* Layout responsivo: columna en móvil, fila en desktop */
     .grid-main {
       display: grid;
       grid-template-columns: 1fr;
@@ -98,7 +96,6 @@
       }
     }
 
-    /* Panel izquierdo - Inventario */
     .inventory-panel {
       background: rgba(0, 5, 20, 0.6);
       backdrop-filter: blur(8px);
@@ -108,14 +105,8 @@
       box-shadow: 0 15px 35px rgba(250, 150, 0, 0.5);
       display: flex;
       flex-direction: column;
-      height: fit-content;
-      max-height: 70vh;
-    }
-
-    @media (min-width: 900px) {
-      .inventory-panel {
-        max-height: 80vh;
-      }
+      height: 75vh;
+      max-height: 80vh;
     }
 
     .header-neon {
@@ -144,29 +135,22 @@
       white-space: nowrap;
     }
 
-    /* Tabla con scroll */
     .table-container {
       flex: 1;
       overflow-y: auto;
       overflow-x: auto;
       border-radius: 1rem;
       background: #03061733;
-      margin-bottom: 1rem;
-      min-height: 200px;
-      max-height: 400px;
+      margin-bottom: 0.5rem;
+      min-height: 350px;
+      max-height: 55vh;
       scrollbar-width: thin;
       scrollbar-color: #ffaa33 #1f2e42;
     }
 
-    @media (min-width: 900px) {
-      .table-container {
-        max-height: 500px;
-      }
-    }
-
     .table-container::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
+      width: 8px;
+      height: 8px;
     }
     .table-container::-webkit-scrollbar-track {
       background: #1f2e42;
@@ -180,7 +164,8 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 600px;
+      min-width: 1500px;
+      font-size: 0.75rem;
     }
     
     th {
@@ -188,252 +173,211 @@
       background: #0b1a30;
       color: #ffdb9d;
       font-weight: 600;
-      font-size: clamp(0.7rem, 2.5vw, 0.85rem);
-      padding: 0.8rem 0.3rem;
+      font-size: 0.7rem;
+      padding: 0.6rem 0.2rem;
       border-bottom: 2px solid #f90;
       text-transform: uppercase;
       position: sticky;
       top: 0;
-      z-index: 10;
+      z-index: 20;
+      text-align: center;
+      white-space: nowrap;
     }
     
     td {
-      padding: 0.6rem 0.3rem;
+      padding: 0.4rem 0.2rem;
       border-bottom: 1px solid #4d3f1a;
       color: #f0f0ff;
-      font-size: clamp(0.7rem, 2.5vw, 0.8rem);
+      font-size: 0.7rem;
+      text-align: center;
     }
     
     .product-name { 
       font-weight: 600; 
       color: #ffe49e;
-      max-width: 150px;
+      max-width: 140px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
     
-    .money { 
-      font-family: 'Orbitron', monospace; 
-      font-weight: 600; 
-      color: #ffdb8b;
-      white-space: nowrap;
-    }
-    
-    .stock-value { 
-      font-weight: 700; 
-      background: #1f2e42; 
-      padding: 0.2rem 0.5rem; 
-      border-radius: 20px; 
-      display: inline-block; 
-      border: 1px solid #f90;
-      font-size: clamp(0.65rem, 2.5vw, 0.75rem);
-    }
-
-    /* Controles compactos para móvil */
-    .sell-control {
-      display: flex;
-      gap: 2px;
-      align-items: center;
-      justify-content: flex-end;
-      flex-wrap: wrap;
-    }
-    
-    .sell-control input {
-      width: 40px;
+    .editable-input {
+      width: 75px;
       background: #0b1424;
       border: 1px solid #f9a826;
       border-radius: 30px;
-      padding: 0.2rem 0.1rem;
+      padding: 0.25rem 0.1rem;
       color: white;
       font-weight: 600;
       text-align: center;
-      font-size: 0.7rem;
+      font-size: 0.65rem;
     }
-    
-    .btn-sell, .btn-edit, .btn-adjust, .btn-delete {
-      background: transparent;
-      border: 1.5px solid;
-      padding: 0.25rem 0.4rem;
-      border-radius: 30px;
-      font-weight: 700;
-      font-size: 0.6rem;
-      cursor: pointer;
-      min-width: 35px;
-      white-space: nowrap;
-    }
-    
-    .btn-sell { border-color: #ffb800; color: #ffd966; }
-    .btn-edit { border-color: #5f9eff; color: #a0c8ff; }
-    .btn-adjust { border-color: #4caf50; color: #a5d6a5; }
-    .btn-delete { border-color: #ff6b6b; color: #ffa7a7; }
 
-    /* Formulario añadir producto */
-    .add-product-section {
+    .readonly-input {
+      width: 75px;
+      background: #1a1f30;
+      border: 1px solid #5f5f5f;
+      border-radius: 30px;
+      padding: 0.25rem 0.1rem;
+      color: #cccccc;
+      font-weight: 600;
+      text-align: center;
+      font-size: 0.65rem;
+    }
+
+    .ganancias-footer {
+      background: #0d1b2f;
+      border-radius: 1rem;
+      padding: 0.6rem 1rem;
+      border: 1px solid #ffaa33;
+      margin: 0.5rem 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.9rem;
       flex-shrink: 0;
     }
     
-    .add-product-section h3 {
-      margin: 0.3rem 0;
-      font-size: clamp(0.9rem, 4vw, 1.1rem);
+    .ganancia-neta {
+      color: #a5d6a5;
+      font-weight: 700;
     }
     
-    .add-product-form {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr 0.8fr;
-      gap: 0.3rem;
+    .porcentaje {
+      color: #ffd966;
+      font-weight: 700;
+    }
+
+    .add-product-panel {
       background: #0d1b2f;
+      border-radius: 1rem;
       padding: 0.8rem;
-      border-radius: 1.5rem;
       border: 1px solid #f9a826;
+      margin-top: 0.5rem;
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
     }
     
-    .add-product-form input {
+    .add-product-panel input {
       background: #021024;
       border: 1px solid #f9a826;
       border-radius: 40px;
-      padding: 0.5rem 0.3rem;
+      padding: 0.5rem 0.8rem;
       color: white;
       font-weight: 500;
-      font-size: 0.7rem;
-      text-align: center;
-      min-width: 0;
+      font-size: 0.8rem;
+      flex: 2;
+      min-width: 200px;
     }
     
-    .btn-add {
-      background: linear-gradient(130deg, #b45f06, #e68a2e);
+    .btn-add-product {
+      background: linear-gradient(130deg, #2e7d32, #4caf50);
       border: none;
       border-radius: 40px;
-      font-weight: 800;
+      font-weight: 700;
       color: white;
       text-transform: uppercase;
-      font-size: 0.7rem;
+      font-size: 0.8rem;
       cursor: pointer;
-      border: 1px solid #ffcc66;
-      padding: 0.5rem 0.2rem;
+      border: 1px solid #a5d6a5;
+      box-shadow: 0 0 10px #4caf50;
+      padding: 0.5rem 1.2rem;
       white-space: nowrap;
     }
 
-    /* Panel derecho - Estadísticas mejorado */
-    .stats-panel {
+    .action-buttons-panel {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: flex-end;
+      margin: 0.5rem 0;
+      flex-wrap: wrap;
+      flex-shrink: 0;
+    }
+    
+    .btn-action {
+      background: transparent;
+      border: 1.5px solid;
+      padding: 0.4rem 0.8rem;
+      border-radius: 40px;
+      font-weight: 700;
+      font-size: 0.7rem;
+      cursor: pointer;
+      box-shadow: 0 0 8px currentColor;
+      min-width: 80px;
+    }
+    
+    .btn-pdf { border-color: #4ef; color: #7ff5ff; }
+    .btn-save { border-color: #4caf50; color: #a5d6a5; }
+    .btn-reset-cero { border-color: #ffaa33; color: #ffd966; }
+    .btn-reset-todo { border-color: #ff7b7b; color: #ffa7a7; }
+
+    /* Panel derecho simplificado */
+    .movimientos-panel {
       background: rgba(0, 5, 20, 0.7);
       backdrop-filter: blur(8px);
       border: 1px solid #ffaa33;
       border-radius: 1.5rem;
       padding: 1rem;
       box-shadow: 0 15px 35px #a35400b5;
+      height: fit-content;
     }
     
-    .stats-panel h2 {
+    .movimientos-panel h2 {
       font-size: clamp(1.2rem, 5vw, 1.8rem);
       margin-bottom: 0.8rem;
     }
 
-    /* Grid de 2 columnas para estadísticas */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 0.8rem;
-      margin-bottom: 1rem;
-    }
-    
-    .stat-card {
-      background: #0d102bbb;
-      border-radius: 1.2rem;
-      padding: 0.8rem 0.5rem;
-      border: 1px solid #ffb347;
-      box-shadow: 0 0 12px #ff8c42;
-    }
-    
-    .stat-label {
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      color: #ffdca8;
-      letter-spacing: 1px;
-    }
-    
-    .stat-number {
-      font-family: 'Orbitron', monospace;
-      font-size: clamp(1rem, 4vw, 1.6rem);
-      font-weight: 800;
-      background: linear-gradient(120deg, #fff2d0, #ffcf9a);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      line-height: 1.2;
-      word-break: break-word;
-    }
-    
-    .stat-detail {
-      font-size: 0.6rem;
-      color: #ffd58c;
-      margin-top: 3px;
-      border-top: 1px dashed #b26500;
-      padding-top: 3px;
-    }
-
-    /* Log de ventas */
     .log-section {
       background: #060c1b;
       border-radius: 1.5rem;
       padding: 0.8rem;
       border: 1px solid #ffaa33;
-      margin: 0.8rem 0;
     }
     
     .log-title {
       font-family: 'Orbitron', sans-serif;
       color: #ffd58c;
       font-size: 0.9rem;
-      margin-bottom: 0.3rem;
+      margin-bottom: 0.5rem;
     }
     
     .sales-log {
-      max-height: 120px;
+      max-height: 500px;
       overflow-y: auto;
-      font-size: 0.75rem;
+      font-size: 0.85rem;
       list-style: none;
       scrollbar-width: thin;
     }
     
     .sales-log li {
-      padding: 0.3rem 0;
+      padding: 0.5rem 0;
       border-bottom: 1px solid #7f551a;
       display: flex;
       justify-content: space-between;
-    }
-
-    /* Botones de acción */
-    .action-buttons {
-      display: flex;
-      gap: 0.8rem;
-      justify-content: flex-end;
-      margin: 0.8rem 0;
-      flex-wrap: wrap;
+      color: #ffe3b5;
     }
     
-    .btn-pdf, .btn-reset {
-      font-family: 'Orbitron', sans-serif;
-      background: transparent;
-      border: 1.5px solid;
-      padding: 0.5rem 1rem;
-      border-radius: 40px;
-      font-weight: 700;
-      font-size: 0.7rem;
-      cursor: pointer;
-      box-shadow: 0 0 8px currentColor;
-      flex: 1 1 auto;
-      min-width: 120px;
+    .log-product {
+      font-weight: 600;
+      color: #ffdb8b;
     }
     
-    .btn-pdf { border-color: #4ef; color: #7ff5ff; }
-    .btn-reset { border-color: #ff7b7b; color: #ffa7a7; }
+    .log-quantity {
+      background: #1f2e42;
+      padding: 0.1rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+    }
 
     .footnote {
       text-align: right;
       font-size: 0.65rem;
       opacity: 0.7;
-      border-top: 1px solid #cc8b2f;
-      padding-top: 0.5rem;
+      margin-top: 0.8rem;
     }
 
     .cup-flag {
@@ -442,104 +386,97 @@
       font-size: 1rem;
       filter: drop-shadow(0 0 4px gold);
     }
+
+    .total-row {
+      background: #1f2e42;
+      font-weight: 700;
+      border-top: 2px solid #ffb800;
+    }
+    .total-row td {
+      background: #1f2e42;
+      color: #ffdb9d;
+    }
+    
+    .ganancia-row {
+      background: #0d1b2f;
+      font-weight: 700;
+      border-top: 2px solid #4caf50;
+    }
+    .ganancia-row td {
+      background: #0d1b2f;
+      color: #a5d6a5;
+    }
   </style>
 </head>
 <body>
 <div class="dashboard">
-  <h1>✦ NEBULA · iPV <span>🇨🇺 responsive</span></h1>
+  <h1>✦ NEBULA · IPV GANANCIAS <span>🇨🇺 pass: 00000</span></h1>
 
   <div class="grid-main">
-    <!-- COLUMNA IZQUIERDA: inventario -->
     <div class="inventory-panel">
       <div class="header-neon">
-        <h2>⍟ inventario activo <span class="cup-flag">🇨🇺</span></h2>
-        <div class="badge-quantity" id="totalProductsBadge">0 ítems</div>
+        <h2>⍟ inventario <span class="cup-flag">🇨🇺</span></h2>
+        <div class="badge-quantity" id="totalProductsBadge">0 productos</div>
       </div>
 
-      <!-- Tabla con scroll -->
       <div class="table-container">
         <table id="productTable">
           <thead>
             <tr>
-              <th>Producto</th>
-              <th>Precio</th>
-              <th>Coste</th>
-              <th>Inv.</th>
-              <th>Acciones</th>
+              <th>No.</th>
+              <th>Descripción</th>
+              <th>U/M</th>
+              <th>P.Venta</th>
+              <th>P.Costo</th>
+              <th colspan="2">Saldo inicial</th>
+              <th colspan="2">Entrada</th>
+              <th colspan="2">Salida (uds)</th>
+              <th colspan="2">Venta (importe)</th>
+              <th colspan="2">Saldo final</th>
+            </tr>
+            <tr>
+              <th></th><th></th><th></th><th></th><th></th>
+              <th>Cant</th><th>Imp</th>
+              <th>Cant</th><th>Imp</th>
+              <th>Cant</th><th>Precio</th>
+              <th>Cant</th><th>Total</th>
+              <th>Cant</th><th>Imp</th>
             </tr>
           </thead>
           <tbody id="productTableBody"></tbody>
         </table>
       </div>
 
-      <!-- Añadir producto -->
-      <div class="add-product-section">
-        <h3>➕ añadir</h3>
-        <div class="add-product-form">
-          <input type="text" id="newName" placeholder="nombre">
-          <input type="number" id="newPrice" placeholder="precio" step="1" min="0">
-          <input type="number" id="newCost" placeholder="coste" step="1" min="0">
-          <input type="number" id="newStock" placeholder="uds" min="1" value="10">
-          <button class="btn-add" id="addProductBtn">CREAR</button>
-        </div>
+      <!-- Footer de ganancias netas -->
+      <div class="ganancias-footer" id="gananciasFooter">
+        <span>Ganancias Netas: <span class="ganancia-neta" id="gananciaNeta">0.00 CUP</span></span>
+        <span>Porcentaje: <span class="porcentaje" id="porcentajeGanancia">0.00%</span></span>
+      </div>
+
+      <div class="add-product-panel">
+        <input type="text" id="newProductName" placeholder="Nombre del nuevo producto">
+        <button class="btn-add-product" id="addProductBtn">➕ AÑADIR PRODUCTO</button>
+      </div>
+
+      <div class="action-buttons-panel">
+        <button class="btn-action btn-pdf" id="downloadPdfBtn">📥 PDF</button>
+        <button class="btn-action btn-save" id="saveManualBtn">💾 GUARDAR</button>
+        <button class="btn-action btn-reset-cero" id="resetCeroBtn">0️⃣ RESET A CERO</button>
+        <button class="btn-action btn-reset-todo" id="resetDataBtn">🔄 RESET TODO</button>
       </div>
     </div>
 
-    <!-- COLUMNA DERECHA: estadísticas completas -->
-    <div class="stats-panel">
-      <h2>📊 resumen ventas</h2>
-
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-label">Ingresos</div>
-          <div class="stat-number" id="totalRevenue">0 CUP</div>
-          <div class="stat-detail" id="totalUnitsSold">0 unidades</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Ganancia</div>
-          <div class="stat-number" id="totalProfit">0 CUP</div>
-          <div class="stat-detail" id="profitMargin">margen 0%</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Valor inventario</div>
-          <div class="stat-number" id="inventoryValue">0 CUP</div>
-          <div class="stat-detail">a precio de coste</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Faltante (COGS)</div>
-          <div class="stat-number" id="missingInventoryValue">0 CUP</div>
-          <div class="stat-detail">coste de lo vendido</div>
-        </div>
-      </div>
-
-      <!-- Productos vendidos recientemente -->
+    <!-- Panel derecho solo con movimientos -->
+    <div class="movimientos-panel">
+      <h2>📋 últimos movimientos</h2>
       <div class="log-section">
-        <div class="log-title">📋 últimos productos vendidos</div>
-        <ul class="sales-log" id="salesLogList">
-          <li style="opacity:0.6;">— sin ventas —</li>
+        <div class="log-title">ventas registradas</div>
+        <ul class="sales-log" id="movimientosList">
+          <li style="opacity:0.6;">— sin movimientos —</li>
         </ul>
       </div>
-
-      <!-- Totales y subtotales adicionales -->
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin: 0.5rem 0; font-size: 0.8rem;">
-        <div style="background: rgba(255,200,100,0.1); padding: 0.5rem; border-radius: 1rem;">
-          <div>Subtotal ventas</div>
-          <strong id="subtotalDisplay">0 CUP</strong>
-        </div>
-        <div style="background: rgba(100,200,255,0.1); padding: 0.5rem; border-radius: 1rem;">
-          <div>Total productos</div>
-          <strong id="totalProductsDisplay">0</strong>
-        </div>
-      </div>
-
-      <!-- Botones -->
-      <div class="action-buttons">
-        <button class="btn-pdf" id="downloadPdfBtn">📥 PDF</button>
-        <button class="btn-reset" id="resetSalesBtn">🔄 RESET</button>
-      </div>
-
       <div class="footnote">
-        <span id="validationMsg">⚖️ cuadre exacto</span>
+        <span id="persistenciaMsg">💾 auto-save activado</span>
       </div>
     </div>
   </div>
@@ -548,251 +485,542 @@
 <script>
   (function() {
     const { jsPDF } = window.jspdf;
+    const STORAGE_KEY = 'nebula_ipv_ganancias';
+    const RESET_PASSWORD = '00000';
 
     let products = [];
-    let sales = [];
+    let movimientos = [];
+    let nextId = 100;
 
-    const sampleProducts = [
-      { name: '🍚 Arroz 1 kg', price: 650, cost: 520, stock: 25 },
-      { name: '🫘 Frijoles 1 kg', price: 830, cost: 660, stock: 18 },
-      { name: '🍗 Pollo 10 lbs', price: 4250, cost: 3400, stock: 6 },
-      { name: '🍗 Picadillo Pollo 1lb', price: 310, cost: 240, stock: 30 },
-      { name: '🍖 Jamonada 1lb', price: 320, cost: 250, stock: 22 },
-      { name: '🪔 Aceite 900 ml', price: 1000, cost: 800, stock: 14 },
-      { name: '🍞 Harina Sublime 1 lb', price: 240, cost: 170, stock: 40 },
-      { name: '🍙 Azúcar 1 lb', price: 270, cost: 190, stock: 45 },
-      { name: '🥤 Refresco lata (SANTA)', price: 270, cost: 200, stock: 50 },
-      { name: '🍅 Pasta de Puré', price: 480, cost: 360, stock: 27 },
-      { name: '🥛 Leche en polvo', price: 1000, cost: 820, stock: 12 },
-      { name: '🥛 Leche sabores', price: 1100, cost: 860, stock: 9 },
-      { name: '🫑 Sazón Fresco', price: 60, cost: 40, stock: 100 }
+    // ========== 15 PRODUCTOS INICIALES ==========
+    const initialProducts = [
+      { id: 1, descripcion: 'Azúcar 1 lb', um: 'lb', precioVenta: 350, precioCosto: 304.5, 
+        saldoInicialCant: 5, saldoInicialImp: 1522.5, 
+        entradaCant: 2, entradaImp: 609, 
+        salidaCant: 3, salidaPrecio: 350,
+        ventaCant: 3, ventaImp: 1050,
+        saldoFinalCant: 4, saldoFinalImp: 1218 },
+      { id: 2, descripcion: 'Arroz 1 kg', um: 'kg', precioVenta: 650, precioCosto: 520,
+        saldoInicialCant: 10, saldoInicialImp: 5200,
+        entradaCant: 5, entradaImp: 2600,
+        salidaCant: 4, salidaPrecio: 650,
+        ventaCant: 4, ventaImp: 2600,
+        saldoFinalCant: 11, saldoFinalImp: 5720 },
+      { id: 3, descripcion: 'Frijoles 1 kg', um: 'kg', precioVenta: 830, precioCosto: 660,
+        saldoInicialCant: 8, saldoInicialImp: 5280,
+        entradaCant: 3, entradaImp: 1980,
+        salidaCant: 2, salidaPrecio: 830,
+        ventaCant: 2, ventaImp: 1660,
+        saldoFinalCant: 9, saldoFinalImp: 5940 },
+      { id: 4, descripcion: 'Pollo 10 lbs', um: 'lbs', precioVenta: 4250, precioCosto: 3400,
+        saldoInicialCant: 6, saldoInicialImp: 20400,
+        entradaCant: 2, entradaImp: 6800,
+        salidaCant: 3, salidaPrecio: 4250,
+        ventaCant: 3, ventaImp: 12750,
+        saldoFinalCant: 5, saldoFinalImp: 17000 },
+      { id: 5, descripcion: 'Picadillo Pollo 1lb', um: 'lb', precioVenta: 310, precioCosto: 240,
+        saldoInicialCant: 30, saldoInicialImp: 7200,
+        entradaCant: 10, entradaImp: 2400,
+        salidaCant: 8, salidaPrecio: 310,
+        ventaCant: 8, ventaImp: 2480,
+        saldoFinalCant: 32, saldoFinalImp: 7680 },
+      { id: 6, descripcion: 'Jamonada 1lb', um: 'lb', precioVenta: 320, precioCosto: 250,
+        saldoInicialCant: 22, saldoInicialImp: 5500,
+        entradaCant: 5, entradaImp: 1250,
+        salidaCant: 7, salidaPrecio: 320,
+        ventaCant: 7, ventaImp: 2240,
+        saldoFinalCant: 20, saldoFinalImp: 5000 },
+      { id: 7, descripcion: 'Aceite 900 ml', um: 'ml', precioVenta: 1000, precioCosto: 800,
+        saldoInicialCant: 14, saldoInicialImp: 11200,
+        entradaCant: 4, entradaImp: 3200,
+        salidaCant: 5, salidaPrecio: 1000,
+        ventaCant: 5, ventaImp: 5000,
+        saldoFinalCant: 13, saldoFinalImp: 10400 },
+      { id: 8, descripcion: 'Harina Sublime 1 lb', um: 'lb', precioVenta: 240, precioCosto: 170,
+        saldoInicialCant: 40, saldoInicialImp: 6800,
+        entradaCant: 15, entradaImp: 2550,
+        salidaCant: 12, salidaPrecio: 240,
+        ventaCant: 12, ventaImp: 2880,
+        saldoFinalCant: 43, saldoFinalImp: 7310 },
+      { id: 9, descripcion: 'Refresco lata', um: 'lata', precioVenta: 270, precioCosto: 200,
+        saldoInicialCant: 50, saldoInicialImp: 10000,
+        entradaCant: 24, entradaImp: 4800,
+        salidaCant: 20, salidaPrecio: 270,
+        ventaCant: 20, ventaImp: 5400,
+        saldoFinalCant: 54, saldoFinalImp: 10800 },
+      { id: 10, descripcion: 'Pasta de Puré', um: 'ud', precioVenta: 480, precioCosto: 360,
+        saldoInicialCant: 27, saldoInicialImp: 9720,
+        entradaCant: 8, entradaImp: 2880,
+        salidaCant: 6, salidaPrecio: 480,
+        ventaCant: 6, ventaImp: 2880,
+        saldoFinalCant: 29, saldoFinalImp: 10440 },
+      { id: 11, descripcion: 'Leche en polvo', um: 'ud', precioVenta: 1000, precioCosto: 820,
+        saldoInicialCant: 12, saldoInicialImp: 9840,
+        entradaCant: 4, entradaImp: 3280,
+        salidaCant: 3, salidaPrecio: 1000,
+        ventaCant: 3, ventaImp: 3000,
+        saldoFinalCant: 13, saldoFinalImp: 10660 },
+      { id: 12, descripcion: 'Leche sabores', um: 'ud', precioVenta: 1100, precioCosto: 860,
+        saldoInicialCant: 9, saldoInicialImp: 7740,
+        entradaCant: 3, entradaImp: 2580,
+        salidaCant: 2, salidaPrecio: 1100,
+        ventaCant: 2, ventaImp: 2200,
+        saldoFinalCant: 10, saldoFinalImp: 8600 },
+      { id: 13, descripcion: 'Sazón Fresco', um: 'ud', precioVenta: 60, precioCosto: 40,
+        saldoInicialCant: 100, saldoInicialImp: 4000,
+        entradaCant: 30, entradaImp: 1200,
+        salidaCant: 25, salidaPrecio: 60,
+        ventaCant: 25, ventaImp: 1500,
+        saldoFinalCant: 105, saldoFinalImp: 4200 },
+      { id: 14, descripcion: 'Café 250g', um: 'ud', precioVenta: 450, precioCosto: 380,
+        saldoInicialCant: 15, saldoInicialImp: 5700,
+        entradaCant: 5, entradaImp: 1900,
+        salidaCant: 4, salidaPrecio: 450,
+        ventaCant: 4, ventaImp: 1800,
+        saldoFinalCant: 16, saldoFinalImp: 6080 },
+      { id: 15, descripcion: 'Galletas 200g', um: 'ud', precioVenta: 120, precioCosto: 90,
+        saldoInicialCant: 40, saldoInicialImp: 3600,
+        entradaCant: 20, entradaImp: 1800,
+        salidaCant: 10, salidaPrecio: 120,
+        ventaCant: 10, ventaImp: 1200,
+        saldoFinalCant: 50, saldoFinalImp: 4500 }
     ];
 
-    function loadSamples() {
-      for (let p of sampleProducts) {
-        products.push({
-          id: Date.now() + Math.random() * 1000,
-          name: p.name,
-          priceCents: p.price,
-          costCents: p.cost,
-          stock: p.stock
-        });
+    // ========== FUNCIONES DE PERSISTENCIA ==========
+    function cargarDatos() {
+      const guardados = localStorage.getItem(STORAGE_KEY);
+      if (guardados) {
+        try {
+          const datos = JSON.parse(guardados);
+          products = datos.products || [];
+          movimientos = datos.movimientos || [];
+          nextId = datos.nextId || 100;
+        } catch (e) {
+          products = JSON.parse(JSON.stringify(initialProducts));
+          movimientos = [];
+          nextId = 100;
+        }
+      } else {
+        products = JSON.parse(JSON.stringify(initialProducts));
+        movimientos = [];
+        nextId = 100;
       }
     }
-    loadSamples();
 
-    function computeDailyStats() {
-      let totalRevenue = 0, totalCostSold = 0, totalUnits = 0;
-      for (let sale of sales) {
-        totalRevenue += sale.revenue;
-        totalCostSold += sale.cost;
-        totalUnits += sale.qty;
+    function guardarDatos() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        products: products,
+        movimientos: movimientos,
+        nextId: nextId
+      }));
+      document.getElementById('persistenciaMsg').innerHTML = '💾 guardado ✓';
+      setTimeout(() => {
+        document.getElementById('persistenciaMsg').innerHTML = '💾 auto-save activado';
+      }, 2000);
+    }
+
+    // ========== RESET A CERO ==========
+    function resetToCero() {
+      const password = prompt('🔐 Ingresa la contraseña para poner todo a CERO:');
+      if (password !== RESET_PASSWORD) {
+        alert('❌ Contraseña incorrecta');
+        return;
       }
-      let inventoryValue = products.reduce((acc, p) => acc + (p.stock * p.costCents), 0);
+
+      if (confirm('¿Estás SEGURO? Todos los productos quedarán con valores CERO.')) {
+        products.forEach(p => {
+          p.precioVenta = 0;
+          p.precioCosto = 0;
+          p.saldoInicialCant = 0;
+          p.saldoInicialImp = 0;
+          p.entradaCant = 0;
+          p.entradaImp = 0;
+          p.salidaCant = 0;
+          p.salidaPrecio = 0;
+          p.ventaCant = 0;
+          p.ventaImp = 0;
+          p.saldoFinalCant = 0;
+          p.saldoFinalImp = 0;
+        });
+        
+        movimientos.push({
+          fecha: new Date().toISOString(),
+          tipo: '⚠️ RESET CERO',
+          descripcion: 'Sistema',
+          cantidad: 0
+        });
+        
+        guardarDatos();
+        renderAll();
+        setTimeout(setupEventListeners, 100);
+        alert('✅ Todos los productos en CERO');
+      }
+    }
+
+    // ========== LÓGICA MATEMÁTICA ==========
+    function actualizarProducto(product, campoModificado) {
+      const p = product;
+      
+      if (campoModificado === 'precioCosto') {
+        p.saldoInicialImp = p.saldoInicialCant * p.precioCosto;
+        p.entradaImp = p.entradaCant * p.precioCosto;
+        p.saldoFinalImp = p.saldoFinalCant * p.precioCosto;
+      }
+      
+      if (campoModificado === 'precioVenta') {
+        p.salidaPrecio = p.precioVenta;
+        p.ventaImp = p.ventaCant * p.precioVenta;
+      }
+      
+      if (campoModificado === 'saldoInicialCant') {
+        p.saldoInicialImp = p.saldoInicialCant * p.precioCosto;
+      }
+      
+      if (campoModificado === 'entradaCant') {
+        p.entradaImp = p.entradaCant * p.precioCosto;
+      }
+      
+      if (campoModificado === 'salidaCant') {
+        p.salidaPrecio = p.precioVenta;
+        if (p.ventaCant !== p.salidaCant) {
+          p.ventaCant = p.salidaCant;
+          p.ventaImp = p.ventaCant * p.precioVenta;
+        }
+      }
+      
+      if (campoModificado === 'ventaCant') {
+        p.ventaImp = p.ventaCant * p.precioVenta;
+        if (p.salidaCant !== p.ventaCant) {
+          p.salidaCant = p.ventaCant;
+          p.salidaPrecio = p.precioVenta;
+        }
+      }
+      
+      p.saldoFinalCant = p.saldoInicialCant + p.entradaCant - p.salidaCant;
+      p.saldoFinalImp = p.saldoFinalCant * p.precioCosto;
+      
+      p.saldoInicialImp = Math.round(p.saldoInicialImp * 100) / 100;
+      p.entradaImp = Math.round(p.entradaImp * 100) / 100;
+      p.ventaImp = Math.round(p.ventaImp * 100) / 100;
+      p.saldoFinalImp = Math.round(p.saldoFinalImp * 100) / 100;
+    }
+
+    function formatNumber(num) {
+      if (num === undefined || num === null) return '0';
+      if (Number.isInteger(num)) return num.toString();
+      return num.toFixed(2).replace(/\.00$/, '');
+    }
+
+    function calcularGanancias() {
+      let totalVentas = 0;
+      let totalCostoVentas = 0;
+
+      products.forEach(p => {
+        totalVentas += p.ventaImp || 0;
+        totalCostoVentas += (p.ventaCant || 0) * p.precioCosto;
+      });
+
+      totalCostoVentas = Math.round(totalCostoVentas * 100) / 100;
+      const ganancia = totalVentas - totalCostoVentas;
+      const porcentaje = totalVentas > 0 ? (ganancia / totalVentas) * 100 : 0;
+
       return {
-        revenue: totalRevenue,
-        costSold: totalCostSold,
-        units: totalUnits,
-        inventoryValue: inventoryValue,
-        profit: totalRevenue - totalCostSold
+        ganancia: Math.round(ganancia * 100) / 100,
+        porcentaje: Math.round(porcentaje * 100) / 100
       };
     }
 
-    function removeZeroStockProducts() {
-      products = products.filter(p => p.stock > 0);
+    function addNewProduct() {
+      const nombre = document.getElementById('newProductName').value.trim();
+      if (!nombre) {
+        alert('Ingresa un nombre');
+        return;
+      }
+
+      const nuevoProducto = {
+        id: nextId++,
+        descripcion: nombre,
+        um: 'ud',
+        precioVenta: 0,
+        precioCosto: 0,
+        saldoInicialCant: 0,
+        saldoInicialImp: 0,
+        entradaCant: 0,
+        entradaImp: 0,
+        salidaCant: 0,
+        salidaPrecio: 0,
+        ventaCant: 0,
+        ventaImp: 0,
+        saldoFinalCant: 0,
+        saldoFinalImp: 0
+      };
+
+      products.push(nuevoProducto);
+      
+      movimientos.push({
+        fecha: new Date().toISOString(),
+        tipo: '➕ Nuevo producto',
+        descripcion: nombre,
+        cantidad: 0
+      });
+
+      document.getElementById('newProductName').value = '';
+      guardarDatos();
+      renderAll();
+      setTimeout(setupEventListeners, 100);
     }
 
     function renderAll() {
-      removeZeroStockProducts();
-      const stats = computeDailyStats();
-
-      // Tabla de productos
       const tbody = document.getElementById('productTableBody');
       tbody.innerHTML = '';
-      products.forEach(prod => {
-        tbody.innerHTML += `<tr>
-          <td class="product-name" title="${prod.name}">${prod.name.length > 15 ? prod.name.substr(0,12)+'…' : prod.name}</td>
-          <td class="money">${prod.priceCents}</td>
-          <td class="money">${prod.costCents}</td>
-          <td><span class="stock-value">${prod.stock}</span></td>
-          <td><div class="sell-control">
-            <input type="number" min="1" max="${prod.stock}" value="1" id="qty-${prod.id}">
-            <button class="btn-sell" data-id="${prod.id}">V</button>
-            <button class="btn-edit" data-id="${prod.id}">✎</button>
-            <button class="btn-adjust" data-id="${prod.id}">📦</button>
-            <button class="btn-delete" data-id="${prod.id}">🗑️</button>
-          </div></td>
-        </tr>`;
+
+      const sortedProducts = [...products].sort((a, b) => a.id - b.id);
+
+      sortedProducts.forEach((prod, index) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${index + 1}</td>
+          <td class="product-name" contenteditable="true" data-id="${prod.id}" data-field="descripcion">${prod.descripcion}</td>
+          <td contenteditable="true" data-id="${prod.id}" data-field="um">${prod.um || 'ud'}</td>
+          <td><input type="number" class="editable-input" value="${prod.precioVenta}" data-id="${prod.id}" data-field="precioVenta" min="0" step="0.01"></td>
+          <td><input type="number" class="editable-input" value="${prod.precioCosto}" data-id="${prod.id}" data-field="precioCosto" min="0" step="0.01"></td>
+          <td><input type="number" class="editable-input" value="${prod.saldoInicialCant}" data-id="${prod.id}" data-field="saldoInicialCant" min="0" step="0.01"></td>
+          <td><input type="number" class="readonly-input" value="${formatNumber(prod.saldoInicialImp)}" readonly></td>
+          <td><input type="number" class="editable-input" value="${prod.entradaCant}" data-id="${prod.id}" data-field="entradaCant" min="0" step="0.01"></td>
+          <td><input type="number" class="readonly-input" value="${formatNumber(prod.entradaImp)}" readonly></td>
+          <td><input type="number" class="editable-input" value="${prod.salidaCant}" data-id="${prod.id}" data-field="salidaCant" min="0" step="0.01"></td>
+          <td><input type="number" class="readonly-input" value="${formatNumber(prod.precioVenta)}" readonly></td>
+          <td><input type="number" class="editable-input" value="${prod.ventaCant}" data-id="${prod.id}" data-field="ventaCant" min="0" step="0.01"></td>
+          <td><input type="number" class="readonly-input" value="${formatNumber(prod.ventaImp)}" readonly></td>
+          <td><input type="number" class="readonly-input" value="${formatNumber(prod.saldoFinalCant)}" readonly></td>
+          <td><input type="number" class="readonly-input" value="${formatNumber(prod.saldoFinalImp)}" readonly></td>
+        `;
+        tbody.appendChild(tr);
       });
 
-      // Actualizar todos los totales y subtotales
-      document.getElementById('totalProductsBadge').innerText = products.length + ' ítems';
-      document.getElementById('totalRevenue').innerText = stats.revenue + ' CUP';
-      document.getElementById('totalUnitsSold').innerText = stats.units + ' uds';
-      document.getElementById('totalProfit').innerText = stats.profit + ' CUP';
-      
-      const margin = stats.revenue > 0 ? ((stats.profit / stats.revenue)*100).toFixed(1) : '0.0';
-      document.getElementById('profitMargin').innerText = `margen ${margin}%`;
-      
-      document.getElementById('inventoryValue').innerText = stats.inventoryValue + ' CUP';
-      document.getElementById('missingInventoryValue').innerText = stats.costSold + ' CUP';
-      
-      // Subtotales adicionales
-      document.getElementById('subtotalDisplay').innerText = stats.revenue + ' CUP';
-      document.getElementById('totalProductsDisplay').innerText = products.length;
+      // Calcular ganancias
+      const ganancias = calcularGanancias();
+      document.getElementById('gananciaNeta').innerText = ganancias.ganancia.toFixed(2) + ' CUP';
+      document.getElementById('porcentajeGanancia').innerText = ganancias.porcentaje.toFixed(2) + '%';
 
-      // Log de ventas
-      const logList = document.getElementById('salesLogList');
-      logList.innerHTML = '';
-      if (sales.length === 0) {
-        logList.innerHTML = '<li style="opacity:0.6;">— sin ventas —</li>';
+      // Actualizar badge
+      document.getElementById('totalProductsBadge').innerText = products.length + ' productos';
+
+      // Actualizar movimientos
+      const movList = document.getElementById('movimientosList');
+      movList.innerHTML = '';
+      if (movimientos.length === 0) {
+        movList.innerHTML = '<li style="opacity:0.6;">— sin movimientos —</li>';
       } else {
-        sales.slice(-8).reverse().forEach(s => {
-          logList.innerHTML += `<li><span>${s.qty} × ${s.name.substring(0,12)}</span> <span class="log-money">${s.revenue} CUP</span></li>`;
+        movimientos.slice(-10).reverse().forEach(m => {
+          const li = document.createElement('li');
+          if (m.tipo.includes('Venta') || m.cantidad > 0) {
+            li.innerHTML = `<span><span class="log-product">${m.descripcion}</span> ${m.tipo}</span> 
+                            <span class="log-quantity">${m.cantidad} uds</span>`;
+          } else {
+            li.innerHTML = `<span>${m.tipo}: ${m.descripcion}</span> 
+                            <span class="log-quantity">${m.cantidad}</span>`;
+          }
+          movList.appendChild(li);
         });
       }
-
-      document.getElementById('validationMsg').innerHTML = `🧪 faltante = ${stats.costSold} CUP`;
     }
 
-    // Funciones de negocio
-    function sellProduct(id, qty) {
-      const prod = products.find(p => p.id == id);
-      if (!prod) return;
-      if (qty < 1) qty = 1;
-      if (prod.stock < qty) { alert(`Stock: ${prod.stock}`); return; }
-      sales.push({
-        id: Date.now()+Math.random(),
-        productId: id,
-        name: prod.name,
-        qty,
-        revenue: prod.priceCents * qty,
-        cost: prod.costCents * qty
-      });
-      prod.stock -= qty;
-      renderAll();
-    }
-
-    function addProduct(name, priceStr, costStr, stockStr) {
-      if (!name.trim()) return alert('Nombre requerido');
-      const price = parseInt(priceStr), cost = parseInt(costStr), stock = parseInt(stockStr);
-      if (isNaN(price)||price<0||isNaN(cost)||cost<0||isNaN(stock)||stock<1) 
-        return alert('Valores inválidos');
-      products.push({
-        id: Date.now()+Math.random()*10000,
-        name: name.trim(),
-        priceCents: price,
-        costCents: cost,
-        stock
-      });
-      renderAll();
-      document.getElementById('newName').value = '';
-      document.getElementById('newPrice').value = '';
-      document.getElementById('newCost').value = '';
-      document.getElementById('newStock').value = '10';
-    }
-
-    function editProduct(id) {
-      const p = products.find(p => p.id == id);
-      if (!p) return;
-      let np = prompt('Nuevo precio:', p.priceCents);
-      if (np && !isNaN(parseInt(np)) && parseInt(np) >= 0) p.priceCents = parseInt(np);
-      let nc = prompt('Nuevo coste:', p.costCents);
-      if (nc && !isNaN(parseInt(nc)) && parseInt(nc) >= 0) p.costCents = parseInt(nc);
-      renderAll();
-    }
-
-    function adjustInventory(id) {
-      const p = products.find(p => p.id == id);
-      if (!p) return;
-      let newStock = prompt(`Nuevo inventario para ${p.name}:`, p.stock);
-      if (newStock !== null) {
-        let stockInt = parseInt(newStock);
-        if (!isNaN(stockInt) && stockInt >= 0) {
-          p.stock = stockInt;
-          renderAll();
+    function handleInputChange(e) {
+      const id = parseInt(this.dataset.id);
+      const field = this.dataset.field;
+      const value = parseFloat(this.value) || 0;
+      
+      const product = products.find(p => p.id === id);
+      if (product) {
+        const oldValue = product[field];
+        product[field] = value;
+        
+        actualizarProducto(product, field);
+        
+        if (field.includes('Cant') && value !== oldValue) {
+          let tipoMov = field.replace('Cant', '').replace(/([A-Z])/g, ' $1').trim();
+          if (tipoMov === 'salida' || tipoMov === 'venta') {
+            tipoMov = 'Venta';
+          } else if (tipoMov === 'entrada') {
+            tipoMov = 'Entrada';
+          }
+          
+          movimientos.push({
+            fecha: new Date().toISOString(),
+            tipo: tipoMov,
+            descripcion: product.descripcion,
+            cantidad: value
+          });
         }
+        
+        guardarDatos();
+        renderAll();
+        setTimeout(setupEventListeners, 100);
       }
     }
 
-    function deleteProduct(id) {
-      const p = products.find(p => p.id == id);
-      if (p && confirm(`Eliminar ${p.name}?`)) {
-        products = products.filter(p => p.id != id);
-        renderAll();
+    function handleBlur(e) {
+      const id = parseInt(this.dataset.id);
+      const field = this.dataset.field;
+      const value = this.innerText.trim();
+      
+      const product = products.find(p => p.id === id);
+      if (product && product[field] !== value) {
+        product[field] = value;
+        guardarDatos();
       }
     }
 
-    function resetSales() {
-      if (confirm('Resetear todas las ventas?')) {
-        sales = [];
+    function setupEventListeners() {
+      document.querySelectorAll('.editable-input').forEach(input => {
+        input.removeEventListener('change', handleInputChange);
+        input.addEventListener('change', handleInputChange);
+      });
+
+      document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+        el.removeEventListener('blur', handleBlur);
+        el.addEventListener('blur', handleBlur);
+      });
+    }
+
+    function resetAllData() {
+      if (confirm('¿Resetear a los datos originales de ejemplo?')) {
+        products = JSON.parse(JSON.stringify(initialProducts));
+        movimientos = [];
+        nextId = 100;
+        guardarDatos();
         renderAll();
+        setTimeout(setupEventListeners, 100);
       }
     }
 
     function downloadPDF() {
-      const doc = new jsPDF();
-      const stats = computeDailyStats();
-      const today = new Date().toLocaleDateString('es-CU');
+      const doc = new jsPDF({
+        orientation: 'landscape',
+        unit: 'mm',
+        format: 'a4'
+      });
+
+      const now = new Date();
+      const fechaHora = now.toLocaleDateString('es-CU') + ' ' + now.toLocaleTimeString('es-CU');
+      const ganancias = calcularGanancias();
       
       doc.setFontSize(16);
-      doc.setTextColor(255,140,0);
-      doc.text('NEBULA POS · Reporte CUP', 14,20);
+      doc.setTextColor(0, 0, 0);
+      doc.setFont('helvetica', 'bold');
+      doc.text('IPV DE VENTA - REPORTE DIARIO', 14, 10);
+      
       doc.setFontSize(8);
-      doc.text(`Fecha: ${today}`, 14,28);
+      doc.text(`Generado: ${fechaHora}`, 14, 16);
+      doc.text(`UEB #: _______________`, 140, 16);
+      doc.text(`Productos: ${products.length}`, 240, 16);
+
+      const tableColumn = [
+        'No.', 'Descripción', 'U/M', 'P.Vta', 'P.Costo',
+        'Saldo inicial', '', 'Entrada', '', 'Salida', '', 'Venta', '', 'Saldo final', ''
+      ];
       
-      doc.autoTable({
-        startY: 32,
-        head: [['Producto', 'Precio', 'Coste', 'Inventario']],
-        body: products.map(p => [p.name, p.priceCents, p.costCents, p.stock]),
-        theme: 'grid',
-        headStyles: { fillColor: [255,140,0] }
+      const subColumnas = [
+        '', '', '', '', '', 'Cant', 'Imp', 'Cant', 'Imp', 'Cant', 'Precio', 'Cant', 'Total', 'Cant', 'Imp'
+      ];
+
+      const tableRows = [];
+      
+      products.sort((a, b) => a.id - b.id).forEach((p, index) => {
+        tableRows.push([
+          (index + 1).toString(),
+          p.descripcion,
+          p.um || 'ud',
+          p.precioVenta.toFixed(2),
+          p.precioCosto.toFixed(2),
+          formatNumber(p.saldoInicialCant),
+          formatNumber(p.saldoInicialImp),
+          formatNumber(p.entradaCant),
+          formatNumber(p.entradaImp),
+          formatNumber(p.salidaCant),
+          formatNumber(p.precioVenta),
+          formatNumber(p.ventaCant),
+          formatNumber(p.ventaImp),
+          formatNumber(p.saldoFinalCant),
+          formatNumber(p.saldoFinalImp)
+        ]);
       });
-      
-      let y = doc.lastAutoTable.finalY + 8;
-      doc.text(`Ingresos: ${stats.revenue} CUP`, 14, y);
-      doc.text(`Ganancia: ${stats.profit} CUP`, 14, y+5);
-      doc.text(`Faltante: ${stats.costSold} CUP`, 14, y+10);
-      doc.text(`Unidades vendidas: ${stats.units}`, 14, y+15);
-      
-      doc.save(`inventario_${today}.pdf`);
+
+      // Fila de ganancias netas
+      tableRows.push([
+        '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''
+      ]);
+      tableRows.push([
+        'GANANCIAS NETAS',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        ganancias.ganancia.toFixed(2) + ' CUP',
+        'PORCENTAJE',
+        ganancias.porcentaje.toFixed(2) + '%'
+      ]);
+
+      doc.autoTable({
+        startY: 20,
+        head: [tableColumn, subColumnas],
+        body: tableRows,
+        theme: 'grid',
+        headStyles: { 
+          fillColor: [0, 0, 0], 
+          textColor: [255, 255, 255],
+          fontStyle: 'bold',
+          fontSize: 7
+        },
+        styles: { 
+          fontSize: 6,
+          cellPadding: 1.5,
+          lineColor: [0, 0, 0],
+          lineWidth: 0.2
+        },
+        columnStyles: {
+          0: { cellWidth: 8 },
+          1: { cellWidth: 45 },
+          2: { cellWidth: 10 },
+          3: { cellWidth: 14, halign: 'right' },
+          4: { cellWidth: 14, halign: 'right' },
+          5: { cellWidth: 12, halign: 'right' },
+          6: { cellWidth: 18, halign: 'right' },
+          7: { cellWidth: 12, halign: 'right' },
+          8: { cellWidth: 18, halign: 'right' },
+          9: { cellWidth: 12, halign: 'right' },
+          10: { cellWidth: 14, halign: 'right' },
+          11: { cellWidth: 12, halign: 'right' },
+          12: { cellWidth: 18, halign: 'right' },
+          13: { cellWidth: 12, halign: 'right' },
+          14: { cellWidth: 18, halign: 'right' }
+        },
+        margin: { left: 5, right: 5 }
+      });
+
+      doc.save(`IPV_GANANCIAS_${now.toISOString().slice(0,10)}.pdf`);
     }
 
-    // Event listeners
-    document.addEventListener('click', e => {
-      if (e.target.classList.contains('btn-sell')) {
-        const id = e.target.dataset.id;
-        const qty = parseInt(document.getElementById('qty-'+id)?.value) || 1;
-        sellProduct(id, qty);
-      } else if (e.target.classList.contains('btn-edit')) {
-        editProduct(e.target.dataset.id);
-      } else if (e.target.classList.contains('btn-adjust')) {
-        adjustInventory(e.target.dataset.id);
-      } else if (e.target.classList.contains('btn-delete')) {
-        deleteProduct(e.target.dataset.id);
-      }
-    });
-
-    document.getElementById('addProductBtn').addEventListener('click', () => {
-      addProduct(
-        document.getElementById('newName').value,
-        document.getElementById('newPrice').value,
-        document.getElementById('newCost').value,
-        document.getElementById('newStock').value
-      );
-    });
-
-    document.getElementById('resetSalesBtn').addEventListener('click', resetSales);
-    document.getElementById('downloadPdfBtn').addEventListener('click', downloadPDF);
-
-    // Enter en formulario
-    document.querySelectorAll('.add-product-form input').forEach(i => {
-      i.addEventListener('keypress', e => {
-        if (e.key === 'Enter') document.getElementById('addProductBtn').click();
-      });
-    });
-
+    // ========== INICIALIZACIÓN ==========
+    cargarDatos();
     renderAll();
+    setTimeout(setupEventListeners, 200);
+
+    document.getElementById('downloadPdfBtn').addEventListener('click', downloadPDF);
+    document.getElementById('saveManualBtn').addEventListener('click', guardarDatos);
+    document.getElementById('resetCeroBtn').addEventListener('click', resetToCero);
+    document.getElementById('resetDataBtn').addEventListener('click', resetAllData);
+    document.getElementById('addProductBtn').addEventListener('click', addNewProduct);
+
+    window.addEventListener('beforeunload', guardarDatos);
   })();
 </script>
 </body>
