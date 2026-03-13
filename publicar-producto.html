@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Publicar producto · CUBAZON</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f2f5;
+            color: #0f1111;
+            line-height: 1.5;
+        }
+        
+        #header-wrap {
+            background: #131921;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-header {
+            padding: 10px 20px;
+        }
+        .container.row {
+            max-width: 1500px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header-logo img {
+            height: 50px;
+            width: auto;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+        .right-menu ul {
+            display: flex;
+            gap: 20px;
+            list-style: none;
+            align-items: center;
+        }
+        .right-menu ul li a {
+            color: white;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .sora-cart {
+            position: relative;
+        }
+        .sora-cart-details {
+            display: flex;
+            align-items: center;
+            color: white;
+            cursor: pointer;
+        }
+        .sora-cart-details:after {
+            content: '\f290';
+            font-family: 'FontAwesome';
+            font-size: 24px;
+            margin-left: 5px;
+        }
+        .simpleCart_quantity {
+            background: #f08804;
+            color: #0f1111;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-left: 5px;
+        }
+        .header-menu {
+            background: #232f3e;
+            padding: 0 20px;
+        }
+        #main-menu ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+        #main-menu ul li a {
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 0;
+            display: block;
+        }
+        
+        .publicar-container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #0f1111;
+        }
+        
+        .subtitle {
+            color: #6c757d;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #0f1111;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: #f08804;
+            outline: none;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: #ffd814;
+            color: #0f1111;
+        }
+        
+        .btn-primary:hover {
+            background: #f7ca00;
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-secondary {
+            background: #f0f2f5;
+            color: #0f1111;
+            margin-top: 15px;
+        }
+        
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 25px 0;
+            font-size: 14px;
+        }
+        
+        .info-box i {
+            color: #17a2b8;
+            margin-right: 8px;
+        }
+        
+        .image-preview {
+            width: 100%;
+            height: 200px;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            overflow: hidden;
+            background: #f8f9fa;
+        }
+        
+        .image-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .image-preview i {
+            font-size: 48px;
+            color: #ccc;
+        }
+        
+        .verificacion-pendiente {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .verificacion-pendiente i {
+            font-size: 64px;
+            color: #ffc107;
+            margin-bottom: 20px;
+        }
+        
+        .verificacion-pendiente h3 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #856404;
+        }
+        
+        .verificacion-pendiente p {
+            color: #856404;
+            margin-bottom: 20px;
+        }
+        
+        .verificacion-rechazada {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .verificacion-rechazada i {
+            font-size: 64px;
+            color: #dc3545;
+            margin-bottom: 20px;
+        }
+        
+        .verificacion-rechazada h3 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #721c24;
+        }
+        
+        .verificacion-rechazada p {
+            color: #721c24;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #ffd814;
+            color: #0f1111;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        #footer-wrapper {
+            background: #232f3e;
+            color: white;
+            padding: 50px 20px;
+            margin-top: 50px;
+        }
+        .footer-widgets-wrap {
+            max-width: 1500px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+        }
+        #sub-footer-wrapper {
+            background: #131921;
+            padding: 20px;
+            text-align: center;
+            color: #ddd;
+        }
+        
+        @media (max-width: 768px) {
+            .publicar-container {
+                margin: 20px;
+                padding: 25px;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <div id="header-wrap">
+        <div class="header-header">
+            <div class="container row">
+                <div class="header-logo">
+                    <a href="/">
+                        <img src="http://imgfz.com/i/oXOfVlT.png" alt="CUBAZON" style="height: 50px;">
+                    </a>
+                </div>
+                <div class="header-right">
+                    <div class="right-menu">
+                        <ul>
+                            <li><a href="/login.html" id="userMenuLink">
+                                <i class="fa fa-sign-in"></i> 
+                                <span id="userMenuText">Iniciar sesión</span>
+                            </a></li>
+                            <li><a href="/p/cart.html"><i class="fa fa-shopping-cart"></i> <span id="cart-counter" class="simpleCart_quantity">0</span></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="header-menu">
+            <div class="container row">
+                <div id="main-menu">
+                    <ul>
+                        <li><a href="/">Inicio</a></li>
+                        <li><a href="/mi-cuenta.html">Mi Cuenta</a></li>
+                        <li><a href="/configurar-tienda.html">Mi Tienda</a></li>
+                        <li><a href="/publicar-producto.html">Publicar producto</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <div class="publicar-container">
+        <h1>📦 Publicar nuevo producto</h1>
+        <p class="subtitle">Completa los datos de lo que quieres vender</p>
+        
+        <div id="loadingIndicator" style="text-align: center; padding: 20px; display: block;">
+            <i class="fa fa-spinner fa-pulse fa-2x"></i>
+            <p>Verificando tu tienda...</p>
+        </div>
+        
+        <div id="mensajeContainer" style="display: none;"></div>
+        
+        <form id="productoForm" style="display: none;">
+            <div class="form-group">
+                <label><i class="fa fa-tag"></i> Nombre del producto *</label>
+                <input type="text" id="nombre" class="form-control" placeholder="Ej: Camiseta básica negra" required>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label><i class="fa fa-dollar"></i> Precio (CUP) *</label>
+                    <input type="number" id="precio" class="form-control" min="1" step="0.01" placeholder="15.99" required>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fa fa-cubes"></i> Stock *</label>
+                    <input type="number" id="stock" class="form-control" min="1" value="1" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fa fa-align-left"></i> Descripción</label>
+                <textarea id="descripcion" class="form-control" rows="4" placeholder="Describe tu producto..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fa fa-image"></i> URL de la imagen</label>
+                <input type="url" id="imagenUrl" class="form-control" placeholder="https://ejemplo.com/imagen.jpg">
+                <div class="image-preview" id="imagePreview">
+                    <i class="fa fa-image"></i>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label><i class="fa fa-folder"></i> Categoría *</label>
+                    <select id="categoria" class="form-control" required>
+                        <option value="">Selecciona una categoría</option>
+                        <option value="Electrónica">📱 Electrónica</option>
+                        <option value="Ropa">👕 Ropa</option>
+                        <option value="Hogar">🏠 Hogar</option>
+                        <option value="Accesorios">⌚ Accesorios</option>
+                        <option value="Consumibles">🖨️ Consumibles</option>
+                        <option value="Limpieza">🧹 Limpieza</option>
+                        <option value="Deportes">⚽ Deportes</option>
+                        <option value="Juguetes">🎮 Juguetes</option>
+                        <option value="Libros">📚 Libros</option>
+                        <option value="Mascotas">🐶 Mascotas</option>
+                        <option value="Belleza">💄 Belleza</option>
+                        <option value="Salud">💊 Salud</option>
+                        <option value="Alimentos">🍎 Alimentos</option>
+                        <option value="Bebidas">🥤 Bebidas</option>
+                        <option value="Otros">📦 Otros</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fa fa-tags"></i> Etiquetas</label>
+                    <input type="text" id="etiquetas" class="form-control" placeholder="separadas por comas">
+                </div>
+            </div>
+            
+            <div class="info-box">
+                <i class="fa fa-info-circle"></i>
+                <strong>Importante:</strong> Los clientes te contactarán directamente por WhatsApp al número que configuraste en tu tienda.
+            </div>
+            
+            <button type="submit" class="btn btn-primary" id="publicarBtn">
+                <i class="fa fa-cloud-upload"></i> Publicar producto
+            </button>
+        </form>
+        
+        <div id="resultMessage" style="margin-top: 20px;"></div>
+    </div>
+
+    <!-- FOOTER -->
+    <div id="footer-wrapper">
+        <div class="footer-widgets-wrap">
+            <div class="footer">
+                <h3>CUBAZON</h3>
+                <p>Tu tienda online de confianza en Sagua de Tánamo.</p>
+            </div>
+        </div>
+    </div>
+    <div id="sub-footer-wrapper">
+        <p>@Copyright 2026 CUBAZON</p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="module">
+        import { supabase } from '/js/supabase-client.js';
+        import { auth } from '/js/auth.js';
+        import { initCarrito } from '/js/cart.js';
+        
+        const carrito = initCarrito();
+        window.cart = carrito;
+        carrito.cargarDeLocalStorage();
+        carrito.actualizarInterfaz();
+        
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const mensajeContainer = document.getElementById('mensajeContainer');
+        const productoForm = document.getElementById('productoForm');
+        const imagenUrl = document.getElementById('imagenUrl');
+        const imagePreview = document.getElementById('imagePreview');
+        
+        function actualizarMenuUsuario() {
+            const userMenuLink = document.getElementById('userMenuLink');
+            const userMenuText = document.getElementById('userMenuText');
+            
+            if (!userMenuLink || !userMenuText) return;
+            
+            if (auth.isAuthenticated()) {
+                const usuario = auth.getUsuario();
+                const nombre = usuario?.nombre_completo || usuario?.email?.split('@')[0] || 'Mi cuenta';
+                userMenuText.textContent = nombre;
+                userMenuLink.href = '/mi-cuenta.html';
+                userMenuLink.innerHTML = `<i class="fa fa-user"></i> ${nombre}`;
+            } else {
+                userMenuText.textContent = 'Iniciar sesión';
+                userMenuLink.href = '/login.html?redirect=/publicar-producto.html';
+                userMenuLink.innerHTML = '<i class="fa fa-sign-in"></i> Iniciar sesión';
+            }
+        }
+        
+        // ========== VERIFICAR QUE EL USUARIO TIENE TIENDA Y ESTÁ VERIFICADO ==========
+        async function verificarTienda() {
+            loadingIndicator.style.display = 'block';
+            mensajeContainer.style.display = 'none';
+            productoForm.style.display = 'none';
+            
+            for (let i = 0; i < 10; i++) {
+                if (auth.isAuthenticated()) {
+                    const usuario = auth.getUsuario();
+                    
+                    const { data, error } = await supabase
+                        .from('vendedores')
+                        .select('id, estado_verificacion, motivo_rechazo')
+                        .eq('id', usuario.id)
+                        .single();
+                    
+                    loadingIndicator.style.display = 'none';
+                    
+                    if (data) {
+                        // TIENE TIENDA - Verificar estado
+                        if (data.estado_verificacion === 'verificado') {
+                            // ✅ Verificado - puede publicar
+                            productoForm.style.display = 'block';
+                        } else if (data.estado_verificacion === 'pendiente') {
+                            // ⏳ Pendiente - mostrar mensaje
+                            mensajeContainer.style.display = 'block';
+                            mensajeContainer.innerHTML = `
+                                <div class="verificacion-pendiente">
+                                    <i class="fa fa-clock-o"></i>
+                                    <h3>Verificación pendiente</h3>
+                                    <p>Tu tienda está pendiente de verificación. No puedes publicar productos hasta que un administrador apruebe tus documentos.</p>
+                                    <p style="background: #fff3cd; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                                        <i class="fa fa-clock-o"></i> 
+                                        <strong>Plazo estimado: 24-48 horas</strong>
+                                    </p>
+                                    <a href="/mi-cuenta.html" class="btn">Volver a mi cuenta</a>
+                                </div>
+                            `;
+                        } else if (data.estado_verificacion === 'rechazado') {
+                            // ❌ Rechazado - mostrar motivo
+                            mensajeContainer.style.display = 'block';
+                            mensajeContainer.innerHTML = `
+                                <div class="verificacion-rechazada">
+                                    <i class="fa fa-exclamation-triangle"></i>
+                                    <h3>Solicitud rechazada</h3>
+                                    <p>Tu solicitud de tienda fue rechazada por el siguiente motivo:</p>
+                                    <p style="background: #f8d7da; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                                        <i class="fa fa-info-circle"></i> 
+                                        ${data.motivo_rechazo || 'Motivo no especificado'}
+                                    </p>
+                                    <a href="/configurar-tienda.html" class="btn">Corregir y volver a enviar</a>
+                                </div>
+                            `;
+                        }
+                    } else {
+                        // No tiene tienda
+                        mensajeContainer.style.display = 'block';
+                        mensajeContainer.innerHTML = `
+                            <div style="text-align: center; padding: 40px;">
+                                <i class="fa fa-store" style="font-size: 64px; color: #6c757d; margin-bottom: 20px;"></i>
+                                <h3>Primero configura tu tienda</h3>
+                                <p style="color: #6c757d; margin: 20px 0;">
+                                    Necesitas tener una tienda activa y verificada para publicar productos.
+                                </p>
+                                <a href="/configurar-tienda.html" class="btn">
+                                    <i class="fa fa-cog"></i> Configurar tienda
+                                </a>
+                            </div>
+                        `;
+                    }
+                    return;
+                }
+                await new Promise(resolve => setTimeout(resolve, 200));
+            }
+            
+            loadingIndicator.style.display = 'none';
+            window.location.href = '/login.html?redirect=/publicar-producto.html';
+        }
+        
+        imagenUrl.addEventListener('input', function() {
+            const url = this.value.trim();
+            if (url) {
+                imagePreview.innerHTML = `<img src="${url}" onerror="this.src='/assets/images/no-image.jpg'">`;
+            } else {
+                imagePreview.innerHTML = '<i class="fa fa-image"></i>';
+            }
+        });
+        
+        document.getElementById('productoForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const usuario = auth.getUsuario();
+            const btn = document.getElementById('publicarBtn');
+            const resultDiv = document.getElementById('resultMessage');
+            
+            const categoria = document.getElementById('categoria').value;
+            
+            if (!categoria) {
+                Swal.fire('Error', 'Debes seleccionar una categoría', 'error');
+                return;
+            }
+            
+            const etiquetas = document.getElementById('etiquetas').value
+                .split(',')
+                .map(e => e.trim())
+                .filter(e => e.length > 0);
+            
+            const datos = {
+                vendedor_id: usuario.id,
+                nombre: document.getElementById('nombre').value,
+                precio: parseFloat(document.getElementById('precio').value),
+                stock: parseInt(document.getElementById('stock').value),
+                descripcion: document.getElementById('descripcion').value || null,
+                imagen_url: document.getElementById('imagenUrl').value || null,
+                categoria: categoria,
+                etiquetas: etiquetas.length > 0 ? etiquetas : null,
+                activo: true
+            };
+            
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa fa-spinner fa-pulse"></i> Publicando...';
+            
+            const { data, error } = await supabase
+                .from('productos_vendedor')
+                .insert([datos])
+                .select();
+            
+            if (error) {
+                resultDiv.innerHTML = `
+                    <div style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 8px;">
+                        <i class="fa fa-exclamation-circle"></i> Error: ${error.message}
+                    </div>
+                `;
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa fa-cloud-upload"></i> Publicar producto';
+            } else {
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Producto publicado!',
+                    text: 'Tu producto ya está visible en el marketplace.',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+                
+                setTimeout(() => {
+                    window.location.href = '/mi-cuenta.html';
+                }, 2000);
+            }
+        });
+        
+        actualizarMenuUsuario();
+        auth.onCambio(actualizarMenuUsuario);
+        verificarTienda();
+    </script>
+</body>
+</html>

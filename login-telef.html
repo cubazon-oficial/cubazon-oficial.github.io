@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso con teléfono · CUBAZON</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .login-container {
+            max-width: 450px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 32px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            animation: slideUp 0.6s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header img {
+            height: 70px;
+            margin-bottom: 20px;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #6c757d;
+            font-size: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #2d3748;
+            font-size: 14px;
+        }
+        
+        .form-group label i {
+            color: #667eea;
+            margin-right: 8px;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .input-group .prefix {
+            background: #edf2f7;
+            padding: 16px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            font-weight: 600;
+            color: #4a5568;
+            min-width: 80px;
+            text-align: center;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .form-control:focus {
+            border-color: #667eea;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 10px 20px -5px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px -5px rgba(102, 126, 234, 0.6);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.7;
+            transform: none;
+            cursor: not-allowed;
+        }
+        
+        .btn-back {
+            background: transparent;
+            color: #718096;
+            border: 2px solid #e2e8f0;
+            margin-top: 15px;
+        }
+        
+        .btn-back:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+        
+        .codigo-input {
+            text-align: center;
+            font-size: 28px;
+            letter-spacing: 8px;
+            font-weight: 700;
+        }
+        
+        .info-box {
+            background: #f0f9ff;
+            border-radius: 16px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            border-left: 4px solid #3182ce;
+        }
+        
+        .info-box i {
+            font-size: 40px;
+            color: #3182ce;
+            margin-bottom: 10px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .mt-4 {
+            margin-top: 20px;
+        }
+        
+        .alert {
+            padding: 16px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-left: 4px solid;
+        }
+        
+        .alert-error {
+            background: #fff5f5;
+            color: #c53030;
+            border-left-color: #c53030;
+        }
+        
+        .alert-success {
+            background: #f0fff4;
+            color: #276749;
+            border-left-color: #38a169;
+        }
+        
+        .fa-spinner {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #667eea;
+        }
+        
+        .loading i {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        
+        .footer-links {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+        }
+        
+        .footer-links a {
+            color: #718096;
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 14px;
+        }
+        
+        .footer-links a:hover {
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="header">
+            <img src="http://imgfz.com/i/oXOfVlT.png" alt="CUBAZON">
+            <h1>Acceso con teléfono</h1>
+            <p id="subtitulo">Ingresa tu número para recibir un código</p>
+        </div>
+        
+        <div id="alertMessage" class="hidden"></div>
+        
+        <!-- PASO 1: INGRESAR TELÉFONO -->
+        <div id="pasoTelefono">
+            <form id="telefonoForm">
+                <div class="form-group">
+                    <label><i class="fa fa-phone"></i> Número de teléfono</label>
+                    <div class="input-group">
+                        <span class="prefix">+53</span>
+                        <input type="tel" id="telefono" class="form-control" 
+                               placeholder="51234567" maxlength="8" inputmode="numeric" autofocus>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" id="telefonoBtn">
+                    <i class="fa fa-arrow-right"></i> Solicitar código
+                </button>
+            </form>
+            
+            <div class="text-center mt-4">
+                <a href="/login.html" class="btn-back btn">
+                    <i class="fa fa-arrow-left"></i> Volver al inicio
+                </a>
+            </div>
+        </div>
+        
+        <!-- PANTALLA DE CARGA -->
+        <div id="pantallaCarga" class="hidden">
+            <div class="loading">
+                <i class="fa fa-spinner fa-pulse"></i>
+                <h3>Verificando tu número...</h3>
+                <p>Por favor espera un momento</p>
+            </div>
+        </div>
+        
+        <!-- PASO 2: INGRESAR CÓDIGO -->
+        <div id="pasoCodigo" class="hidden">
+            <div class="info-box">
+                <i class="fa fa-telegram"></i>
+                <h3>Código enviado</h3>
+                <p>Hemos enviado un código de 6 dígitos a tu Telegram</p>
+                <p style="font-size: 13px; color: #4a5568; margin-top: 10px;">
+                    <i class="fa fa-clock-o"></i> ⏳ Válido por <strong>5 minutos</strong>
+                </p>
+            </div>
+            
+            <form id="codigoForm">
+                <div class="form-group">
+                    <label><i class="fa fa-key"></i> Código de verificación</label>
+                    <input type="text" id="codigo" class="form-control codigo-input" 
+                           placeholder="000000" maxlength="6" inputmode="numeric" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" id="codigoBtn">
+                    <i class="fa fa-check"></i> Verificar y acceder
+                </button>
+            </form>
+            
+            <div class="text-center mt-4">
+                <a href="#" id="reenviarLink">¿No recibiste el código? Reenviar</a>
+            </div>
+            
+            <div class="text-center mt-4">
+                <button class="btn-back btn" onclick="volverAlTelefono()">
+                    <i class="fa fa-arrow-left"></i> Usar otro número
+                </button>
+            </div>
+        </div>
+        
+        <div class="footer-links">
+            <a href="/registro.html">Crear cuenta</a>
+            <a href="/login.html">Acceso con email</a>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script type="module">
+        import { supabase } from '/js/supabase-client.js'
+        import { auth } from '/js/auth.js'
+        
+        let telefonoActual = ''
+        let emailReal = ''
+        let temporizador = null
+        
+        // ========== PASO 1: SOLICITAR CÓDIGO ==========
+        document.getElementById('telefonoForm').addEventListener('submit', async function(e) {
+            e.preventDefault()
+            
+            const telefono = document.getElementById('telefono').value.trim()
+            const btn = document.getElementById('telefonoBtn')
+            
+            if (!telefono || !/^[0-9]{8}$/.test(telefono)) {
+                mostrarError('Ingresa un teléfono válido (8 dígitos)')
+                return
+            }
+            
+            telefonoActual = telefono
+            
+            // Mostrar pantalla de carga
+            document.getElementById('pasoTelefono').classList.add('hidden')
+            document.getElementById('pantallaCarga').classList.remove('hidden')
+            document.getElementById('subtitulo').textContent = 'Verificando...'
+            
+            btn.disabled = true
+            btn.innerHTML = '<i class="fa fa-spinner fa-pulse"></i> Procesando...'
+            
+            try {
+                // Verificar si el teléfono existe
+                const existeTel = await auth.telefonoExiste(telefono)
+                
+                console.log('🔍 Resultado verificación:', existeTel)
+                
+                // Pequeña pausa
+                await new Promise(resolve => setTimeout(resolve, 1500))
+                
+                if (existeTel.existe) {
+                    // ✅ Usuario existe
+                    emailReal = existeTel.email
+                    console.log('✅ Email real encontrado:', emailReal)
+                    
+                    await enviarCodigoTelegram()
+                } else {
+                    // ❌ No existe
+                    console.log('❌ Número no encontrado')
+                    
+                    document.getElementById('pantallaCarga').classList.add('hidden')
+                    
+                    Swal.fire({
+                        icon: 'info',
+                        title: '📱 Número no registrado',
+                        text: 'Este teléfono no tiene una cuenta asociada. ¿Quieres registrarte?',
+                        showCancelButton: true,
+                        confirmButtonText: 'Ir a registro',
+                        cancelButtonText: 'Volver',
+                        confirmButtonColor: '#667eea'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = '/registro.html'
+                        } else {
+                            volverAlTelefono()
+                        }
+                    })
+                }
+                
+            } catch (error) {
+                console.error('Error:', error)
+                mostrarError('Error al procesar la solicitud')
+                volverAlTelefono()
+            }
+            
+            btn.disabled = false
+            btn.innerHTML = '<i class="fa fa-arrow-right"></i> Solicitar código'
+        })
+        
+        // ========== ENVIAR CÓDIGO ==========
+        async function enviarCodigoTelegram() {
+            if (!emailReal) {
+                console.error('❌ Error: emailReal vacío')
+                mostrarError('Error al obtener tu información')
+                volverAlTelefono()
+                return
+            }
+            
+            const resultado = await auth.solicitarCodigoSinPassword(emailReal, 'telegram')
+            
+            document.getElementById('pantallaCarga').classList.add('hidden')
+            
+            if (resultado.success) {
+                document.getElementById('pasoCodigo').classList.remove('hidden')
+                document.getElementById('codigo').focus()
+                document.getElementById('subtitulo').textContent = 'Ingresa el código'
+                
+                iniciarTemporizadorReenvio()
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Código enviado!',
+                    text: 'Revisa tu Telegram',
+                    timer: 2000,
+                    showConfirmButton: false
+                })
+            } else {
+                mostrarError(resultado.error)
+                volverAlTelefono()
+            }
+        }
+        
+        // ========== PASO 2: VERIFICAR CÓDIGO ==========
+        document.getElementById('codigoForm').addEventListener('submit', async function(e) {
+            e.preventDefault()
+            
+            const codigo = document.getElementById('codigo').value.trim()
+            const btn = document.getElementById('codigoBtn')
+            
+            if (!codigo || codigo.length !== 6) {
+                mostrarError('Ingresa el código de 6 dígitos')
+                return
+            }
+            
+            btn.disabled = true
+            btn.innerHTML = '<i class="fa fa-spinner fa-pulse"></i> Verificando...'
+            
+            if (!emailReal) {
+                mostrarError('Error: sesión expirada')
+                volverAlTelefono()
+                return
+            }
+            
+            const resultado = await auth.validarCodigoSinPassword(emailReal, codigo)
+            
+            if (resultado.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Bienvenido!',
+                    text: 'Acceso concedido',
+                    timer: 2000,
+                    showConfirmButton: false
+                }).then(() => {
+                    window.location.href = '/index.html'
+                })
+            } else {
+                mostrarError(resultado.error)
+                document.getElementById('codigo').value = ''
+                document.getElementById('codigo').focus()
+            }
+            
+            btn.disabled = false
+            btn.innerHTML = '<i class="fa fa-check"></i> Verificar y acceder'
+        })
+        
+        // ========== REENVIAR CÓDIGO ==========
+        document.getElementById('reenviarLink').addEventListener('click', async function(e) {
+            e.preventDefault()
+            
+            const link = this
+            if (link.classList.contains('disabled')) return
+            if (!emailReal) return
+            
+            link.classList.add('disabled')
+            link.innerHTML = '<i class="fa fa-spinner fa-pulse"></i> Reenviando...'
+            
+            const resultado = await auth.solicitarCodigoSinPassword(emailReal, 'telegram')
+            
+            if (resultado.success) {
+                Swal.fire('Éxito', 'Nuevo código enviado', 'success')
+                iniciarTemporizadorReenvio()
+            } else {
+                mostrarError(resultado.error)
+                link.classList.remove('disabled')
+                link.innerHTML = '¿No recibiste el código? Reenviar'
+            }
+        })
+        
+        // ========== VOLVER AL TELÉFONO ==========
+        window.volverAlTelefono = function() {
+            document.getElementById('pasoCodigo').classList.add('hidden')
+            document.getElementById('pantallaCarga').classList.add('hidden')
+            document.getElementById('pasoTelefono').classList.remove('hidden')
+            document.getElementById('telefono').value = ''
+            document.getElementById('telefono').focus()
+            document.getElementById('subtitulo').textContent = 'Ingresa tu número para recibir un código'
+            emailReal = ''
+            detenerTemporizador()
+        }
+        
+        // ========== FUNCIONES AUXILIARES ==========
+        function mostrarError(mensaje) {
+            const alertMsg = document.getElementById('alertMessage')
+            alertMsg.innerHTML = `
+                <div class="alert alert-error">
+                    <i class="fa fa-exclamation-circle"></i>
+                    ${mensaje}
+                </div>
+            `
+            alertMsg.classList.remove('hidden')
+            
+            setTimeout(() => {
+                alertMsg.classList.add('hidden')
+            }, 5000)
+        }
+        
+        function iniciarTemporizadorReenvio() {
+            detenerTemporizador()
+            
+            const link = document.getElementById('reenviarLink')
+            let segundos = 60
+            
+            link.classList.add('disabled')
+            link.innerHTML = `Reenviar (${segundos}s)`
+            
+            temporizador = setInterval(() => {
+                segundos--
+                if (segundos > 0) {
+                    link.innerHTML = `Reenviar (${segundos}s)`
+                } else {
+                    detenerTemporizador()
+                    link.classList.remove('disabled')
+                    link.innerHTML = '¿No recibiste el código? Reenviar'
+                }
+            }, 1000)
+        }
+        
+        function detenerTemporizador() {
+            if (temporizador) {
+                clearInterval(temporizador)
+                temporizador = null
+            }
+        }
+        
+        // Auto-formato
+        document.getElementById('telefono').addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8)
+        })
+        
+        document.getElementById('codigo').addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6)
+        })
+    </script>
+</body>
+</html>

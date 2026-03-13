@@ -12,6 +12,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
+        /* (Mantén todo tu CSS exactamente igual) */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
@@ -129,33 +130,88 @@
             border-radius: 8px;
             border: 1px solid #ddd;
         }
-        .product-price {
+        
+        /* ===== ESTILOS DE PRECIO MEJORADOS ESTILO AMAZON ===== */
+        .price-section {
+            margin-bottom: 15px;
+        }
+        
+        .price-section .price-label {
+            font-size: 14px;
+            color: #565959;
+            margin-bottom: 5px;
+        }
+        
+        .price-container {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .current-price {
             font-size: 32px;
             font-weight: 700;
             color: #b12704;
         }
-        .product-price small {
+        
+        .current-price small {
             font-size: 16px;
             font-weight: 400;
             color: #565959;
             margin-left: 5px;
         }
-        .product-original-price {
+        
+        .original-price {
             font-size: 16px;
             color: #6c757d;
             text-decoration: line-through;
-            margin-left: 10px;
+            margin-left: 5px;
         }
-        .product-discount {
+        
+        .discount-badge {
             display: inline-block;
             background: #dc3545;
             color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 700;
+            margin-left: 10px;
+            box-shadow: 0 2px 4px rgba(220,53,69,0.2);
+        }
+        
+        .savings-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: #28a745;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 30px;
             font-size: 14px;
             font-weight: 600;
-            margin-left: 10px;
+            margin-top: 10px;
+            width: fit-content;
         }
+        
+        .savings-badge i {
+            font-size: 14px;
+        }
+        
+        .price-breakdown {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed #ddd;
+            font-size: 14px;
+            color: #565959;
+        }
+        
+        .price-breakdown span {
+            font-weight: 600;
+            color: #b12704;
+        }
+        
         .product-stock {
             display: inline-block;
             padding: 8px 16px;
@@ -322,7 +378,7 @@
 </head>
 <body>
     <div id="outer-wrapper">
-        <!-- HEADER -->
+        <!-- HEADER (exactamente igual) -->
         <div id="header-wrap">
             <div class="header-header">
                 <div class="container row">
@@ -391,7 +447,7 @@
             <div id="productContainer" style="display: none;"></div>
         </div>
 
-        <!-- FOOTER -->
+        <!-- FOOTER (exactamente igual) -->
         <div id="footer-wrapper">
             <div class="footer-widgets-wrap">
                 <div class="footer">
@@ -410,9 +466,9 @@
                 </div>
                 <div class="footer">
                     <h3 style="color: white; margin-bottom: 20px;">Atención al cliente</h3>
-                    <p style="color: #ddd; margin-bottom: 10px;"><i class="fa fa-phone"></i> +53 51234567</p>
+                    <p style="color: #ddd; margin-bottom: 10px;"><i class="fa fa-phone"></i> +53 56591892</p>
                     <p style="color: #ddd; margin-bottom: 10px;"><i class="fa fa-envelope"></i> soporte@cubazon.com</p>
-                    <p style="color: #ddd;"><i class="fa fa-whatsapp"></i> +53 51234567</p>
+                    <p style="color: #ddd;"><i class="fa fa-whatsapp"></i> +53 56591892</p>
                 </div>
             </div>
         </div>
@@ -475,6 +531,7 @@
         function renderizarProducto(p) {
             const container = document.getElementById('productContainer')
             
+            // Determinar estado del stock
             let stockClass = 'stock-available'
             let stockText = `✅ Stock disponible: ${p.stock} unidades`
             
@@ -486,12 +543,28 @@
                 stockText = `⚠️ Stock bajo: ${p.stock} unidades`
             }
             
-            const precioOferta = p.oferta && p.precio_oferta ? p.precio_oferta : null
-            const precioActual = precioOferta || p.precio
-            const descuento = p.oferta && p.precio_oferta ? Math.round(((p.precio - p.precio_oferta) / p.precio) * 100) : 0
+            // ===== LÓGICA CORREGIDA =====
+            // Ahora usa oferta_del_dia (como en tu admin) en lugar de oferta
+            const tieneOferta = p.oferta_del_dia === true &&  // CAMBIO CRÍTICO AQUÍ
+                               p.precio_oferta && 
+                               parseFloat(p.precio_oferta) > 0 && 
+                               parseFloat(p.precio_oferta) < parseFloat(p.precio)
             
+            const precioOriginal = parseFloat(p.precio) || 0
+            const precioOferta = tieneOferta ? parseFloat(p.precio_oferta) : null
+            const precioActual = tieneOferta ? precioOferta : precioOriginal
+            
+            // Calcular descuento y ahorro solo si hay oferta válida
+            let descuento = 0
+            let ahorro = 0
+            
+            if (tieneOferta && precioOriginal > 0) {
+                descuento = Math.round(((precioOriginal - precioOferta) / precioOriginal) * 100)
+                ahorro = (precioOriginal - precioOferta).toFixed(2)
+            }
+            
+            // Generar acciones según stock
             let accionesHtml = ''
-            
             if (p.stock <= 0) {
                 accionesHtml = `<div class="product-agotado-large"><i class="fa fa-ban"></i> PRODUCTO AGOTADO</div>`
             } else {
@@ -507,6 +580,41 @@
                 `
             }
             
+            // Generar HTML de precio
+            let precioHtml = ''
+            
+            if (tieneOferta) {
+                // CON OFERTA: muestra precio actual grande + original tachado + badge descuento
+                precioHtml = `
+                    <div class="price-section">
+                        <div class="price-label">Precio:</div>
+                        <div class="price-container">
+                            <span class="current-price">$${precioActual.toFixed(2)} <small>CUP</small></span>
+                            <span class="original-price">$${precioOriginal.toFixed(2)}</span>
+                            <span class="discount-badge">-${descuento}%</span>
+                        </div>
+                        <div class="savings-badge">
+                            <i class="fa fa-tag"></i> Ahorras $${ahorro} CUP (${descuento}%)
+                        </div>
+                        <div class="price-breakdown">
+                            <i class="fa fa-check-circle" style="color: #28a745;"></i> 
+                            Precio recomendado: <span>$${precioOriginal.toFixed(2)} CUP</span> | 
+                            Tu precio: <span>$${precioActual.toFixed(2)} CUP</span>
+                        </div>
+                    </div>
+                `
+            } else {
+                // SIN OFERTA: solo precio normal
+                precioHtml = `
+                    <div class="price-section">
+                        <div class="price-container">
+                            <span class="current-price">$${precioOriginal.toFixed(2)} <small>CUP</small></span>
+                        </div>
+                    </div>
+                `
+            }
+            
+            // Renderizar todo el producto
             container.innerHTML = `
                 <div class="product-detail-grid">
                     <div class="main-image">
@@ -515,9 +623,7 @@
                     <div class="product-info">
                         <h1 class="product-title">${p.nombre}</h1>
                         <div class="product-price-box">
-                            <span class="product-price">$${precioActual.toFixed(2)} <small>CUP</small></span>
-                            ${precioOferta ? `<span class="product-original-price">$${p.precio.toFixed(2)}</span>` : ''}
-                            ${descuento > 0 ? `<span class="product-discount">-${descuento}%</span>` : ''}
+                            ${precioHtml}
                             <div>
                                 <span class="product-stock ${stockClass}">
                                     <i class="fa ${p.stock <= 0 ? 'fa-ban' : (p.stock <= 5 ? 'fa-exclamation-triangle' : 'fa-check-circle')}"></i> 
@@ -549,11 +655,15 @@
             if (exito) window.location.href = '/p/checkout.html'
         }
 
+        // Iniciar carga del producto
         cargarProducto()
 
+        // Back to top functionality
         window.addEventListener('scroll', function() {
             const backTop = document.querySelector('.back-top')
-            backTop.style.display = window.scrollY > 300 ? 'flex' : 'none'
+            if (backTop) {
+                backTop.style.display = window.scrollY > 300 ? 'flex' : 'none'
+            }
         })
         
         document.querySelector('.back-top')?.addEventListener('click', function() {

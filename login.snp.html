@@ -3,16 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar sesión · CUBAZON</title>
+    <title>Acceso con teléfono · CUBAZON</title>
     
-    <!-- Fonts -->
+    <!-- Fonts y estilos -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
         body {
             font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -22,7 +21,6 @@
             justify-content: center;
             padding: 20px;
         }
-        
         .login-container {
             max-width: 450px;
             width: 100%;
@@ -33,36 +31,21 @@
             padding: 40px;
             animation: slideUp 0.6s ease-out;
         }
-        
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
         .header {
             text-align: center;
             margin-bottom: 30px;
         }
-        
         .header img {
             height: 70px;
             margin-bottom: 20px;
         }
-        
         .header h1 {
             font-size: 28px;
             font-weight: 800;
             background: linear-gradient(135deg, #667eea, #764ba2);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
         }
-        
-        .header p {
-            color: #6c757d;
-            font-size: 15px;
-        }
-        
         .btn {
             width: 100%;
             padding: 16px;
@@ -77,58 +60,24 @@
             gap: 10px;
             transition: all 0.3s ease;
             margin-bottom: 15px;
-            text-decoration: none;
         }
-        
         .btn-google {
             background: white;
             color: #757575;
             border: 2px solid #e2e8f0;
         }
-        
         .btn-google:hover {
             background: #f8f9fa;
             border-color: #667eea;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px -5px rgba(102, 126, 234, 0.3);
         }
-        
         .btn-google img {
             width: 20px;
             height: 20px;
         }
-        
-        .btn-telefono {
-            background: #0088cc;
-            color: white;
-        }
-        
-        .btn-telefono:hover {
-            background: #006699;
-            transform: translateY(-2px);
-        }
-        
-        .btn-email {
-            background: #4a5568;
-            color: white;
-            border: 2px solid #2d3748;
-        }
-        
-        .btn-email:hover {
-            background: #2d3748;
-            transform: translateY(-2px);
-        }
-        
         .btn-primary {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
         }
-        
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 30px -5px rgba(102, 126, 234, 0.6);
-        }
-        
         .divider {
             display: flex;
             align-items: center;
@@ -136,77 +85,50 @@
             margin: 25px 0;
             color: #a0aec0;
         }
-        
-        .divider::before,
-        .divider::after {
+        .divider::before, .divider::after {
             content: '';
             flex: 1;
             border-bottom: 2px solid #e2e8f0;
         }
-        
         .divider span {
             padding: 0 20px;
-            font-size: 14px;
-            font-weight: 500;
         }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
+        .form-group { margin-bottom: 20px; }
         .form-group label {
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
             color: #2d3748;
-            font-size: 14px;
         }
-        
-        .form-group label i {
-            color: #667eea;
-            margin-right: 8px;
-        }
-        
         .form-control {
             width: 100%;
             padding: 16px 20px;
             border: 2px solid #e2e8f0;
             border-radius: 16px;
             font-size: 15px;
-            transition: all 0.3s ease;
-            background: white;
         }
-        
-        .form-control:focus {
-            border-color: #667eea;
-            outline: none;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        .input-group {
+            display: flex;
+            gap: 10px;
         }
-        
+        .input-group .prefix {
+            background: #edf2f7;
+            padding: 16px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            font-weight: 600;
+            color: #4a5568;
+        }
         .footer-links {
             text-align: center;
             margin-top: 25px;
             padding-top: 20px;
             border-top: 2px solid #e2e8f0;
         }
-        
         .footer-links a {
             color: #718096;
             text-decoration: none;
             margin: 0 10px;
-            font-size: 14px;
-        }
-        
-        .footer-links a:hover {
-            color: #667eea;
-        }
-        
-        .fa-spinner {
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -214,8 +136,7 @@
     <div class="login-container">
         <div class="header">
             <img src="http://imgfz.com/i/oXOfVlT.png" alt="CUBAZON">
-            <h1>Bienvenido a CUBAZON</h1>
-            <p>Elige cómo quieres acceder</p>
+            <h1>Acceso rápido</h1>
         </div>
         
         <!-- BOTÓN DE GOOGLE -->
@@ -224,76 +145,86 @@
             Continuar con Google
         </button>
         
-        <!-- BOTÓN DE TELÉFONO (REDIRIGE A login-telef.html) -->
-        <a href="/login-telef.html" class="btn btn-telefono">
-            <i class="fa fa-phone"></i> Iniciar con mi número
-        </a>
-        
         <div class="divider">
-            <span>o con email</span>
+            <span>o con tu teléfono</span>
         </div>
         
-        <!-- ACCESO TRADICIONAL CON EMAIL -->
-        <form id="loginForm">
+        <!-- PASO 1: Teléfono -->
+        <div id="pasoTelefono">
             <div class="form-group">
-                <label><i class="fa fa-envelope"></i> Email</label>
-                <input type="email" id="email" class="form-control" placeholder="tu@email.com" required>
+                <label>Número de teléfono</label>
+                <div class="input-group">
+                    <span class="prefix">+53</span>
+                    <input type="tel" id="telefono" class="form-control" placeholder="51234567" maxlength="8">
+                </div>
             </div>
-            <div class="form-group">
-                <label><i class="fa fa-lock"></i> Contraseña</label>
-                <input type="password" id="password" class="form-control" placeholder="••••••" required>
+            <button class="btn btn-primary" id="telefonoBtn">Continuar</button>
+        </div>
+        
+        <!-- PASO 2: Código -->
+        <div id="pasoCodigo" style="display: none;">
+            <div style="text-align: center; margin: 20px 0;">
+                <i class="fa fa-telegram" style="font-size: 48px; color: #0088cc;"></i>
+                <p>Código enviado a tu Telegram</p>
             </div>
-            <button type="submit" class="btn btn-primary">
-                <i class="fa fa-sign-in"></i> Iniciar sesión
-            </button>
-        </form>
+            <input type="text" id="codigo" class="form-control" placeholder="Código de 6 dígitos" maxlength="6">
+            <button class="btn btn-primary" id="verificarBtn" style="margin-top: 15px;">Verificar y acceder</button>
+            <div style="text-align: center; margin-top: 15px;">
+                <a href="#" id="reenviarLink">Reenviar código</a>
+            </div>
+        </div>
         
         <div class="footer-links">
-            <a href="/registro.html">Crear cuenta nueva</a>
-            <a href="/recuperar-password.html">¿Olvidaste tu contraseña?</a>
+            <a href="/login.html">Login con email</a>
+            <a href="/registro.html">Registro</a>
         </div>
     </div>
-    
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <script type="module">
         import { supabase } from '/js/supabase-client.js'
         import { auth } from '/js/auth.js'
         
-        // ========== GOOGLE ==========
-        document.getElementById('googleLoginBtn').addEventListener('click', async function() {
-            const btn = this
-            btn.disabled = true
-            btn.innerHTML = '<i class="fa fa-spinner fa-pulse"></i> Conectando con Google...'
-            
+        let telefonoActual = ''
+        
+        // Google
+        document.getElementById('googleLoginBtn').addEventListener('click', async () => {
             await supabase.auth.signInWithOAuth({
                 provider: 'google',
                 options: { redirectTo: window.location.origin + '/index.html' }
             })
         })
         
-        // ========== LOGIN TRADICIONAL ==========
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
-            e.preventDefault()
+        // Teléfono
+        document.getElementById('telefonoBtn').onclick = async function() {
+            const telefono = document.getElementById('telefono').value
+            if (!/^\d{8}$/.test(telefono)) return alert('Teléfono inválido')
             
-            const email = document.getElementById('email').value
-            const password = document.getElementById('password').value
-            const btn = this.querySelector('button[type="submit"]')
+            telefonoActual = telefono
+            const email = `${telefono}@telefono.cubazon`
             
-            btn.disabled = true
-            btn.innerHTML = '<i class="fa fa-spinner fa-pulse"></i> Iniciando sesión...'
+            this.disabled = true
+            this.innerHTML = '<i class="fa fa-spinner fa-pulse"></i> Enviando código...'
             
-            const resultado = await auth.login(email, password)
+            const res = await auth.solicitarCodigoSinPassword(email, 'telegram')
             
-            if (resultado.success) {
-                window.location.href = '/index.html'
+            if (res.success) {
+                document.getElementById('pasoTelefono').style.display = 'none'
+                document.getElementById('pasoCodigo').style.display = 'block'
             } else {
-                Swal.fire('Error', resultado.error, 'error')
+                alert(res.error)
             }
+            this.disabled = false
+            this.innerHTML = 'Continuar'
+        }
+        
+        document.getElementById('verificarBtn').onclick = async function() {
+            const codigo = document.getElementById('codigo').value
+            const email = `${telefonoActual}@telefono.cubazon`
             
-            btn.disabled = false
-            btn.innerHTML = '<i class="fa fa-sign-in"></i> Iniciar sesión'
-        })
+            const res = await auth.validarCodigoSinPassword(email, codigo)
+            if (res.success) window.location.href = '/index.html'
+            else alert('Código incorrecto')
+        }
     </script>
 </body>
 </html>

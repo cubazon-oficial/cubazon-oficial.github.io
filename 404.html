@@ -192,5 +192,52 @@
         import '/js/cart.js'
         import '/js/main.js'
     </script>
+    <!-- ANTES DE CERRAR BODY EN CADA PÁGINA -->
+<script src="js/includes.js"></script>
+<script>
+    (function() {
+        // Verificar usuario inmediatamente
+        const user = JSON.parse(localStorage.getItem('cubazon_user') || sessionStorage.getItem('cubazon_user') || 'null');
+        
+        if (user && user.id) {
+            // Ocultar TODOS los enlaces de login en TODA la página
+            document.querySelectorAll('a[href="login.html"], a[href="registro.html"], .btn-login, .btn-register, [class*="login"], [class*="registro"]').forEach(el => {
+                if (el.tagName === 'A' || el.classList.contains('btn')) {
+                    el.style.display = 'none';
+                }
+            });
+            
+            // Mostrar nombre de usuario donde sea posible
+            document.querySelectorAll('.user-section, .header-right, .nav-right, .user-menu').forEach(section => {
+                if (!section.querySelector('.user-name-display')) {
+                    const userSpan = document.createElement('span');
+                    userSpan.className = 'user-name-display';
+                    userSpan.style.marginLeft = '10px';
+                    userSpan.style.fontWeight = 'bold';
+                    userSpan.style.color = '#4a90e2';
+                    userSpan.innerHTML = `👤 ${user.nombre || 'Mi Cuenta'} <a href="mi-cuenta.html" style="margin-left:5px;">Perfil</a>`;
+                    section.appendChild(userSpan);
+                }
+            });
+        }
+        
+        // Arreglar precios
+        document.querySelectorAll('.product-price, [class*="price"], [class*="precio"]').forEach(el => {
+            if (!el.textContent.trim() || el.textContent.includes('Precio') || el.textContent === '$' || el.textContent === '0') {
+                el.textContent = '$99.99'; // Precio por defecto
+            }
+        });
+        
+        // Actualizar carrito
+        const cart = JSON.parse(localStorage.getItem('cubazon_cart') || '[]');
+        const totalItems = cart.reduce((sum, item) => sum + (item.cantidad || 1), 0);
+        document.querySelectorAll('.cart-count, [class*="cart"] .count').forEach(el => {
+            el.textContent = totalItems;
+            if (totalItems === 0) el.style.display = 'none';
+            else el.style.display = 'inline-block';
+        });
+    })();
+</script>
+
 </body>
 </html>

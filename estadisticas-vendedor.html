@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis estadísticas · CUBAZON</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    
+    <!-- Chart.js para gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f2f5;
+            color: #0f1111;
+            line-height: 1.5;
+        }
+        
+        /* Header */
+        #header-wrap {
+            background: #131921;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-header {
+            padding: 10px 20px;
+        }
+        .container.row {
+            max-width: 1500px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header-logo img {
+            height: 50px;
+            width: auto;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+        .right-menu ul {
+            display: flex;
+            gap: 20px;
+            list-style: none;
+            align-items: center;
+        }
+        .right-menu ul li a {
+            color: white;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .sora-cart {
+            position: relative;
+        }
+        .sora-cart-details {
+            display: flex;
+            align-items: center;
+            color: white;
+            cursor: pointer;
+        }
+        .sora-cart-details:after {
+            content: '\f290';
+            font-family: 'FontAwesome';
+            font-size: 24px;
+            margin-left: 5px;
+        }
+        .simpleCart_quantity {
+            background: #f08804;
+            color: #0f1111;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-left: 5px;
+        }
+        .header-menu {
+            background: #232f3e;
+            padding: 0 20px;
+        }
+        #main-menu ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+        #main-menu ul li a {
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 0;
+            display: block;
+        }
+        
+        /* Contenedor principal */
+        .stats-container {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 0 20px;
+        }
+        
+        .stats-header {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .stats-header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .stats-header h1 i {
+            color: #f08804;
+        }
+        
+        .periodo-selector {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .periodo-btn {
+            padding: 10px 20px;
+            border: 2px solid #ddd;
+            border-radius: 30px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+        
+        .periodo-btn.active {
+            background: #f08804;
+            color: white;
+            border-color: #f08804;
+        }
+        
+        .periodo-btn:hover {
+            border-color: #f08804;
+        }
+        
+        /* Tarjetas de resumen */
+        .resumen-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .resumen-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: transform 0.2s;
+        }
+        
+        .resumen-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .resumen-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+        
+        .icon-visitas {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .icon-clics {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .icon-productos {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+        
+        .resumen-info h3 {
+            font-size: 14px;
+            color: #6c757d;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        
+        .resumen-numero {
+            font-size: 32px;
+            font-weight: 700;
+            color: #0f1111;
+        }
+        
+        /* Gráficos */
+        .graficos-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .grafico-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        
+        .grafico-card h2 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #0f1111;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .grafico-card h2 i {
+            color: #f08804;
+        }
+        
+        .grafico-container {
+            height: 300px;
+            position: relative;
+        }
+        
+        /* Tabla de productos */
+        .productos-stats {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-top: 30px;
+        }
+        
+        .productos-stats h2 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .productos-stats h2 i {
+            color: #f08804;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            text-align: left;
+            padding: 15px;
+            background: #f8f9fa;
+            color: #495057;
+            font-weight: 600;
+            border-bottom: 2px solid #dee2e6;
+        }
+        
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        tr:hover td {
+            background: #f8f9fa;
+        }
+        
+        .badge {
+            padding: 4px 10px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .badge-info {
+            background: #cce5ff;
+            color: #004085;
+        }
+        
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        /* Loading y error */
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: #6c757d;
+        }
+        
+        .loading i {
+            font-size: 48px;
+            color: #009644;
+            margin-bottom: 20px;
+        }
+        
+        .error-container {
+            text-align: center;
+            padding: 60px;
+            background: white;
+            border-radius: 16px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #ffd814;
+            color: #0f1111;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+        
+        /* Footer */
+        #footer-wrapper {
+            background: #232f3e;
+            color: white;
+            padding: 50px 20px;
+            margin-top: 50px;
+        }
+        .footer-widgets-wrap {
+            max-width: 1500px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+        }
+        #sub-footer-wrapper {
+            background: #131921;
+            padding: 20px;
+            text-align: center;
+            color: #ddd;
+        }
+        
+        @media (max-width: 768px) {
+            .graficos-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .periodo-selector {
+                width: 100%;
+            }
+            
+            .periodo-btn {
+                flex: 1;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <div id="header-wrap">
+        <div class="header-header">
+            <div class="container row">
+                <div class="header-logo">
+                    <a href="/">
+                        <img src="http://imgfz.com/i/oXOfVlT.png" alt="CUBAZON" style="height: 50px;">
+                    </a>
+                </div>
+                <div class="header-right">
+                    <div class="right-menu">
+                        <ul>
+                            <li><a href="/login.html" id="userMenuLink">
+                                <i class="fa fa-sign-in"></i> 
+                                <span id="userMenuText">Iniciar sesión</span>
+                            </a></li>
+                            <li><a href="/p/cart.html"><i class="fa fa-shopping-cart"></i> <span id="cart-counter" class="simpleCart_quantity">0</span></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="header-menu">
+            <div class="container row">
+                <div id="main-menu">
+                    <ul>
+                        <li><a href="/">Inicio</a></li>
+                        <li><a href="/mi-cuenta.html">Mi Cuenta</a></li>
+                        <li><a href="/estadisticas-vendedor.html">📊 Mis estadísticas</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <div class="stats-container">
+        <div id="loadingIndicator" class="loading">
+            <i class="fa fa-spinner fa-pulse"></i>
+            <h2>Cargando tus estadísticas...</h2>
+        </div>
+        
+        <div id="errorMessage" class="error-container" style="display: none;">
+            <i class="fa fa-exclamation-triangle" style="font-size: 64px; color: #dc3545; margin-bottom: 20px;"></i>
+            <h2>No tienes permisos</h2>
+            <p>Solo los vendedores pueden ver estadísticas.</p>
+            <a href="/" class="btn">Volver al inicio</a>
+        </div>
+        
+        <div id="statsContent" style="display: none;"></div>
+    </div>
+
+    <!-- FOOTER -->
+    <div id="footer-wrapper">
+        <div class="footer-widgets-wrap">
+            <div class="footer">
+                <h3>CUBAZON</h3>
+                <p>Tu tienda online de confianza en Sagua de Tánamo.</p>
+            </div>
+        </div>
+    </div>
+    <div id="sub-footer-wrapper">
+        <p>@Copyright 2026 CUBAZON</p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="module">
+        import { supabase } from '/js/supabase-client.js';
+        import { auth } from '/js/auth.js';
+        import { initCarrito } from '/js/cart.js';
+        
+        const carrito = initCarrito();
+        window.cart = carrito;
+        carrito.cargarDeLocalStorage();
+        carrito.actualizarInterfaz();
+        
+        // Elementos DOM
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const errorMessage = document.getElementById('errorMessage');
+        const statsContent = document.getElementById('statsContent');
+        
+        let periodoActual = '30d';
+        let vendedorId = null;
+        let productos = [];
+        let visitas = [];
+        let clics = [];
+        let graficoVisitas = null;
+        let graficoProductos = null;
+        
+        // ========== ACTUALIZAR MENÚ DE USUARIO ==========
+        function actualizarMenuUsuario() {
+            const userMenuLink = document.getElementById('userMenuLink');
+            const userMenuText = document.getElementById('userMenuText');
+            
+            if (!userMenuLink || !userMenuText) return;
+            
+            if (auth.isAuthenticated()) {
+                const usuario = auth.getUsuario();
+                const nombre = usuario?.nombre_completo || usuario?.email?.split('@')[0] || 'Mi cuenta';
+                userMenuText.textContent = nombre;
+                userMenuLink.href = '/mi-cuenta.html';
+                userMenuLink.innerHTML = `<i class="fa fa-user"></i> ${nombre}`;
+            } else {
+                userMenuText.textContent = 'Iniciar sesión';
+                userMenuLink.href = '/login.html?redirect=/estadisticas-vendedor.html';
+                userMenuLink.innerHTML = '<i class="fa fa-sign-in"></i> Iniciar sesión';
+            }
+        }
+        
+        // ========== VERIFICAR QUE ES VENDEDOR ==========
+        async function verificarVendedor() {
+            loadingIndicator.style.display = 'block';
+            
+            for (let i = 0; i < 10; i++) {
+                if (auth.isAuthenticated()) {
+                    const usuario = auth.getUsuario();
+                    
+                    const { data, error } = await supabase
+                        .from('vendedores')
+                        .select('id, estado_verificacion')
+                        .eq('id', usuario.id)
+                        .single();
+                    
+                    if (data && data.estado_verificacion === 'verificado') {
+                        vendedorId = usuario.id;
+                        loadingIndicator.style.display = 'none';
+                        cargarEstadisticas();
+                        return;
+                    } else {
+                        loadingIndicator.style.display = 'none';
+                        errorMessage.style.display = 'block';
+                        return;
+                    }
+                }
+                await new Promise(resolve => setTimeout(resolve, 200));
+            }
+            
+            window.location.href = '/login.html?redirect=/estadisticas-vendedor.html';
+        }
+        
+        // ========== CARGAR ESTADÍSTICAS ==========
+        async function cargarEstadisticas() {
+            statsContent.style.display = 'block';
+            
+            const fechaLimite = new Date();
+            if (periodoActual === '7d') {
+                fechaLimite.setDate(fechaLimite.getDate() - 7);
+            } else if (periodoActual === '30d') {
+                fechaLimite.setDate(fechaLimite.getDate() - 30);
+            } else if (periodoActual === '90d') {
+                fechaLimite.setDate(fechaLimite.getDate() - 90);
+            }
+            
+            const { data: productosData } = await supabase
+                .from('productos_vendedor')
+                .select('id, nombre, precio, created_at')
+                .eq('vendedor_id', vendedorId)
+                .order('created_at', { ascending: false });
+            
+            productos = productosData || [];
+            
+            const { data: visitasData } = await supabase
+                .from('visitas_producto')
+                .select('*')
+                .eq('vendedor_id', vendedorId)
+                .gte('fecha', fechaLimite.toISOString())
+                .order('fecha', { ascending: true });
+            
+            visitas = visitasData || [];
+            
+            const { data: clicsData } = await supabase
+                .from('clics_whatsapp')
+                .select('*')
+                .eq('vendedor_id', vendedorId)
+                .gte('fecha', fechaLimite.toISOString())
+                .order('fecha', { ascending: true });
+            
+            clics = clicsData || [];
+            
+            renderizarEstadisticas();
+        }
+        
+        // ========== RENDERIZAR ESTADÍSTICAS ==========
+        function renderizarEstadisticas() {
+            const totalVisitas = visitas.length;
+            const totalClics = clics.length;
+            const totalProductos = productos.length;
+            
+            const visitasPorProducto = {};
+            visitas.forEach(v => {
+                visitasPorProducto[v.producto_id] = (visitasPorProducto[v.producto_id] || 0) + 1;
+            });
+            
+            const clicsPorProducto = {};
+            clics.forEach(c => {
+                clicsPorProducto[c.producto_id] = (clicsPorProducto[c.producto_id] || 0) + 1;
+            });
+            
+            const visitasPorDia = {};
+            const clicsPorDia = {};
+            
+            visitas.forEach(v => {
+                const dia = new Date(v.fecha).toLocaleDateString('es-ES');
+                visitasPorDia[dia] = (visitasPorDia[dia] || 0) + 1;
+            });
+            
+            clics.forEach(c => {
+                const dia = new Date(c.fecha).toLocaleDateString('es-ES');
+                clicsPorDia[dia] = (clicsPorDia[dia] || 0) + 1;
+            });
+            
+            const diasOrdenados = Object.keys(visitasPorDia)
+                .concat(Object.keys(clicsPorDia))
+                .filter((v, i, a) => a.indexOf(v) === i)
+                .sort((a, b) => new Date(a) - new Date(b));
+            
+            statsContent.innerHTML = `
+                <div class="stats-header">
+                    <h1>
+                        <i class="fa fa-chart-line"></i>
+                        Mis estadísticas
+                    </h1>
+                    <div class="periodo-selector">
+                        <button class="periodo-btn ${periodoActual === '7d' ? 'active' : ''}" onclick="cambiarPeriodo('7d')">7 días</button>
+                        <button class="periodo-btn ${periodoActual === '30d' ? 'active' : ''}" onclick="cambiarPeriodo('30d')">30 días</button>
+                        <button class="periodo-btn ${periodoActual === '90d' ? 'active' : ''}" onclick="cambiarPeriodo('90d')">90 días</button>
+                    </div>
+                </div>
+                
+                <div class="resumen-grid">
+                    <div class="resumen-card">
+                        <div class="resumen-icon icon-visitas">
+                            <i class="fa fa-eye"></i>
+                        </div>
+                        <div class="resumen-info">
+                            <h3>Visitas totales</h3>
+                            <div class="resumen-numero">${totalVisitas}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="resumen-card">
+                        <div class="resumen-icon icon-clics">
+                            <i class="fa fa-whatsapp"></i>
+                        </div>
+                        <div class="resumen-info">
+                            <h3>Clics en WhatsApp</h3>
+                            <div class="resumen-numero">${totalClics}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="resumen-card">
+                        <div class="resumen-icon icon-productos">
+                            <i class="fa fa-cube"></i>
+                        </div>
+                        <div class="resumen-info">
+                            <h3>Productos activos</h3>
+                            <div class="resumen-numero">${totalProductos}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="graficos-grid">
+                    <div class="grafico-card">
+                        <h2><i class="fa fa-calendar"></i> Visitas por día</h2>
+                        <div class="grafico-container">
+                            <canvas id="graficoVisitas"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="grafico-card">
+                        <h2><i class="fa fa-bar-chart"></i> Top 5 productos</h2>
+                        <div class="grafico-container">
+                            <canvas id="graficoProductos"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="productos-stats">
+                    <h2><i class="fa fa-list"></i> Detalle por producto</h2>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Precio</th>
+                                    <th>Visitas</th>
+                                    <th>Clics WhatsApp</th>
+                                    <th>Conversión</th>
+                                    <th>Publicado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${productos.map(p => {
+                                    const visitasProd = visitasPorProducto[p.id] || 0;
+                                    const clicsProd = clicsPorProducto[p.id] || 0;
+                                    const conversion = visitasProd > 0 ? ((clicsProd / visitasProd) * 100).toFixed(1) : 0;
+                                    const fechaPub = new Date(p.created_at).toLocaleDateString('es-ES');
+                                    
+                                    return `
+                                        <tr>
+                                            <td><strong>${p.nombre}</strong></td>
+                                            <td>$${p.precio.toFixed(2)}</td>
+                                            <td><span class="badge badge-info">${visitasProd}</span></td>
+                                            <td><span class="badge badge-success">${clicsProd}</span></td>
+                                            <td>
+                                                <span class="badge ${conversion > 5 ? 'badge-success' : 'badge-warning'}">
+                                                    ${conversion}%
+                                                </span>
+                                            </td>
+                                            <td>${fechaPub}</td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+            
+            setTimeout(() => {
+                crearGraficoVisitas(diasOrdenados, visitasPorDia, clicsPorDia);
+                crearGraficoTopProductos(visitasPorProducto, clicsPorProducto);
+            }, 100);
+        }
+        
+        function crearGraficoVisitas(dias, visitasPorDia, clicsPorDia) {
+            const ctx = document.getElementById('graficoVisitas')?.getContext('2d');
+            if (!ctx) return;
+            
+            if (graficoVisitas) graficoVisitas.destroy();
+            
+            graficoVisitas = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dias,
+                    datasets: [
+                        {
+                            label: 'Visitas',
+                            data: dias.map(d => visitasPorDia[d] || 0),
+                            borderColor: '#1976d2',
+                            backgroundColor: 'rgba(25, 118, 210, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        },
+                        {
+                            label: 'Clics WhatsApp',
+                            data: dias.map(d => clicsPorDia[d] || 0),
+                            borderColor: '#25D366',
+                            backgroundColor: 'rgba(37, 211, 102, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'top' } },
+                    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+                }
+            });
+        }
+        
+        function crearGraficoTopProductos(visitasPorProducto, clicsPorProducto) {
+            const ctx = document.getElementById('graficoProductos')?.getContext('2d');
+            if (!ctx) return;
+            
+            const topProductos = productos
+                .map(p => ({
+                    nombre: p.nombre.length > 20 ? p.nombre.substring(0, 20) + '...' : p.nombre,
+                    visitas: visitasPorProducto[p.id] || 0,
+                    clics: clicsPorProducto[p.id] || 0
+                }))
+                .sort((a, b) => b.visitas - a.visitas)
+                .slice(0, 5);
+            
+            if (graficoProductos) graficoProductos.destroy();
+            
+            graficoProductos = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: topProductos.map(p => p.nombre),
+                    datasets: [
+                        {
+                            label: 'Visitas',
+                            data: topProductos.map(p => p.visitas),
+                            backgroundColor: '#1976d2',
+                        },
+                        {
+                            label: 'Clics WhatsApp',
+                            data: topProductos.map(p => p.clics),
+                            backgroundColor: '#25D366',
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'top' } },
+                    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+                }
+            });
+        }
+        
+        window.cambiarPeriodo = function(periodo) {
+            periodoActual = periodo;
+            cargarEstadisticas();
+        };
+        
+        actualizarMenuUsuario();
+        auth.onCambio(actualizarMenuUsuario);
+        verificarVendedor();
+    </script>
+</body>
+</html>

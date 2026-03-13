@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar producto · CUBAZON</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f2f5;
+            color: #0f1111;
+            line-height: 1.5;
+        }
+        
+        /* Header (igual que el resto) */
+        #header-wrap {
+            background: #131921;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-header {
+            padding: 10px 20px;
+        }
+        .container.row {
+            max-width: 1500px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header-logo img {
+            height: 50px;
+            width: auto;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+        .right-menu ul {
+            display: flex;
+            gap: 20px;
+            list-style: none;
+            align-items: center;
+        }
+        .right-menu ul li a {
+            color: white;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .sora-cart {
+            position: relative;
+        }
+        .sora-cart-details {
+            display: flex;
+            align-items: center;
+            color: white;
+            cursor: pointer;
+        }
+        .sora-cart-details:after {
+            content: '\f290';
+            font-family: 'FontAwesome';
+            font-size: 24px;
+            margin-left: 5px;
+        }
+        .simpleCart_quantity {
+            background: #f08804;
+            color: #0f1111;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-left: 5px;
+        }
+        .header-menu {
+            background: #232f3e;
+            padding: 0 20px;
+        }
+        #main-menu ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+        #main-menu ul li a {
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 0;
+            display: block;
+        }
+        
+        /* Contenedor principal */
+        .editar-container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #0f1111;
+        }
+        
+        .subtitle {
+            color: #6c757d;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #0f1111;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: #f08804;
+            outline: none;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: #ffd814;
+            color: #0f1111;
+        }
+        
+        .btn-primary:hover {
+            background: #f7ca00;
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+            margin-top: 15px;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .btn-secondary {
+            background: #f0f2f5;
+            color: #0f1111;
+            margin-top: 15px;
+        }
+        
+        .image-preview {
+            width: 100%;
+            height: 200px;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            overflow: hidden;
+            background: #f8f9fa;
+        }
+        
+        .image-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .image-preview i {
+            font-size: 48px;
+            color: #ccc;
+        }
+        
+        .acciones-peligrosas {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #ffebee;
+        }
+        
+        /* Footer */
+        #footer-wrapper {
+            background: #232f3e;
+            color: white;
+            padding: 50px 20px;
+            margin-top: 50px;
+        }
+        .footer-widgets-wrap {
+            max-width: 1500px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+        }
+        #sub-footer-wrapper {
+            background: #131921;
+            padding: 20px;
+            text-align: center;
+            color: #ddd;
+        }
+        
+        @media (max-width: 768px) {
+            .editar-container {
+                margin: 20px;
+                padding: 25px;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <div id="header-wrap">
+        <div class="header-header">
+            <div class="container row">
+                <div class="header-logo">
+                    <a href="/">
+                        <img src="http://imgfz.com/i/oXOfVlT.png" alt="CUBAZON" style="height: 50px;">
+                    </a>
+                </div>
+                <div class="header-right">
+                    <div class="right-menu">
+                        <ul>
+                            <li><a href="/login.html" id="userMenuLink">
+                                <i class="fa fa-sign-in"></i> 
+                                <span id="userMenuText">Iniciar sesión</span>
+                            </a></li>
+                            <li><a href="/p/cart.html"><i class="fa fa-shopping-cart"></i> <span id="cart-counter" class="simpleCart_quantity">0</span></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="header-menu">
+            <div class="container row">
+                <div id="main-menu">
+                    <ul>
+                        <li><a href="/">Inicio</a></li>
+                        <li><a href="/mi-cuenta.html">Mi Cuenta</a></li>
+                        <li><a href="/configurar-tienda.html">Mi Tienda</a></li>
+                        <li><a href="/publicar-producto.html">Publicar producto</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <div class="editar-container">
+        <h1>✏️ Editar producto</h1>
+        <p class="subtitle">Modifica los datos de tu producto</p>
+        
+        <div id="loadingIndicator" style="text-align: center; padding: 20px; display: none;">
+            <i class="fa fa-spinner fa-pulse fa-2x"></i>
+            <p>Cargando producto...</p>
+        </div>
+        
+        <div id="errorMessage" style="display: none; text-align: center; padding: 30px;">
+            <i class="fa fa-exclamation-triangle" style="font-size: 48px; color: #dc3545; margin-bottom: 20px;"></i>
+            <h3>Producto no encontrado</h3>
+            <p style="color: #6c757d; margin: 20px 0;">El producto que buscas no existe o no tienes permiso para editarlo.</p>
+            <a href="/mi-cuenta.html" class="btn btn-primary" style="display: inline-block; width: auto; padding: 12px 30px; text-decoration: none;">
+                Volver a mi cuenta
+            </a>
+        </div>
+        
+        <form id="productoForm" style="display: none;">
+            <input type="hidden" id="productoId">
+            
+            <div class="form-group">
+                <label><i class="fa fa-tag"></i> Nombre del producto *</label>
+                <input type="text" id="nombre" class="form-control" placeholder="Ej: Camiseta básica negra" required>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label><i class="fa fa-dollar"></i> Precio (CUP) *</label>
+                    <input type="number" id="precio" class="form-control" min="1" step="0.01" placeholder="15.99" required>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fa fa-cubes"></i> Stock *</label>
+                    <input type="number" id="stock" class="form-control" min="0" value="1" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fa fa-align-left"></i> Descripción</label>
+                <textarea id="descripcion" class="form-control" rows="4" placeholder="Describe tu producto..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fa fa-image"></i> URL de la imagen</label>
+                <input type="url" id="imagenUrl" class="form-control" placeholder="https://ejemplo.com/imagen.jpg">
+                <div class="image-preview" id="imagePreview">
+                    <i class="fa fa-image"></i>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label><i class="fa fa-folder"></i> Categoría</label>
+                    <input type="text" id="categoria" class="form-control" placeholder="Ej: Ropa, Electrónica">
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fa fa-tags"></i> Etiquetas</label>
+                    <input type="text" id="etiquetas" class="form-control" placeholder="separadas por comas">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fa fa-toggle-on"></i> Estado</label>
+                <select id="activo" class="form-control">
+                    <option value="true">Activo (visible en la tienda)</option>
+                    <option value="false">Inactivo (oculto)</option>
+                </select>
+            </div>
+            
+            <button type="submit" class="btn btn-primary" id="guardarBtn">
+                <i class="fa fa-save"></i> Guardar cambios
+            </button>
+        </form>
+        
+        <div class="acciones-peligrosas" id="accionesPeligrosas" style="display: none;">
+            <h3 style="color: #dc3545; margin-bottom: 15px;"><i class="fa fa-exclamation-triangle"></i> Zona de peligro</h3>
+            <button class="btn btn-danger" id="eliminarBtn">
+                <i class="fa fa-trash"></i> Eliminar producto permanentemente
+            </button>
+        </div>
+        
+        <div id="resultMessage" style="margin-top: 20px;"></div>
+    </div>
+
+    <!-- FOOTER -->
+    <div id="footer-wrapper">
+        <div class="footer-widgets-wrap">
+            <div class="footer">
+                <h3>CUBAZON</h3>
+                <p>Tu tienda online de confianza en Sagua de Tánamo.</p>
+            </div>
+        </div>
+    </div>
+    <div id="sub-footer-wrapper">
+        <p>@Copyright 2026 CUBAZON</p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="module">
+        import { supabase } from '/js/supabase-client.js';
+        import { auth } from '/js/auth.js';
+        import { initCarrito } from '/js/cart.js';
+        
+        // Inicializar carrito
+        const carrito = initCarrito();
+        window.cart = carrito;
+        carrito.cargarDeLocalStorage();
+        carrito.actualizarInterfaz();
+        
+        // Elementos DOM
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const errorMessage = document.getElementById('errorMessage');
+        const productoForm = document.getElementById('productoForm');
+        const accionesPeligrosas = document.getElementById('accionesPeligrosas');
+        const imagenUrl = document.getElementById('imagenUrl');
+        const imagePreview = document.getElementById('imagePreview');
+        
+        // Obtener ID de la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const productoId = urlParams.get('id');
+        
+        // ========== FUNCIÓN PARA MOSTRAR ERROR (CORREGIDO) ==========
+        function mostrarError(mensaje) {
+            errorMessage.style.display = 'block';
+            errorMessage.querySelector('p').textContent = mensaje;
+            loadingIndicator.style.display = 'none';
+        }
+        
+        // ========== ACTUALIZAR MENÚ DE USUARIO ==========
+        function actualizarMenuUsuario() {
+            const userMenuLink = document.getElementById('userMenuLink');
+            const userMenuText = document.getElementById('userMenuText');
+            
+            if (!userMenuLink || !userMenuText) return;
+            
+            if (auth.isAuthenticated()) {
+                const usuario = auth.getUsuario();
+                const nombre = usuario?.nombre_completo || usuario?.email?.split('@')[0] || 'Mi cuenta';
+                userMenuText.textContent = nombre;
+                userMenuLink.href = '/mi-cuenta.html';
+                userMenuLink.innerHTML = `<i class="fa fa-user"></i> ${nombre}`;
+            } else {
+                userMenuText.textContent = 'Iniciar sesión';
+                userMenuLink.href = '/login.html?redirect=/editar-producto-vendedor.html';
+                userMenuLink.innerHTML = '<i class="fa fa-sign-in"></i> Iniciar sesión';
+            }
+        }
+        
+        // ========== VERIFICAR AUTENTICACIÓN Y CARGAR PRODUCTO ==========
+        async function verificarYCargar() {
+            loadingIndicator.style.display = 'block';
+            
+            // Esperar autenticación
+            for (let i = 0; i < 10; i++) {
+                if (auth.isAuthenticated()) {
+                    break;
+                }
+                await new Promise(resolve => setTimeout(resolve, 200));
+            }
+            
+            if (!auth.isAuthenticated()) {
+                window.location.href = '/login.html?redirect=/editar-producto-vendedor.html';
+                return;
+            }
+            
+            if (!productoId) {
+                mostrarError('ID de producto no válido');
+                return;
+            }
+            
+            await cargarProducto();
+        }
+        
+        // ========== CARGAR PRODUCTO ==========
+        async function cargarProducto() {
+            try {
+                const usuario = auth.getUsuario();
+                
+                const { data, error } = await supabase
+                    .from('productos_vendedor')
+                    .select('*')
+                    .eq('id', productoId)
+                    .single();
+                
+                if (error || !data) {
+                    throw new Error('Producto no encontrado');
+                }
+                
+                // Verificar que el producto pertenece al usuario
+                if (data.vendedor_id !== usuario.id) {
+                    throw new Error('No tienes permiso para editar este producto');
+                }
+                
+                // Cargar datos en el formulario
+                document.getElementById('productoId').value = data.id;
+                document.getElementById('nombre').value = data.nombre;
+                document.getElementById('precio').value = data.precio;
+                document.getElementById('stock').value = data.stock;
+                document.getElementById('descripcion').value = data.descripcion || '';
+                document.getElementById('imagenUrl').value = data.imagen_url || '';
+                document.getElementById('categoria').value = data.categoria || '';
+                document.getElementById('etiquetas').value = data.etiquetas ? data.etiquetas.join(', ') : '';
+                document.getElementById('activo').value = data.activo ? 'true' : 'false';
+                
+                // Actualizar preview de imagen
+                if (data.imagen_url) {
+                    imagePreview.innerHTML = `<img src="${data.imagen_url}" onerror="this.src='/assets/images/no-image.jpg'">`;
+                }
+                
+                loadingIndicator.style.display = 'none';
+                productoForm.style.display = 'block';
+                accionesPeligrosas.style.display = 'block';
+                
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarError(error.message);
+            }
+        }
+        
+        // ========== PREVISUALIZAR IMAGEN ==========
+        imagenUrl.addEventListener('input', function() {
+            const url = this.value.trim();
+            if (url) {
+                imagePreview.innerHTML = `<img src="${url}" onerror="this.src='/assets/images/no-image.jpg'">`;
+            } else {
+                imagePreview.innerHTML = '<i class="fa fa-image"></i>';
+            }
+        });
+        
+        // ========== GUARDAR CAMBIOS ==========
+        document.getElementById('productoForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const btn = document.getElementById('guardarBtn');
+            const resultDiv = document.getElementById('resultMessage');
+            
+            const etiquetas = document.getElementById('etiquetas').value
+                .split(',')
+                .map(e => e.trim())
+                .filter(e => e.length > 0);
+            
+            const datos = {
+                nombre: document.getElementById('nombre').value,
+                precio: parseFloat(document.getElementById('precio').value),
+                stock: parseInt(document.getElementById('stock').value),
+                descripcion: document.getElementById('descripcion').value || null,
+                imagen_url: document.getElementById('imagenUrl').value || null,
+                categoria: document.getElementById('categoria').value || null,
+                etiquetas: etiquetas.length > 0 ? etiquetas : null,
+                activo: document.getElementById('activo').value === 'true'
+            };
+            
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa fa-spinner fa-pulse"></i> Guardando...';
+            resultDiv.innerHTML = '';
+            
+            const { error } = await supabase
+                .from('productos_vendedor')
+                .update(datos)
+                .eq('id', productoId);
+            
+            if (error) {
+                resultDiv.innerHTML = `
+                    <div style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 8px;">
+                        <i class="fa fa-exclamation-circle"></i> Error: ${error.message}
+                    </div>
+                `;
+            } else {
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Producto actualizado!',
+                    text: 'Los cambios se guardaron correctamente',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+                
+                setTimeout(() => {
+                    window.location.href = '/mi-cuenta.html';
+                }, 2000);
+            }
+            
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa fa-save"></i> Guardar cambios';
+        });
+        
+        // ========== ELIMINAR PRODUCTO ==========
+        document.getElementById('eliminarBtn').addEventListener('click', async () => {
+            const result = await Swal.fire({
+                title: '¿Eliminar producto?',
+                text: 'Esta acción no se puede deshacer',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            });
+            
+            if (result.isConfirmed) {
+                const { error } = await supabase
+                    .from('productos_vendedor')
+                    .delete()
+                    .eq('id', productoId);
+                
+                if (error) {
+                    Swal.fire('Error', 'No se pudo eliminar el producto', 'error');
+                } else {
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Producto eliminado!',
+                        text: 'El producto ha sido eliminado permanentemente',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                    
+                    setTimeout(() => {
+                        window.location.href = '/mi-cuenta.html';
+                    }, 2000);
+                }
+            }
+        });
+        
+        // ========== INICIALIZAR ==========
+        actualizarMenuUsuario();
+        auth.onCambio(actualizarMenuUsuario);
+        verificarYCargar();
+    </script>
+</body>
+</html>
