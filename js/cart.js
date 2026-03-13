@@ -1,6 +1,7 @@
 // ============================================
-// cart.js - VERSIÓN DEFINITIVA
-// Con imágenes corregidas y carrito que no se cierra
+// cart.js - VERSIÓN CORREGIDA
+// Con soporte para oferta_del_dia
+// Imágenes corregidas y carrito que no se cierra
 // Preview con productos en scroll y botones fijos
 // ============================================
 
@@ -39,7 +40,7 @@ export class Carrito {
             
             const { data: producto, error } = await supabase
                 .from('productos')
-                .select('id, nombre, precio, stock, oferta, precio_oferta, imagen_url')
+                .select('id, nombre, precio, stock, oferta_del_dia, precio_oferta, imagen_url')
                 .eq('id', productoId)
                 .single()
             
@@ -54,9 +55,12 @@ export class Carrito {
                 return false
             }
             
-            const precioFinal = (producto.oferta && producto.precio_oferta) 
-                ? producto.precio_oferta 
-                : producto.precio
+            // 🔥 CORREGIDO: Usar oferta_del_dia en lugar de oferta
+            const precioFinal = (producto.oferta_del_dia === true && producto.precio_oferta && producto.precio_oferta > 0) 
+                ? parseFloat(producto.precio_oferta)
+                : parseFloat(producto.precio)
+            
+            console.log(`💰 Producto ${producto.nombre}: precio final $${precioFinal} (oferta: ${producto.oferta_del_dia})`)
             
             const itemExistente = this.items.find(item => 
                 item.producto_id === productoId && 
@@ -65,7 +69,7 @@ export class Carrito {
             
             if (itemExistente) {
                 itemExistente.cantidad += cantidad
-                itemExistente.precio = precioFinal
+                itemExistente.precio = precioFinal // Actualizar por si cambió la oferta
             } else {
                 this.items.push({
                     id: `${productoId}_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
@@ -204,7 +208,7 @@ export class Carrito {
         }))
     }
     
-    // ========== PREVIEW CARRITO - CORREGIDO: solo productos, total en footer ==========
+    // ========== PREVIEW CARRITO ==========
     renderizarPreviewCarrito() {
         const container = document.querySelector('.simpleCart_items');
         const totalContainer = document.getElementById('cart-preview-total-amount');
@@ -256,12 +260,10 @@ export class Carrito {
         
         container.innerHTML = html
         
-        // Actualizar total en el footer
         if (totalContainer) {
             totalContainer.textContent = `$${totalGeneral.toFixed(2)} CUP`
         }
         
-        // Actualizar otros totales si existen (por ejemplo en la página de carrito)
         const totalElement = document.getElementById('cart-total')
         if (totalElement) totalElement.textContent = `$${totalGeneral.toFixed(2)} CUP`
     }

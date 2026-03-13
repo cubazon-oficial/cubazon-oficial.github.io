@@ -1,6 +1,6 @@
 // ============================================
 // products.js - VERSIÓN CORREGIDA
-// LINKS A producto.html?id= EN VEZ DE /producto/id
+// CON LOS NOMBRES CORRECTOS DE COLUMNAS
 // ============================================
 
 import { supabase } from './supabase-client.js'
@@ -38,7 +38,7 @@ export class ProductManager {
     
     getProductosOferta(limite = 4) {
         return this.productos
-            .filter(p => p.oferta === true)
+            .filter(p => p.oferta_del_dia === true)  // ← CORREGIDO: oferta → oferta_del_dia
             .slice(0, limite)
     }
     
@@ -88,7 +88,7 @@ export class ProductManager {
             html += `
                 <div class="slider-item">
                     <a href="/producto.html?id=${p.id}">
-                        <img src="${p.imagen || 'https://via.placeholder.com/1200x400'}" alt="${p.nombre}">
+                        <img src="${p.imagen_url || 'https://via.placeholder.com/1200x400'}" alt="${p.nombre}">  <!-- CORREGIDO: imagen → imagen_url -->
                     </a>
                     <div class="post-info-wrap">
                         <span class="post-tag">${p.etiquetas?.[0] || 'Destacado'}</span>
@@ -116,10 +116,9 @@ export class ProductManager {
             card.className = 'product-card'
             
             if (p.stock <= 0) {
-                // ✅ PRODUCTO AGOTADO
                 card.innerHTML = `
                     <a href="/producto.html?id=${p.id}">
-                        <img src="${p.imagen || 'https://via.placeholder.com/400'}" class="product-image" alt="${p.nombre}" onerror="this.src='https://via.placeholder.com/400'">
+                        <img src="${p.imagen_url || 'https://via.placeholder.com/400'}" class="product-image" alt="${p.nombre}" onerror="this.src='https://via.placeholder.com/400'">  <!-- CORREGIDO: imagen → imagen_url -->
                     </a>
                     <a href="/producto.html?id=${p.id}" style="text-decoration: none; color: inherit;">
                         <h3 class="product-title">${p.nombre}</h3>
@@ -137,10 +136,9 @@ export class ProductManager {
                     </div>
                 `
             } else {
-                // ✅ PRODUCTO CON STOCK
                 card.innerHTML = `
                     <a href="/producto.html?id=${p.id}">
-                        <img src="${p.imagen || 'https://via.placeholder.com/400'}" class="product-image" alt="${p.nombre}" onerror="this.src='https://via.placeholder.com/400'">
+                        <img src="${p.imagen_url || 'https://via.placeholder.com/400'}" class="product-image" alt="${p.nombre}" onerror="this.src='https://via.placeholder.com/400'">  <!-- CORREGIDO: imagen → imagen_url -->
                     </a>
                     <a href="/producto.html?id=${p.id}" style="text-decoration: none; color: inherit;">
                         <h3 class="product-title">${p.nombre}</h3>
@@ -175,10 +173,9 @@ export class ProductManager {
             card.className = 'product-card'
             
             if (p.stock <= 0) {
-                // ✅ PRODUCTO AGOTADO
                 card.innerHTML = `
                     <a href="/producto.html?id=${p.id}">
-                        <img src="${p.imagen || 'https://via.placeholder.com/400'}" class="product-image" alt="${p.nombre}" onerror="this.src='https://via.placeholder.com/400'">
+                        <img src="${p.imagen_url || 'https://via.placeholder.com/400'}" class="product-image" alt="${p.nombre}" onerror="this.src='https://via.placeholder.com/400'">  <!-- CORREGIDO: imagen → imagen_url -->
                     </a>
                     <a href="/producto.html?id=${p.id}" style="text-decoration: none; color: inherit;">
                         <h3 class="product-title">${p.nombre}</h3>
@@ -193,10 +190,9 @@ export class ProductManager {
                     </div>
                 `
             } else {
-                // ✅ PRODUCTO CON OFERTA Y STOCK
                 card.innerHTML = `
                     <a href="/producto.html?id=${p.id}">
-                        <img src="${p.imagen || 'https://via.placeholder.com/400'}" class="product-image" alt="${p.nombre}" onerror="this.src='https://via.placeholder.com/400'">
+                        <img src="${p.imagen_url || 'https://via.placeholder.com/400'}" class="product-image" alt="${p.nombre}" onerror="this.src='https://via.placeholder.com/400'">  <!-- CORREGIDO: imagen → imagen_url -->
                     </a>
                     <a href="/producto.html?id=${p.id}" style="text-decoration: none; color: inherit;">
                         <h3 class="product-title">${p.nombre}</h3>
@@ -230,10 +226,9 @@ export class ProductManager {
             card.style.alignItems = 'center'
             
             if (p.stock <= 0) {
-                // ✅ PRODUCTO AGOTADO
                 card.innerHTML = `
                     <a href="/producto.html?id=${p.id}">
-                        <img src="${p.imagen || 'https://via.placeholder.com/400'}" style="width: 100px; height: 100px; object-fit: contain; margin-right: 20px;" onerror="this.src='https://via.placeholder.com/400'">
+                        <img src="${p.imagen_url || 'https://via.placeholder.com/400'}" style="width: 100px; height: 100px; object-fit: contain; margin-right: 20px;" onerror="this.src='https://via.placeholder.com/400'">  <!-- CORREGIDO: imagen → imagen_url -->
                     </a>
                     <div style="flex: 1;">
                         <a href="/producto.html?id=${p.id}" style="text-decoration: none; color: inherit;">
@@ -245,10 +240,9 @@ export class ProductManager {
                     </div>
                 `
             } else {
-                // ✅ PRODUCTO CON STOCK
                 card.innerHTML = `
                     <a href="/producto.html?id=${p.id}">
-                        <img src="${p.imagen || 'https://via.placeholder.com/400'}" style="width: 100px; height: 100px; object-fit: contain; margin-right: 20px;" onerror="this.src='https://via.placeholder.com/400'">
+                        <img src="${p.imagen_url || 'https://via.placeholder.com/400'}" style="width: 100px; height: 100px; object-fit: contain; margin-right: 20px;" onerror="this.src='https://via.placeholder.com/400'">  <!-- CORREGIDO: imagen → imagen_url -->
                     </a>
                     <div style="flex: 1;">
                         <a href="/producto.html?id=${p.id}" style="text-decoration: none; color: inherit;">
@@ -281,10 +275,9 @@ export class ProductManager {
             card.style.alignItems = 'center'
             
             if (p.stock <= 0) {
-                // ✅ PRODUCTO AGOTADO
                 card.innerHTML = `
                     <a href="/producto.html?id=${p.id}">
-                        <img src="${p.imagen || 'https://via.placeholder.com/400'}" style="width: 100px; height: 100px; object-fit: contain; margin-right: 20px;" onerror="this.src='https://via.placeholder.com/400'">
+                        <img src="${p.imagen_url || 'https://via.placeholder.com/400'}" style="width: 100px; height: 100px; object-fit: contain; margin-right: 20px;" onerror="this.src='https://via.placeholder.com/400'">  <!-- CORREGIDO: imagen → imagen_url -->
                     </a>
                     <div style="flex: 1;">
                         <a href="/producto.html?id=${p.id}" style="text-decoration: none; color: inherit;">
@@ -296,10 +289,9 @@ export class ProductManager {
                     </div>
                 `
             } else {
-                // ✅ PRODUCTO CON STOCK
                 card.innerHTML = `
                     <a href="/producto.html?id=${p.id}">
-                        <img src="${p.imagen || 'https://via.placeholder.com/400'}" style="width: 100px; height: 100px; object-fit: contain; margin-right: 20px;" onerror="this.src='https://via.placeholder.com/400'">
+                        <img src="${p.imagen_url || 'https://via.placeholder.com/400'}" style="width: 100px; height: 100px; object-fit: contain; margin-right: 20px;" onerror="this.src='https://via.placeholder.com/400'">  <!-- CORREGIDO: imagen → imagen_url -->
                     </a>
                     <div style="flex: 1;">
                         <a href="/producto.html?id=${p.id}" style="text-decoration: none; color: inherit;">
@@ -330,10 +322,9 @@ export class ProductManager {
             card.className = 'product-card'
             
             if (p.stock <= 0) {
-                // ✅ PRODUCTO AGOTADO
                 card.innerHTML = `
                     <a href="/producto.html?id=${p.id}">
-                        <img src="${p.imagen || 'https://via.placeholder.com/400'}" class="product-image" alt="${p.nombre}" onerror="this.src='https://via.placeholder.com/400'">
+                        <img src="${p.imagen_url || 'https://via.placeholder.com/400'}" class="product-image" alt="${p.nombre}" onerror="this.src='https://via.placeholder.com/400'">  <!-- CORREGIDO: imagen → imagen_url -->
                     </a>
                     <a href="/producto.html?id=${p.id}" style="text-decoration: none; color: inherit;">
                         <h3 class="product-title">${p.nombre}</h3>
@@ -348,10 +339,9 @@ export class ProductManager {
                     </div>
                 `
             } else {
-                // ✅ PRODUCTO CON STOCK
                 card.innerHTML = `
                     <a href="/producto.html?id=${p.id}">
-                        <img src="${p.imagen || 'https://via.placeholder.com/400'}" class="product-image" alt="${p.nombre}" onerror="this.src='https://via.placeholder.com/400'">
+                        <img src="${p.imagen_url || 'https://via.placeholder.com/400'}" class="product-image" alt="${p.nombre}" onerror="this.src='https://via.placeholder.com/400'">  <!-- CORREGIDO: imagen → imagen_url -->
                     </a>
                     <a href="/producto.html?id=${p.id}" style="text-decoration: none; color: inherit;">
                         <h3 class="product-title">${p.nombre}</h3>
@@ -371,6 +361,7 @@ export class ProductManager {
 // ========== INSTANCIA GLOBAL ==========
 export const productManager = new ProductManager()
 window.productManager = productManager
+
 // ========== LISTA DE DESEOS ==========
 export const listaDeseos = {
     async obtenerLista(usuarioId) {
