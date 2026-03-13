@@ -529,13 +529,65 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script type="module">
+        import { supabase } from '../js/supabase-client.js'
         import { carrito } from '../js/cart.js'
         
         // Exponer globalmente
         window.cart = carrito
 
+        // 🔥 FUNCIÓN PARA OBTENER PRECIO ACTUALIZADO DESDE LA BD
+        async function obtenerPrecioActualizado(item) {
+            try {
+                const { data, error } = await supabase
+                    .from('productos')
+                    .select('precio, precio_oferta, oferta_del_dia')
+                    .eq('id', item.producto_id)
+                    .single()
+                
+                if (error || !data) {
+                    return item.precio // Si hay error, mantener el precio guardado
+                }
+                
+                // Si está en oferta, devolver precio_oferta
+                if (data.oferta_del_dia === true && data.precio_oferta && data.precio_oferta > 0) {
+                    return parseFloat(data.precio_oferta)
+                }
+                
+                // Si no está en oferta, devolver precio normal
+                return parseFloat(data.precio)
+                
+            } catch (error) {
+                console.error('Error obteniendo precio:', error)
+                return item.precio
+            }
+        }
+
+        // 🔥 FUNCIÓN PARA ACTUALIZAR PRECIOS DEL CARRITO
+        async function actualizarPreciosCarrito() {
+            if (!carrito.items || carrito.items.length === 0) return
+            
+            let cambios = false
+            
+            for (const item of carrito.items) {
+                const precioCorrecto = await obtenerPrecioActualizado(item)
+                
+                // Si el precio cambió, actualizar
+                if (item.precio !== precioCorrecto) {
+                    console.log(`🔄 Actualizando precio de ${item.nombre}: ${item.precio} → ${precioCorrecto}`)
+                    item.precio = precioCorrecto
+                    cambios = true
+                }
+            }
+            
+            // Si hubo cambios, guardar y actualizar interfaz
+            if (cambios) {
+                carrito.guardarEnLocalStorage()
+                console.log('✅ Precios actualizados en el carrito')
+            }
+        }
+
         // Función para renderizar el carrito
-        function renderCart() {
+        async function renderCart() {
             const container = document.getElementById('cart-content')
             if (!container) return
 
@@ -543,6 +595,9 @@
             carrito.cargarDeLocalStorage()
             
             console.log('🛒 Items en carrito:', carrito.items)
+
+            // 🔥 ACTUALIZAR PRECIOS ANTES DE RENDERIZAR
+            await actualizarPreciosCarrito()
 
             if (!carrito.items || carrito.items.length === 0) {
                 container.innerHTML = `
@@ -555,6 +610,7 @@
                         </a>
                     </div>
                 `
+                document.getElementById('cart-counter').textContent = '0'
                 return
             }
 
@@ -638,7 +694,7 @@
         // Actualizar cuando cambie el carrito
         window.addEventListener('carrito-actualizado', renderCart)
         
-        console.log('✅ Página de carrito lista')
+        console.log('✅ Página de carrito lista con actualización de precios')
     </script>
 </body>
 </html>
