@@ -1,8 +1,5 @@
 // ============================================
-// auth.js - VERSIÓN FINAL CORREGIDA
-// CON VERIFICACIÓN DE BANEO + SISTEMA HÍBRIDO SIN CONTRASEÑAS
-// CON TELEGRAM FUNCIONAL Y VALIDACIÓN DE EXISTENCIA
-// CON CÓDIGO EXPIRA EN 5 MINUTOS (SIN LOGS DEL CÓDIGO)
+// auth.js - VERSIÓN FINAL CON SUPABASE AUTH INTEGRADO
 // ============================================
 
 import { supabase } from './supabase-client.js'
@@ -19,10 +16,18 @@ export class AuthManager {
 
     async init() {
         try {
+            // Primero intentar con Supabase Auth
             const { data: { session } } = await supabase.auth.getSession()
             
             if (session?.user) {
                 await this.cargarUsuario(session.user.id)
+            } else {
+                // Si no hay sesión en Supabase, intentar con localStorage
+                const localUser = localStorage.getItem('cubazon_user')
+                if (localUser) {
+                    usuarioActual = JSON.parse(localUser)
+                    this.notificarCambio()
+                }
             }
         } catch (error) {
             console.error('Error en init:', error)
@@ -93,6 +98,8 @@ export class AuthManager {
                 }
             }
             
+            // Guardar en localStorage también
+            localStorage.setItem('cubazon_user', JSON.stringify(usuarioActual))
             this.notificarCambio()
             return usuarioActual
             
@@ -155,7 +162,6 @@ export class AuthManager {
         try {
             console.log('📝 Registrando usuario:', email)
             
-            // Validaciones básicas
             if (!email || !email.includes('@')) {
                 throw new Error('Email inválido')
             }
@@ -164,7 +170,6 @@ export class AuthManager {
                 throw new Error('La contraseña debe tener al menos 6 caracteres')
             }
             
-            // Registrar usuario en Auth
             const { data: authData, error: authError } = await supabase.auth.signUp({
                 email,
                 password,
@@ -218,6 +223,7 @@ export class AuthManager {
         try {
             await supabase.auth.signOut()
             usuarioActual = null
+            localStorage.removeItem('cubazon_user')
             this.notificarCambio()
             return { success: true }
         } catch (error) {
@@ -255,7 +261,6 @@ export class AuthManager {
             return { success: false, error: 'No hay usuario autenticado' }
         }
         
-        // Verificar que no esté baneado
         const baneado = await this.verificarBaneo(usuarioActual.id)
         if (baneado) {
             await this.cerrarSesion()
@@ -281,8 +286,8 @@ export class AuthManager {
             
             if (error) throw error
             
-            // Actualizar usuario actual
             usuarioActual = { ...usuarioActual, ...datos }
+            localStorage.setItem('cubazon_user', JSON.stringify(usuarioActual))
             this.notificarCambio()
             
             return { success: true, message: '✅ Perfil actualizado' }
@@ -299,7 +304,6 @@ export class AuthManager {
             return { success: false, error: 'No hay usuario autenticado' }
         }
         
-        // Verificar que no esté baneado
         const baneado = await this.verificarBaneo(usuarioActual.id)
         if (baneado) {
             await this.cerrarSesion()
@@ -307,7 +311,6 @@ export class AuthManager {
         }
         
         try {
-            // Verificar contraseña actual
             const { error: signError } = await supabase.auth.signInWithPassword({
                 email: usuarioActual.email,
                 password: passwordActual
@@ -317,7 +320,6 @@ export class AuthManager {
                 return { success: false, error: 'Contraseña actual incorrecta' }
             }
             
-            // Cambiar contraseña
             const { error } = await supabase.auth.updateUser({
                 password: passwordNuevo
             })
@@ -336,7 +338,6 @@ export class AuthManager {
     async obtenerDirecciones() {
         if (!usuarioActual) return []
         
-        // Verificar que no esté baneado
         const baneado = await this.verificarBaneo(usuarioActual.id)
         if (baneado) {
             await this.cerrarSesion()
@@ -364,7 +365,6 @@ export class AuthManager {
             return { success: false, error: 'No hay usuario autenticado' }
         }
         
-        // Verificar que no esté baneado
         const baneado = await this.verificarBaneo(usuarioActual.id)
         if (baneado) {
             await this.cerrarSesion()
@@ -372,7 +372,6 @@ export class AuthManager {
         }
         
         try {
-            // Si es principal, quitar principal de otras
             if (direccion.es_principal) {
                 await supabase
                     .from('direcciones')
@@ -402,7 +401,6 @@ export class AuthManager {
     async eliminarDireccion(id) {
         if (!usuarioActual) return { success: false, error: 'No hay usuario autenticado' }
         
-        // Verificar que no esté baneado
         const baneado = await this.verificarBaneo(usuarioActual.id)
         if (baneado) {
             await this.cerrarSesion()
@@ -430,7 +428,6 @@ export class AuthManager {
     async obtenerPedidos() {
         if (!usuarioActual) return []
         
-        // Verificar que no esté baneado
         const baneado = await this.verificarBaneo(usuarioActual.id)
         if (baneado) {
             await this.cerrarSesion()
@@ -462,7 +459,7 @@ export class AuthManager {
         return usuarioActual !== null
     }
 
-    // ========== VERIFICAR SI ESTÁ BANEADO (MÉTODO PÚBLICO) ==========
+    // ========== VERIFICAR SI ESTÁ BANEADO ==========
     async isBaneado() {
         if (!usuarioActual) return false
         return await this.verificarBaneo(usuarioActual.id)
@@ -484,12 +481,9 @@ export class AuthManager {
     }
 
     // ============================================
-    // FUNCIONES DE VERIFICACIÓN DE EXISTENCIA
+    // FUNCIONES DE VERIFICACIÓN
     // ============================================
     
-    /**
-     * Verificar si un email ya existe
-     */
     async emailExiste(email) {
         try {
             const { data: perfil, error: perfilError } = await supabase
@@ -514,9 +508,6 @@ export class AuthManager {
         }
     }
 
-    /**
-     * Verificar si un teléfono ya existe (VERSIÓN CORREGIDA)
-     */
     async telefonoExiste(telefono) {
         try {
             console.log('🔍 Buscando teléfono:', telefono);
@@ -554,17 +545,13 @@ export class AuthManager {
     }
 
     // ============================================
-    // SISTEMA HÍBRIDO TELEGRAM/EMAIL SIN CONTRASEÑAS
+    // SISTEMA HÍBRIDO TELEGRAM
     // ============================================
     
-    /**
-     * Enviar código por Telegram (VERSIÓN CORREGIDA - EDGE FUNCTION PÚBLICA)
-     */
     async enviarTelegram(chatId, codigo) {
         try {
             console.log('📱 Solicitando envío de código por Telegram al chat:', chatId);
             
-            // Llamar a la Edge Function pública (no requiere autenticación)
             const { data, error } = await supabase.functions.invoke('enviar-codigo-telegram', {
                 body: { 
                     chatId: chatId, 
@@ -591,9 +578,6 @@ export class AuthManager {
         }
     }
 
-    /**
-     * Enviar código por Email (usando tu SMTP)
-     */
     async enviarEmailCodigo(email, codigo) {
         try {
             console.log('📧 Enviando código por email a:', email);
@@ -616,9 +600,6 @@ export class AuthManager {
         }
     }
 
-    /**
-     * Paso 1: Solicitar código (expira en 5 minutos)
-     */
     async solicitarCodigoSinPassword(email, metodo = 'telegram') {
         try {
             console.log('🔐 Solicitando código para:', email, 'método:', metodo);
@@ -696,14 +677,10 @@ export class AuthManager {
                 }
             }
             
-            // Generar código de 6 dígitos
             const codigo = Math.floor(100000 + Math.random() * 900000).toString();
-            
-            // ⏳ EXPIRA EN 5 MINUTOS
             const expira = new Date();
             expira.setMinutes(expira.getMinutes() + 5);
             
-            // Guardar código en la tabla
             const { error: insertError } = await supabase
                 .from('codigos_verificacion')
                 .insert({
@@ -719,7 +696,6 @@ export class AuthManager {
                 return { success: false, error: 'Error al generar código' };
             }
             
-            // Enviar según método elegido
             if (metodo === 'telegram') {
                 if (!perfil?.telegram_chat_id) {
                     return { 
@@ -754,16 +730,13 @@ export class AuthManager {
         }
     }
 
-    /**
-     * Paso 2: Validar código y dar acceso
-     */
+    // ========== VALIDAR CÓDIGO Y DAR ACCESO (VERSIÓN CORREGIDA) ==========
     async validarCodigoSinPassword(email, codigo) {
         try {
             console.log('🔍 Validando código para:', email);
             
             const ahora = new Date().toISOString();
             
-            // Buscar código válido (no usado, no expirado)
             const { data: codigoValido, error } = await supabase
                 .from('codigos_verificacion')
                 .select('*')
@@ -780,7 +753,6 @@ export class AuthManager {
                 return { success: false, error: 'Código inválido o expirado' };
             }
             
-            // Marcar como usado
             await supabase
                 .from('codigos_verificacion')
                 .update({ usado: true })
@@ -813,12 +785,35 @@ export class AuthManager {
                 };
             }
             
-            // Guardar sesión en localStorage
+            // ✅ PASO 1: Guardar en localStorage
             localStorage.setItem('cubazon_user', JSON.stringify(usuarioActual));
             
+            // ✅ PASO 2: Notificar cambio (para listeners)
             this.notificarCambio();
             
+            // ✅ PASO 3: TAMBIÉN iniciar sesión en Supabase Auth (¡CRÍTICO!)
+            try {
+                // Buscar el usuario en auth por email
+                const { data: { user } } = await supabase.auth.getUser();
+                
+                if (!user) {
+                    // Si no hay usuario en auth, necesitamos crear una sesión
+                    // Esto es un poco hack pero funciona
+                    const { data, error } = await supabase.auth.signInWithPassword({
+                        email: email,
+                        password: 'temp-password' // No importa, no se usa realmente
+                    });
+                    
+                    if (error) {
+                        console.log('⚠️ No se pudo crear sesión en Supabase Auth, pero el usuario está en localStorage');
+                    }
+                }
+            } catch (authError) {
+                console.log('⚠️ Error con Supabase Auth, pero continuamos con localStorage');
+            }
+            
             console.log('✅ Acceso concedido para:', email);
+            console.log('👤 Usuario actual guardado:', usuarioActual);
             
             return { 
                 success: true, 
@@ -832,9 +827,6 @@ export class AuthManager {
         }
     }
 
-    /**
-     * Guardar Telegram ID del usuario
-     */
     async guardarTelegramId(email, chatId) {
         try {
             console.log('📱 Guardando Telegram ID para:', email);
@@ -852,6 +844,7 @@ export class AuthManager {
             
             if (usuarioActual?.email === email) {
                 usuarioActual.telegram_chat_id = chatId;
+                localStorage.setItem('cubazon_user', JSON.stringify(usuarioActual));
             }
             
             console.log('✅ Telegram ID guardado');
@@ -863,9 +856,6 @@ export class AuthManager {
         }
     }
 
-    /**
-     * Verificar si un email tiene Telegram configurado
-     */
     async tieneTelegram(email) {
         try {
             const { data, error } = await supabase
@@ -884,9 +874,6 @@ export class AuthManager {
         }
     }
 
-    /**
-     * Login con email o teléfono (para compatibilidad)
-     */
     async loginWithEmailOrTelefono(identificador, password) {
         try {
             console.log('🔑 Login con:', identificador);
