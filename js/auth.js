@@ -1,5 +1,6 @@
 // ============================================
 // auth.js - VERSIÓN FINAL CON SUPABASE AUTH INTEGRADO
+// Y FALLBACK PARA TELEGRAM
 // ============================================
 
 import { supabase } from './supabase-client.js'
@@ -545,32 +546,64 @@ export class AuthManager {
     }
 
     // ============================================
-    // SISTEMA HÍBRIDO TELEGRAM
+    // SISTEMA HÍBRIDO TELEGRAM (VERSIÓN CORREGIDA CON FALLBACK)
     // ============================================
     
     async enviarTelegram(chatId, codigo) {
         try {
             console.log('📱 Solicitando envío de código por Telegram al chat:', chatId);
             
-            const { data, error } = await supabase.functions.invoke('enviar-codigo-telegram', {
-                body: { 
-                    chatId: chatId, 
-                    codigo: codigo 
+            // Validar que los parámetros no sean undefined
+            if (!chatId) {
+                console.error('❌ chatId es undefined o null');
+                return false;
+            }
+            if (!codigo) {
+                console.error('❌ codigo es undefined o null');
+                return false;
+            }
+            
+            // Intentar con Edge Function primero
+            try {
+                const { data, error } = await supabase.functions.invoke('enviar-codigo-telegram', {
+                    body: { 
+                        chatId: chatId, 
+                        codigo: codigo 
+                    }
+                });
+
+                if (!error && data && data.success) {
+                    console.log('✅ Código enviado por Telegram (vía Edge Function)');
+                    return true;
+                } else {
+                    console.log('⚠️ Edge Function respondió con error, usando método directo:', error || data);
                 }
+            } catch (e) {
+                console.log('⚠️ Error al invocar Edge Function, usando método directo:', e);
+            }
+            
+            // FALLBACK: método directo con token
+            const token = '8753442721:AAHk-f6qBMuPsgLF54UbyALyMlmI709ERkg';
+            
+            const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: chatId,
+                    text: `🔐 *CUBAZON - Tu código de acceso*\n\nHola! Usa este código para iniciar sesión:\n\n\`${codigo}\`\n\n⏳ Válido por 5 minutos.\n\n¿No solicitaste esto? Ignora este mensaje.`,
+                    parse_mode: 'Markdown'
+                })
             });
-
-            if (error) {
-                console.error('❌ Error al invocar Edge Function:', error);
+            
+            const data = await response.json();
+            
+            if (!data.ok) {
+                console.error('❌ Error de Telegram:', data);
                 return false;
             }
-
-            if (data && data.success) {
-                console.log('✅ Código enviado por Telegram (vía Edge Function)');
-                return true;
-            } else {
-                console.error('❌ La Edge Function respondió con error:', data);
-                return false;
-            }
+            
+            console.log('✅ Código enviado por Telegram (método directo)');
+            return true;
 
         } catch (error) {
             console.error('Error en enviarTelegram:', error);
@@ -698,6 +731,7 @@ export class AuthManager {
             
             if (metodo === 'telegram') {
                 if (!perfil?.telegram_chat_id) {
+                    console.log('❌ Usuario sin Telegram ID:', email);
                     return { 
                         success: false, 
                         necesitaTelegramId: true,
@@ -705,6 +739,8 @@ export class AuthManager {
                         email: email
                     };
                 }
+                
+                console.log('📤 Enviando código a Telegram chat:', perfil.telegram_chat_id);
                 
                 const enviado = await this.enviarTelegram(perfil.telegram_chat_id, codigo);
                 if (!enviado) {
@@ -730,7 +766,7 @@ export class AuthManager {
         }
     }
 
-    // ========== VALIDAR CÓDIGO Y DAR ACCESO (VERSIÓN CORREGIDA) ==========
+    // ========== VALIDAR CÓDIGO Y DAR ACCESO ==========
     async validarCodigoSinPassword(email, codigo) {
         try {
             console.log('🔍 Validando código para:', email);
@@ -785,31 +821,23 @@ export class AuthManager {
                 };
             }
             
-            // ✅ PASO 1: Guardar en localStorage
+            // Guardar en localStorage
             localStorage.setItem('cubazon_user', JSON.stringify(usuarioActual));
             
-            // ✅ PASO 2: Notificar cambio (para listeners)
+            // Notificar cambio
             this.notificarCambio();
             
-            // ✅ PASO 3: TAMBIÉN iniciar sesión en Supabase Auth (¡CRÍTICO!)
+            // Intentar sesión en Supabase Auth
             try {
-                // Buscar el usuario en auth por email
                 const { data: { user } } = await supabase.auth.getUser();
-                
                 if (!user) {
-                    // Si no hay usuario en auth, necesitamos crear una sesión
-                    // Esto es un poco hack pero funciona
-                    const { data, error } = await supabase.auth.signInWithPassword({
+                    await supabase.auth.signInWithPassword({
                         email: email,
-                        password: 'temp-password' // No importa, no se usa realmente
+                        password: 'temp-password'
                     });
-                    
-                    if (error) {
-                        console.log('⚠️ No se pudo crear sesión en Supabase Auth, pero el usuario está en localStorage');
-                    }
                 }
             } catch (authError) {
-                console.log('⚠️ Error con Supabase Auth, pero continuamos con localStorage');
+                console.log('⚠️ No se pudo crear sesión en Supabase Auth');
             }
             
             console.log('✅ Acceso concedido para:', email);
