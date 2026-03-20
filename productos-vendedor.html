@@ -922,7 +922,7 @@
             const mensaje = encodeURIComponent(
                 `Hola, me interesa tu producto *${p.nombre}* de *${p.vendedor.nombre_tienda}*.\n` +
                 `Precio: $${p.precio.toFixed(2)} CUP\n` +
-                `Ubicación del vendedor: ${p.vendedor.municipio || ''}, ${p.vendedor.provincia || ''}\n` +
+                `Ubicación del vendedor: ${p.vendedor.municipio}, ${p.vendedor.provincia}\n` +
                 `Domicilio: ${domicilioTexto}\n` +
                 `Stock: ${p.stock} unidades\n` +
                 `¿Podemos coordinar la compra? (Recuerda: solo pago contra entrega)`
@@ -999,7 +999,7 @@
                         ${p.vendedor.provincia ? `
                             <div class="vendedor-detalle-item">
                                 <i class="fa fa-map-marker"></i>
-                                <span><strong>Ubicación:</strong> ${p.vendedor.municipio || ''}, ${p.vendedor.provincia || ''}</span>
+                                <span><strong>Ubicación:</strong> ${p.vendedor.municipio}, ${p.vendedor.provincia}</span>
                             </div>
                         ` : ''}
                         

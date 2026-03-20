@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recarga Exitosa - CUBAZON</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .success-card {
+            background: white;
+            border-radius: 30px;
+            padding: 50px;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .success-icon {
+            width: 100px;
+            height: 100px;
+            background: #10b981;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            margin: 0 auto 30px;
+            animation: scaleIn 0.5s ease;
+        }
+
+        @keyframes scaleIn {
+            0% { transform: scale(0); }
+            70% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 15px;
+            color: #0f172a;
+        }
+
+        p {
+            color: #64748b;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .amount {
+            font-size: 48px;
+            font-weight: 700;
+            color: #059669;
+            margin: 20px 0;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border-radius: 40px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            font-size: 16px;
+        }
+
+        .btn-primary {
+            background: #f97316;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #ea580c;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(249,115,22,0.3);
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+
+        @media (max-width: 640px) {
+            .success-card {
+                padding: 30px;
+            }
+            h1 {
+                font-size: 24px;
+            }
+            .amount {
+                font-size: 32px;
+            }
+            .btn-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="success-card">
+        <div class="success-icon">
+            <i class="fa fa-check"></i>
+        </div>
+        
+        <h1>¡Recarga Exitosa!</h1>
+        <p>Tu saldo ha sido acreditado correctamente</p>
+        
+        <div class="amount" id="montoRecargado">Cargando...</div>
+        
+        <p style="font-size: 14px;">
+            Ya puedes usar tu saldo para comprar en CUBAZON
+        </p>
+        
+        <div class="btn-group">
+            <a href="/" class="btn btn-primary">
+                <i class="fa fa-shopping-cart"></i> Seguir comprando
+            </a>
+            <a href="/mi-cuenta.html" class="btn btn-secondary">
+                <i class="fa fa-user"></i> Mi cuenta
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Mostrar el monto recargado (viene de la URL)
+        const urlParams = new URLSearchParams(window.location.search)
+        const monto = urlParams.get('monto') || ''
+        
+        if (monto) {
+            document.getElementById('montoRecargado').textContent = `${monto} CUP`
+        } else {
+            document.getElementById('montoRecargado').textContent = 'Saldo actualizado'
+        }
+    </script>
+</body>
+</html>

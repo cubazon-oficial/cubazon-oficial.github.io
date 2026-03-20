@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recargar Saldo - CUBAZON</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f3f6f9;
+            color: #0f172a;
+            line-height: 1.5;
+        }
+
+        .recarga-container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .recarga-card {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #0f172a;
+        }
+
+        h1 i {
+            color: #f97316;
+        }
+
+        .subtitle {
+            color: #64748b;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .balance-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+        }
+
+        .balance-label {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .balance-amount {
+            font-size: 36px;
+            font-weight: 700;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 30px 0 20px;
+            color: #0f172a;
+        }
+
+        .montos-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .monto-btn {
+            padding: 15px;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #0f172a;
+        }
+
+        .monto-btn:hover {
+            background: #f97316;
+            border-color: #f97316;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .monto-btn.selected {
+            background: #f97316;
+            border-color: #f97316;
+            color: white;
+        }
+
+        .custom-monto {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .custom-monto input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .custom-monto input:focus {
+            outline: none;
+            border-color: #f97316;
+        }
+
+        .btn-recargar {
+            background: linear-gradient(135deg, #f97316, #f59e0b);
+            color: white;
+            border: none;
+            padding: 18px 30px;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 18px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(249,115,22,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-recargar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(249,115,22,0.4);
+        }
+
+        .info-box {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+
+        .info-box h3 {
+            color: #0369a1;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .info-box ul {
+            list-style: none;
+            color: #0369a1;
+        }
+
+        .info-box li {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .info-box i {
+            color: #0284c7;
+        }
+
+        .volver {
+            display: inline-block;
+            margin-top: 20px;
+            color: #64748b;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .volver i {
+            margin-right: 5px;
+        }
+
+        .volver:hover {
+            color: #f97316;
+        }
+
+        @media (max-width: 640px) {
+            .recarga-card {
+                padding: 25px;
+            }
+            h1 {
+                font-size: 24px;
+            }
+            .montos-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .balance-amount {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="recarga-container">
+        <div class="recarga-card">
+            <h1>
+                <i class="fa fa-bolt"></i>
+                Recargar con QvaPay
+            </h1>
+            <p class="subtitle">Añade saldo a tu cuenta CUBAZON usando Transfermóvil, Enzona o saldo QvaPay</p>
+
+            <!-- Saldo actual -->
+            <div class="balance-card" id="balanceCard" style="display: none;">
+                <div class="balance-label">Tu saldo actual</div>
+                <div class="balance-amount" id="saldoActual">$0.00</div>
+            </div>
+
+            <!-- Selector de montos en CUP -->
+            <div class="section-title">💰 Monto a recargar (CUP)</div>
+            <div class="montos-grid" id="montosPreset">
+                <button class="monto-btn" data-monto="100">100 CUP</button>
+                <button class="monto-btn" data-monto="200">200 CUP</button>
+                <button class="monto-btn" data-monto="500">500 CUP</button>
+                <button class="monto-btn" data-monto="1000">1000 CUP</button>
+            </div>
+
+            <div class="custom-monto">
+                <input type="number" id="montoPersonalizado" 
+                       placeholder="Otro monto (mín. 1 CUP)" min="1" step="1">
+                <button class="btn-recargar" id="btnRecargar">
+                    <i class="fa fa-bolt"></i>
+                    Recargar Ahora
+                </button>
+            </div>
+
+            <!-- Información importante -->
+            <div class="info-box">
+                <h3><i class="fa fa-info-circle"></i> Información importante</h3>
+                <ul>
+                    <li><i class="fa fa-check-circle"></i> Monto mínimo: 1 CUP</li>
+                    <li><i class="fa fa-check-circle"></i> Métodos: Transfermóvil, Enzona, saldo QvaPay</li>
+                    <li><i class="fa fa-check-circle"></i> Comisión: 0% para el comercio</li>
+                    <li><i class="fa fa-check-circle"></i> La recarga es automática</li>
+                </ul>
+            </div>
+
+            <a href="/" class="volver">
+                <i class="fa fa-arrow-left"></i> Volver a la tienda
+            </a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script type="module">
+        import { supabase } from '/js/supabase-client.js'
+        import { auth } from '/js/auth.js'
+
+        // ========== CARGAR SALDO ==========
+        async function cargarSaldo() {
+            const usuario = auth.getUsuario()
+            const balanceCard = document.getElementById('balanceCard')
+            const saldoActual = document.getElementById('saldoActual')
+
+            if (!usuario) {
+                balanceCard.style.display = 'none'
+                return
+            }
+
+            try {
+                const { data, error } = await supabase
+                    .from('saldo_usuarios')
+                    .select('saldo_actual')
+                    .eq('user_id', usuario.id)
+                    .single()
+
+                if (error && error.code !== 'PGRST116') throw error
+
+                const saldo = data?.saldo_actual || 0
+                saldoActual.textContent = `$${saldo.toFixed(2)} CUP`
+                balanceCard.style.display = 'block'
+            } catch (error) {
+                console.error('Error cargando saldo:', error)
+            }
+        }
+
+        // ========== RECARGAR ==========
+        async function recargar(monto) {
+            const usuario = auth.getUsuario()
+            
+            if (!usuario) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Inicia sesión',
+                    text: 'Debes iniciar sesión para recargar saldo'
+                }).then(() => {
+                    window.location.href = '/login.html'
+                })
+                return
+            }
+
+            Swal.fire({
+                title: 'Procesando...',
+                text: 'Conectando con QvaPay',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            })
+
+            try {
+                const { data, error } = await supabase.functions.invoke('qvapay-create-invoice', {
+                    body: {
+                        usuarioId: usuario.id,
+                        monto: monto,
+                        descripcion: `Recarga CUBAZON - ${monto} CUP`
+                    }
+                })
+
+                if (error) throw error
+
+                // Redirigir al usuario a la página de pago de QvaPay
+                window.location.href = data.url
+
+            } catch (error) {
+                console.error('Error:', error)
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.message || 'No se pudo procesar la recarga'
+                })
+            }
+        }
+
+        // ========== EVENTOS ==========
+        
+        // Seleccionar monto predefinido
+        document.querySelectorAll('.monto-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.monto-btn').forEach(b => b.classList.remove('selected'))
+                btn.classList.add('selected')
+                document.getElementById('montoPersonalizado').value = btn.dataset.monto
+            })
+        })
+
+        // Botón recargar
+        document.getElementById('btnRecargar').addEventListener('click', () => {
+            const monto = document.getElementById('montoPersonalizado').value
+            if (!monto || monto < 1) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Monto inválido',
+                    text: 'El monto mínimo es 1 CUP'
+                })
+                return
+            }
+            recargar(parseFloat(monto))
+        })
+
+        // Escuchar cambios de usuario
+        auth.onCambio(() => {
+            cargarSaldo()
+        })
+
+        // Cargar saldo inicial
+        cargarSaldo()
+
+        // Verificar si hay usuario
+        setTimeout(() => {
+            if (!auth.getUsuario()) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Inicia sesión',
+                    text: 'Debes iniciar sesión para recargar saldo',
+                    showCancelButton: true,
+                    confirmButtonText: 'Iniciar sesión',
+                    cancelButtonText: 'Cancelar'
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        window.location.href = '/login.html'
+                    } else {
+                        window.location.href = '/'
+                    }
+                })
+            }
+        }, 500)
+    </script>
+</body>
+</html>

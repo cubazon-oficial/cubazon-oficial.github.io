@@ -151,28 +151,6 @@
         }
         .saldo-mini-card i { font-size: 16px; }
 
-        /* NUEVO: Botón de recarga mini dentro de la tarjeta de saldo */
-        .btn-recarga-mini {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            margin-left: 8px;
-            transition: all 0.2s;
-            font-size: 14px;
-        }
-        
-        .btn-recarga-mini:hover {
-            background: #f97316;
-            transform: scale(1.1);
-        }
-
         /* BOTÓN INICIAR SESIÓN */
         .login-btn {
             color: white;
@@ -338,22 +316,6 @@
         }
 
         #main-menu ul li a:hover { color: var(--amazon-orange); }
-
-        /* NUEVO: Estilo para el botón Crypto en el menú */
-        .btn-crypto {
-            background: linear-gradient(135deg, #f97316, #f59e0b);
-            color: white !important;
-            padding: 5px 15px !important;
-            border-radius: 30px !important;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .btn-crypto:hover {
-            background: linear-gradient(135deg, #ea580c, #d97706) !important;
-            color: white !important;
-        }
 
         /* Estilo para el botón TCP */
         .btn-tcp {
@@ -1179,16 +1141,10 @@
                     </div>
                     
                     <div class="header-right">
-                        <!-- TARJETA DE SALDO - MODIFICADA CON BOTÓN DE RECARGA -->
+                        <!-- TARJETA DE SALDO -->
                         <div id="saldoHeaderCard" class="saldo-mini-card" style="display: none;">
                             <i class="fa fa-credit-card"></i>
                             <span id="saldoHeaderAmount">$0.00</span>
-                            <!-- NUEVO: Botón de recarga crypto -->
-                            <button onclick="window.cryptoManager?.mostrarModalRecarga()" 
-                                    class="btn-recarga-mini" 
-                                    title="Recargar con crypto">
-                                <i class="fa fa-bolt"></i>
-                            </button>
                         </div>
 
                         <!-- BOTÓN INICIAR SESIÓN -->
@@ -1232,8 +1188,6 @@
                             <li><a href="/categoria.html?cat=Hogar">Hogar</a></li>
                             <li><a href="/buscar.html"><i class="fa fa-search"></i> Buscar</a></li>
                             <li><a href="/lista-deseos.html"><i class="fa fa-heart"></i> Mi Lista</a></li>
-                            <!-- NUEVO: Enlace a recarga con crypto -->
-                            <li><a href="/recarga.html" class="btn-crypto"><i class="fa fa-bolt"></i> Recargar</a></li>
                             <li><a href="/index2.html" class="btn-tcp"><i class="fa fa-globe"></i> TCP</a></li>
                         </ul>
                     </div>
@@ -2113,7 +2067,7 @@
             await cargarListaDeseos();
             actualizarBotonLogin();
             await Promise.all([
-                cargarSlider(),
+                cargarSlider(), // ← CAMBIADO: ya no usa cargarSliderPatrocinado
                 cargarDestacados(),
                 cargarOfertas(),
                 cargarConsumibles(),
@@ -2151,13 +2105,6 @@
         document.querySelector('.back-top')?.addEventListener('click', function() {
             window.scrollTo({ top: 0, behavior: 'smooth' })
         })
-    </script>
-
-    <!-- NUEVO: Cargar cryptoManager después de auth -->
-    <script type="module">
-        import { cryptoManager } from '/js/crypto.js'
-        window.cryptoManager = cryptoManager
-        console.log('✅ CryptoManager cargado')
     </script>
 </body>
 </html>
