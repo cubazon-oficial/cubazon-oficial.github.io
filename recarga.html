@@ -204,6 +204,18 @@
             color: #f97316;
         }
 
+        .loader {
+            text-align: center;
+            padding: 40px;
+            color: #64748b;
+        }
+
+        .loader i {
+            font-size: 40px;
+            margin-bottom: 15px;
+            color: #f97316;
+        }
+
         @media (max-width: 640px) {
             .recarga-card {
                 padding: 25px;
@@ -222,51 +234,55 @@
 </head>
 <body>
     <div class="recarga-container">
-        <div class="recarga-card">
-            <h1>
-                <i class="fa fa-bolt"></i>
-                Recargar con QvaPay
-            </h1>
-            <p class="subtitle">Añade saldo a tu cuenta CUBAZON usando Transfermóvil, Enzona o saldo QvaPay</p>
-
-            <!-- Saldo actual -->
-            <div class="balance-card" id="balanceCard" style="display: none;">
-                <div class="balance-label">Tu saldo actual</div>
-                <div class="balance-amount" id="saldoActual">$0.00</div>
+        <div class="recarga-card" id="recargaCard">
+            <!-- Loader mientras se carga -->
+            <div id="loader" class="loader">
+                <i class="fa fa-spinner fa-spin"></i>
+                <p>Cargando...</p>
             </div>
 
-            <!-- Selector de montos en CUP -->
-            <div class="section-title">💰 Monto a recargar (CUP)</div>
-            <div class="montos-grid" id="montosPreset">
-                <button class="monto-btn" data-monto="100">100 CUP</button>
-                <button class="monto-btn" data-monto="200">200 CUP</button>
-                <button class="monto-btn" data-monto="500">500 CUP</button>
-                <button class="monto-btn" data-monto="1000">1000 CUP</button>
-            </div>
-
-            <div class="custom-monto">
-                <input type="number" id="montoPersonalizado" 
-                       placeholder="Otro monto (mín. 1 CUP)" min="1" step="1">
-                <button class="btn-recargar" id="btnRecargar">
+            <!-- Contenido principal (oculto hasta que el usuario cargue) -->
+            <div id="mainContent" style="display: none;">
+                <h1>
                     <i class="fa fa-bolt"></i>
-                    Recargar Ahora
-                </button>
-            </div>
+                    Recargar con QvaPay
+                </h1>
+                <p class="subtitle">Añade saldo a tu cuenta CUBAZON usando Transfermóvil, Enzona o saldo QvaPay</p>
 
-            <!-- Información importante -->
-            <div class="info-box">
-                <h3><i class="fa fa-info-circle"></i> Información importante</h3>
-                <ul>
-                    <li><i class="fa fa-check-circle"></i> Monto mínimo: 1 CUP</li>
-                    <li><i class="fa fa-check-circle"></i> Métodos: Transfermóvil, Enzona, saldo QvaPay</li>
-                    <li><i class="fa fa-check-circle"></i> Comisión: 0% para el comercio</li>
-                    <li><i class="fa fa-check-circle"></i> La recarga es automática</li>
-                </ul>
-            </div>
+                <div class="balance-card" id="balanceCard" style="display: none;">
+                    <div class="balance-label">Tu saldo actual</div>
+                    <div class="balance-amount" id="saldoActual">$0.00</div>
+                </div>
 
-            <a href="/" class="volver">
-                <i class="fa fa-arrow-left"></i> Volver a la tienda
-            </a>
+                <div class="section-title">💰 Monto a recargar (CUP)</div>
+                <div class="montos-grid" id="montosPreset">
+                    <button class="monto-btn" data-monto="100">100 CUP</button>
+                    <button class="monto-btn" data-monto="200">200 CUP</button>
+                    <button class="monto-btn" data-monto="500">500 CUP</button>
+                    <button class="monto-btn" data-monto="1000">1000 CUP</button>
+                </div>
+
+                <div class="custom-monto">
+                    <input type="number" id="montoPersonalizado" placeholder="Otro monto (mín. 1 CUP)" min="1" step="1">
+                    <button class="btn-recargar" id="btnRecargar">
+                        <i class="fa fa-bolt"></i> Recargar Ahora
+                    </button>
+                </div>
+
+                <div class="info-box">
+                    <h3><i class="fa fa-info-circle"></i> Información importante</h3>
+                    <ul>
+                        <li><i class="fa fa-check-circle"></i> Monto mínimo: 1 CUP</li>
+                        <li><i class="fa fa-check-circle"></i> Métodos: Transfermóvil, Enzona, saldo QvaPay</li>
+                        <li><i class="fa fa-check-circle"></i> Comisión: 0% para el comercio</li>
+                        <li><i class="fa fa-check-circle"></i> La recarga es automática</li>
+                    </ul>
+                </div>
+
+                <a href="/" class="volver">
+                    <i class="fa fa-arrow-left"></i> Volver a la tienda
+                </a>
+            </div>
         </div>
     </div>
 
@@ -304,7 +320,7 @@
             }
         }
 
-        // ========== RECARGAR (CORREGIDO) ==========
+        // ========== RECARGAR ==========
         async function recargar(monto) {
             const usuario = auth.getUsuario()
             
@@ -327,14 +343,9 @@
             })
 
             try {
-                // Obtener la sesión actual para el token
                 const { data: sessionData } = await supabase.auth.getSession()
                 const accessToken = sessionData?.session?.access_token
                 
-                console.log('📤 Llamando a qvapay-create-invoice con monto:', monto)
-                console.log('👤 Usuario ID:', usuario.id)
-                
-                // Llamar a la Edge Function con el token explícito
                 const response = await fetch('https://sxxntcaobektiltyppwz.supabase.co/functions/v1/qvapay-create-invoice', {
                     method: 'POST',
                     headers: {
@@ -354,11 +365,10 @@
                     throw new Error(data.error || 'Error en la función')
                 }
 
-                // Redirigir al usuario a la página de pago de QvaPay
                 window.location.href = data.url
 
             } catch (error) {
-                console.error('Error detallado:', error)
+                console.error('Error:', error)
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
@@ -367,58 +377,48 @@
             }
         }
 
-        // ========== EVENTOS ==========
-        
-        // Seleccionar monto predefinido
-        document.querySelectorAll('.monto-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.monto-btn').forEach(b => b.classList.remove('selected'))
-                btn.classList.add('selected')
-                document.getElementById('montoPersonalizado').value = btn.dataset.monto
+        // ========== CONFIGURAR EVENTOS ==========
+        function configurarEventos() {
+            document.querySelectorAll('.monto-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.monto-btn').forEach(b => b.classList.remove('selected'))
+                    btn.classList.add('selected')
+                    document.getElementById('montoPersonalizado').value = btn.dataset.monto
+                })
             })
-        })
 
-        // Botón recargar
-        document.getElementById('btnRecargar').addEventListener('click', () => {
-            const monto = document.getElementById('montoPersonalizado').value
-            if (!monto || monto < 1) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Monto inválido',
-                    text: 'El monto mínimo es 1 CUP'
-                })
-                return
+            document.getElementById('btnRecargar').addEventListener('click', () => {
+                const monto = document.getElementById('montoPersonalizado').value
+                if (!monto || monto < 1) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Monto inválido',
+                        text: 'El monto mínimo es 1 CUP'
+                    })
+                    return
+                }
+                recargar(parseFloat(monto))
+            })
+        }
+
+        // ========== INICIALIZAR - SOLO ESPERAR A QUE EL USUARIO CARGUE ==========
+        function esperarUsuario() {
+            const usuario = auth.getUsuario()
+            
+            if (usuario) {
+                // Usuario ya cargado, mostrar contenido
+                document.getElementById('loader').style.display = 'none'
+                document.getElementById('mainContent').style.display = 'block'
+                cargarSaldo()
+                configurarEventos()
+            } else {
+                // Usuario no cargado aún, esperar un poco más
+                setTimeout(esperarUsuario, 200)
             }
-            recargar(parseFloat(monto))
-        })
+        }
 
-        // Escuchar cambios de usuario
-        auth.onCambio(() => {
-            cargarSaldo()
-        })
-
-        // Cargar saldo inicial
-        cargarSaldo()
-
-        // Verificar si hay usuario
-        setTimeout(() => {
-            if (!auth.getUsuario()) {
-                Swal.fire({
-                    icon: 'info',
-                    title: 'Inicia sesión',
-                    text: 'Debes iniciar sesión para recargar saldo',
-                    showCancelButton: true,
-                    confirmButtonText: 'Iniciar sesión',
-                    cancelButtonText: 'Cancelar'
-                }).then(result => {
-                    if (result.isConfirmed) {
-                        window.location.href = '/login.html'
-                    } else {
-                        window.location.href = '/'
-                    }
-                })
-            }
-        }, 500)
+        // Iniciar
+        esperarUsuario()
     </script>
 </body>
 </html>
