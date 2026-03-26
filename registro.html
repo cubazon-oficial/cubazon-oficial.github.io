@@ -172,6 +172,11 @@
             margin-right: 8px;
         }
         
+        .form-group label .required {
+            color: #dc3545;
+            margin-left: 4px;
+        }
+        
         .input-group {
             display: flex;
             gap: 10px;
@@ -202,6 +207,14 @@
             border-color: #667eea;
             outline: none;
             box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+        
+        select.form-control {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23667eea' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 20px center;
         }
         
         .telegram-card {
@@ -308,6 +321,26 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+        
+        .row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .alert-info {
+            background: #e6fffa;
+            border-left: 4px solid #319795;
+            padding: 15px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+        
+        .alert-info p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #2c7a7b;
+        }
     </style>
 </head>
 <body>
@@ -330,41 +363,75 @@
             Registrarme con email y contraseña
         </button>
         
+        <!-- BOTÓN DE TELEGRAM -->
+        <button class="btn btn-telegram" id="telegramRegisterBtn">
+            <i class="fa fa-telegram"></i>
+            Registrarme con Telegram
+        </button>
+        
         <div class="divider">
-            <span>o con teléfono</span>
+            <span>o</span>
         </div>
         
-        <!-- FORMULARIO DE TELÉFONO -->
-        <div id="formularioTelefono">
+        <!-- FORMULARIO DE TELEGRAM (sin email) -->
+        <div id="formularioTelegram" class="hidden">
             <div class="form-group">
-                <label><i class="fa fa-user"></i> Nombre completo</label>
-                <input type="text" id="nombre" class="form-control" placeholder="Ej: Juan Pérez Pérez">
+                <label><i class="fa fa-user"></i> Nombre completo <span class="required">*</span></label>
+                <input type="text" id="nombreTelegram" class="form-control" placeholder="Ej: Juan Pérez Pérez">
             </div>
             
-            <div class="form-group">
-                <label><i class="fa fa-phone"></i> Teléfono cubano</label>
-                <div class="input-group">
-                    <span class="prefix">+53</span>
-                    <input type="tel" id="telefono" class="form-control" 
-                           placeholder="51234567" maxlength="8" inputmode="numeric">
+            <div class="row-2">
+                <div class="form-group">
+                    <label><i class="fa fa-id-card"></i> Carnet de Identidad <span class="required">*</span></label>
+                    <input type="text" id="carnetTelegram" class="form-control" placeholder="Ej: 00112233445">
+                </div>
+                <div class="form-group">
+                    <label><i class="fa fa-phone"></i> Teléfono <span class="required">*</span></label>
+                    <div class="input-group">
+                        <span class="prefix">+53</span>
+                        <input type="tel" id="telefonoTelegram" class="form-control" placeholder="51234567" maxlength="8" inputmode="numeric">
+                    </div>
                 </div>
             </div>
             
+            <div class="form-group">
+                <label><i class="fa fa-map-marker"></i> Provincia <span class="required">*</span></label>
+                <select id="provinciaTelegram" class="form-control">
+                    <option value="">Selecciona tu provincia</option>
+                    <option value="Pinar del Río">Pinar del Río</option>
+                    <option value="Artemisa">Artemisa</option>
+                    <option value="La Habana">La Habana</option>
+                    <option value="Mayabeque">Mayabeque</option>
+                    <option value="Matanzas">Matanzas</option>
+                    <option value="Cienfuegos">Cienfuegos</option>
+                    <option value="Villa Clara">Villa Clara</option>
+                    <option value="Sancti Spíritus">Sancti Spíritus</option>
+                    <option value="Ciego de Ávila">Ciego de Ávila</option>
+                    <option value="Camagüey">Camagüey</option>
+                    <option value="Las Tunas">Las Tunas</option>
+                    <option value="Granma">Granma</option>
+                    <option value="Holguín">Holguín</option>
+                    <option value="Santiago de Cuba">Santiago de Cuba</option>
+                    <option value="Guantánamo">Guantánamo</option>
+                    <option value="Isla de la Juventud">Isla de la Juventud</option>
+                </select>
+            </div>
+            
             <label style="display: flex; gap: 10px; margin: 20px 0; align-items: flex-start;">
-                <input type="checkbox" id="terminos" style="width: 20px; height: 20px; margin-top: 2px;">
+                <input type="checkbox" id="terminosTelegram" style="width: 20px; height: 20px; margin-top: 2px;">
                 <span style="font-size: 14px; color: #4a5568;">
                     Acepto los <a href="/terminos.html" target="_blank">términos y condiciones</a> 
                     y la <a href="/privacidad.html" target="_blank">política de privacidad</a>
                 </span>
             </label>
             
-            <button class="btn btn-primary" id="continuarTelefonoBtn">
-                <i class="fa fa-arrow-right"></i> Continuar con teléfono
+            <button class="btn btn-primary" id="continuarTelegramBtn">
+                <i class="fa fa-arrow-right"></i> Continuar con Telegram
             </button>
         </div>
         
         <!-- PASO 2: OBTENER ID DE TELEGRAM (con @userinfobot) -->
-        <div id="pasoTelegram" class="hidden">
+        <div id="pasoTelegramId" class="hidden">
             <div class="telegram-card">
                 <h3><i class="fa fa-telegram"></i> Obtén tu ID de Telegram</h3>
                 
@@ -399,7 +466,7 @@
                            placeholder="Ej: 123456789" inputmode="numeric">
                 </div>
                 
-                <button class="btn btn-primary" id="guardarTelegramBtn">
+                <button class="btn btn-primary" id="guardarTelegramIdBtn">
                     <i class="fa fa-check"></i> Ya tengo mi ID, crear cuenta
                 </button>
             </div>
@@ -427,7 +494,7 @@
             </div>
         </div>
         
-        <!-- FORMULARIO DE EMAIL (oculto) -->
+        <!-- FORMULARIO DE EMAIL (expandido) -->
         <div id="formularioEmail" class="hidden" style="margin-top: 20px;">
             <div class="divider">
                 <span>Registro con email</span>
@@ -435,30 +502,59 @@
             
             <form id="emailRegistroForm">
                 <div class="form-group">
-                    <label><i class="fa fa-user"></i> Nombre completo</label>
-                    <input type="text" id="nombreEmail" class="form-control" placeholder="Ej: Juan Pérez" required>
+                    <label><i class="fa fa-user"></i> Nombre completo <span class="required">*</span></label>
+                    <input type="text" id="nombreEmail" class="form-control" placeholder="Ej: Juan Pérez Pérez" required>
                 </div>
                 
-                <div class="form-group">
-                    <label><i class="fa fa-envelope"></i> Correo electrónico</label>
-                    <input type="email" id="email" class="form-control" placeholder="tu@email.com" required>
-                </div>
-                
-                <div class="form-group">
-                    <label><i class="fa fa-phone"></i> Teléfono (opcional)</label>
-                    <div class="input-group">
-                        <span class="prefix">+53</span>
-                        <input type="tel" id="telefonoEmail" class="form-control" placeholder="51234567" maxlength="8">
+                <div class="row-2">
+                    <div class="form-group">
+                        <label><i class="fa fa-id-card"></i> Carnet de Identidad <span class="required">*</span></label>
+                        <input type="text" id="carnetEmail" class="form-control" placeholder="Ej: 00112233445" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fa fa-phone"></i> Teléfono <span class="required">*</span></label>
+                        <div class="input-group">
+                            <span class="prefix">+53</span>
+                            <input type="tel" id="telefonoEmail" class="form-control" placeholder="51234567" maxlength="8" required>
+                        </div>
                     </div>
                 </div>
                 
                 <div class="form-group">
-                    <label><i class="fa fa-lock"></i> Contraseña</label>
+                    <label><i class="fa fa-map-marker"></i> Provincia <span class="required">*</span></label>
+                    <select id="provinciaEmail" class="form-control" required>
+                        <option value="">Selecciona tu provincia</option>
+                        <option value="Pinar del Río">Pinar del Río</option>
+                        <option value="Artemisa">Artemisa</option>
+                        <option value="La Habana">La Habana</option>
+                        <option value="Mayabeque">Mayabeque</option>
+                        <option value="Matanzas">Matanzas</option>
+                        <option value="Cienfuegos">Cienfuegos</option>
+                        <option value="Villa Clara">Villa Clara</option>
+                        <option value="Sancti Spíritus">Sancti Spíritus</option>
+                        <option value="Ciego de Ávila">Ciego de Ávila</option>
+                        <option value="Camagüey">Camagüey</option>
+                        <option value="Las Tunas">Las Tunas</option>
+                        <option value="Granma">Granma</option>
+                        <option value="Holguín">Holguín</option>
+                        <option value="Santiago de Cuba">Santiago de Cuba</option>
+                        <option value="Guantánamo">Guantánamo</option>
+                        <option value="Isla de la Juventud">Isla de la Juventud</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fa fa-envelope"></i> Correo electrónico <span class="required">*</span></label>
+                    <input type="email" id="email" class="form-control" placeholder="tu@email.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fa fa-lock"></i> Contraseña <span class="required">*</span></label>
                     <input type="password" id="password" class="form-control" placeholder="Mínimo 6 caracteres" required>
                 </div>
                 
                 <div class="form-group">
-                    <label><i class="fa fa-lock"></i> Confirmar contraseña</label>
+                    <label><i class="fa fa-lock"></i> Confirmar contraseña <span class="required">*</span></label>
                     <input type="password" id="confirmPassword" class="form-control" placeholder="Repite tu contraseña" required>
                 </div>
                 
@@ -470,6 +566,13 @@
                     <i class="fa fa-user-plus"></i> Crear cuenta con email
                 </button>
             </form>
+            
+            <div class="alert-info" id="confirmacionEmail" style="display: none;">
+                <p><i class="fa fa-envelope"></i> <strong>¡Registro exitoso!</strong></p>
+                <p>Te hemos enviado un correo de confirmación a <strong id="emailConfirmado"></strong></p>
+                <p>⚠️ <strong>Importante:</strong> Revisa también tu bandeja de <strong>SPAM</strong> o <strong>Correo no deseado</strong> si no ves el mensaje en tu bandeja de entrada.</p>
+                <p>Haz clic en el enlace del correo para activar tu cuenta.</p>
+            </div>
         </div>
         
         <div class="footer-links">
@@ -483,10 +586,11 @@
         import { supabase } from '/js/supabase-client.js'
         import { auth } from '/js/auth.js'
         
-        let datosRegistro = {
+        let datosRegistroTelegram = {
             nombre: '',
             telefono: '',
-            email: ''
+            carnet: '',
+            provincia: ''
         }
         let temporizador = null
         
@@ -502,30 +606,67 @@
             })
         })
         
+        // MOSTRAR FORMULARIO TELEGRAM
+        document.getElementById('telegramRegisterBtn').addEventListener('click', function() {
+            const form = document.getElementById('formularioTelegram')
+            form.classList.remove('hidden')
+            document.getElementById('formularioEmail').classList.add('hidden')
+            form.scrollIntoView({ behavior: 'smooth' })
+        })
+        
         // MOSTRAR FORMULARIO EMAIL
         document.getElementById('emailRegisterBtn').addEventListener('click', function() {
             const form = document.getElementById('formularioEmail')
             if (form.classList.contains('hidden')) {
                 form.classList.remove('hidden')
+                document.getElementById('formularioTelegram').classList.add('hidden')
+                document.getElementById('pasoTelegramId').classList.add('hidden')
+                document.getElementById('pasoCodigo').classList.add('hidden')
                 form.scrollIntoView({ behavior: 'smooth' })
             } else {
                 form.classList.add('hidden')
             }
         })
         
+        // VERIFICAR SI TELÉFONO YA EXISTE
+        async function verificarTelefonoExistente(telefono) {
+            try {
+                const existeTel = await auth.telefonoExiste(telefono)
+                if (existeTel.existe) {
+                    return { existe: true, mensaje: `El teléfono ${telefono} ya está registrado. Intenta iniciar sesión.` }
+                }
+                return { existe: false }
+            } catch (error) {
+                console.error('Error verificando teléfono:', error)
+                return { existe: false }
+            }
+        }
+        
         // REGISTRO EMAIL
         document.getElementById('emailRegistroForm').addEventListener('submit', async function(e) {
             e.preventDefault()
             
             const nombre = document.getElementById('nombreEmail').value.trim()
-            const email = document.getElementById('email').value.trim()
+            const carnet = document.getElementById('carnetEmail').value.trim()
             const telefono = document.getElementById('telefonoEmail').value.trim()
+            const provincia = document.getElementById('provinciaEmail').value
+            const email = document.getElementById('email').value.trim()
             const password = document.getElementById('password').value
             const confirm = document.getElementById('confirmPassword').value
             const terminos = document.getElementById('terminosEmail').checked
             
-            if (!nombre || !email || !password) {
-                Swal.fire('Error', 'Completa todos los campos', 'error')
+            if (!nombre || !carnet || !telefono || !provincia || !email || !password) {
+                Swal.fire('Error', 'Completa todos los campos obligatorios', 'error')
+                return
+            }
+            
+            if (!/^[0-9]{8}$/.test(telefono)) {
+                Swal.fire('Error', 'Teléfono inválido (8 dígitos)', 'error')
+                return
+            }
+            
+            if (!/^[0-9]{11}$/.test(carnet)) {
+                Swal.fire('Error', 'Carnet inválido (11 dígitos)', 'error')
                 return
             }
             
@@ -544,40 +685,70 @@
                 return
             }
             
+            // Verificar si ya existe teléfono
+            const existe = await verificarTelefonoExistente(telefono)
+            if (existe.existe) {
+                Swal.fire('Error', existe.mensaje, 'error')
+                return
+            }
+            
             const btn = this.querySelector('button[type="submit"]')
             btn.disabled = true
             btn.innerHTML = '<i class="fa fa-spinner fa-pulse"></i> Creando cuenta...'
             
             try {
-                const datos = { nombre, telefono: telefono || null }
+                const datos = { 
+                    nombre, 
+                    telefono,
+                    carnet,
+                    provincia
+                }
+                
                 const resultado = await auth.registrar(email, password, datos)
                 
                 if (resultado.success) {
+                    const confirmacionDiv = document.getElementById('confirmacionEmail')
+                    const emailSpan = document.getElementById('emailConfirmado')
+                    emailSpan.textContent = email
+                    confirmacionDiv.style.display = 'block'
+                    
+                    // Ocultar el formulario
+                    document.getElementById('formularioEmail').style.display = 'none'
+                    
                     Swal.fire({
                         icon: 'success',
                         title: '¡Registro exitoso!',
-                        timer: 2000,
-                        showConfirmButton: false
-                    }).then(() => window.location.href = '/login.html')
+                        html: `Te hemos enviado un correo de confirmación a <strong>${email}</strong><br><br>⚠️ <strong>Importante:</strong> Revisa también tu bandeja de <strong>SPAM</strong> o <strong>Correo no deseado</strong>.`,
+                        timer: 5000,
+                        showConfirmButton: true
+                    })
                 } else {
                     throw new Error(resultado.error)
                 }
             } catch (error) {
                 Swal.fire('Error', error.message, 'error')
+                btn.disabled = false
+                btn.innerHTML = '<i class="fa fa-user-plus"></i> Crear cuenta con email'
             }
             
             btn.disabled = false
-            btn.innerHTML = '<i class="fa fa-user-plus"></i> Crear cuenta con email'
         })
         
-        // PASO 1: VALIDAR TELÉFONO
-        document.getElementById('continuarTelefonoBtn').addEventListener('click', async function() {
-            const nombre = document.getElementById('nombre').value.trim()
-            const telefono = document.getElementById('telefono').value.trim()
-            const terminos = document.getElementById('terminos').checked
+        // PASO 1: VALIDAR DATOS DE TELEGRAM
+        document.getElementById('continuarTelegramBtn').addEventListener('click', async function() {
+            const nombre = document.getElementById('nombreTelegram').value.trim()
+            const carnet = document.getElementById('carnetTelegram').value.trim()
+            const telefono = document.getElementById('telefonoTelegram').value.trim()
+            const provincia = document.getElementById('provinciaTelegram').value
+            const terminos = document.getElementById('terminosTelegram').checked
             
             if (!nombre) {
                 Swal.fire('Error', 'Ingresa tu nombre', 'error')
+                return
+            }
+            
+            if (!carnet || !/^[0-9]{11}$/.test(carnet)) {
+                Swal.fire('Error', 'Carnet inválido (11 dígitos)', 'error')
                 return
             }
             
@@ -586,44 +757,45 @@
                 return
             }
             
+            if (!provincia) {
+                Swal.fire('Error', 'Selecciona tu provincia', 'error')
+                return
+            }
+            
             if (!terminos) {
                 Swal.fire('Error', 'Debes aceptar los términos', 'error')
                 return
             }
             
-            datosRegistro.nombre = nombre
-            datosRegistro.telefono = telefono
-            datosRegistro.email = `${telefono}@telefono.cubazon`
+            // Verificar si ya existe teléfono
+            const existe = await verificarTelefonoExistente(telefono)
+            if (existe.existe) {
+                Swal.fire('Error', existe.mensaje, 'error')
+                return
+            }
+            
+            datosRegistroTelegram.nombre = nombre
+            datosRegistroTelegram.telefono = telefono
+            datosRegistroTelegram.carnet = carnet
+            datosRegistroTelegram.provincia = provincia
             
             this.disabled = true
             this.innerHTML = '<i class="fa fa-spinner fa-pulse"></i> Verificando...'
             
             try {
-                const existeTel = await auth.telefonoExiste(telefono)
-                
-                if (existeTel.existe) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Teléfono ya registrado',
-                        text: 'Este número ya tiene una cuenta',
-                        confirmButtonText: 'Ir a login'
-                    }).then(() => window.location.href = '/login.html')
-                    return
-                }
-                
-                document.getElementById('formularioTelefono').classList.add('hidden')
-                document.getElementById('pasoTelegram').classList.remove('hidden')
+                document.getElementById('formularioTelegram').classList.add('hidden')
+                document.getElementById('pasoTelegramId').classList.remove('hidden')
                 
             } catch (error) {
-                Swal.fire('Error', 'Error al verificar teléfono', 'error')
+                Swal.fire('Error', 'Error al procesar datos', 'error')
             }
             
             this.disabled = false
-            this.innerHTML = '<i class="fa fa-arrow-right"></i> Continuar con teléfono'
+            this.innerHTML = '<i class="fa fa-arrow-right"></i> Continuar con Telegram'
         })
         
-        // PASO 2: GUARDAR TELEGRAM ID
-        document.getElementById('guardarTelegramBtn').addEventListener('click', async function() {
+        // PASO 2: GUARDAR TELEGRAM ID Y CREAR CUENTA
+        document.getElementById('guardarTelegramIdBtn').addEventListener('click', async function() {
             const telegramId = document.getElementById('telegramId').value.trim()
             
             if (!telegramId || !/^\d+$/.test(telegramId)) {
@@ -635,15 +807,19 @@
             this.innerHTML = '<i class="fa fa-spinner fa-pulse"></i> Creando cuenta...'
             
             try {
+                // Crear email único basado en teléfono
+                const email = `${datosRegistroTelegram.telefono}@telegram.cubazon`
                 const password = Math.random().toString(36).slice(-12)
                 
                 const { data, error } = await supabase.auth.signUp({
-                    email: datosRegistro.email,
+                    email: email,
                     password: password,
                     options: {
                         data: {
-                            nombre: datosRegistro.nombre,
-                            telefono: datosRegistro.telefono,
+                            nombre: datosRegistroTelegram.nombre,
+                            telefono: datosRegistroTelegram.telefono,
+                            carnet: datosRegistroTelegram.carnet,
+                            provincia: datosRegistroTelegram.provincia,
                             telegram_chat_id: telegramId
                         }
                     }
@@ -655,13 +831,17 @@
                 
                 await supabase
                     .from('perfiles')
-                    .update({ telegram_chat_id: telegramId })
+                    .update({ 
+                        telegram_chat_id: telegramId,
+                        carnet: datosRegistroTelegram.carnet,
+                        provincia: datosRegistroTelegram.provincia
+                    })
                     .eq('id', data.user.id)
                 
-                const resultado = await auth.solicitarCodigoSinPassword(datosRegistro.email, 'telegram')
+                const resultado = await auth.solicitarCodigoSinPassword(email, 'telegram')
                 
                 if (resultado.success) {
-                    document.getElementById('pasoTelegram').classList.add('hidden')
+                    document.getElementById('pasoTelegramId').classList.add('hidden')
                     document.getElementById('pasoCodigo').classList.remove('hidden')
                     iniciarTemporizadorReenvio()
                     
@@ -673,7 +853,7 @@
                     })
                 }
             } catch (error) {
-                Swal.fire('Error', 'No se pudo crear la cuenta', 'error')
+                Swal.fire('Error', 'No se pudo crear la cuenta: ' + error.message, 'error')
             }
             
             this.disabled = false
@@ -683,6 +863,7 @@
         // PASO 3: VERIFICAR CÓDIGO
         document.getElementById('verificarCodigoBtn').addEventListener('click', async function() {
             const codigo = document.getElementById('codigo').value.trim()
+            const email = `${datosRegistroTelegram.telefono}@telegram.cubazon`
             
             if (!codigo || codigo.length !== 6) {
                 Swal.fire('Error', 'Ingresa el código de 6 dígitos', 'error')
@@ -692,7 +873,7 @@
             this.disabled = true
             this.innerHTML = '<i class="fa fa-spinner fa-pulse"></i> Verificando...'
             
-            const resultado = await auth.validarCodigoSinPassword(datosRegistro.email, codigo)
+            const resultado = await auth.validarCodigoSinPassword(email, codigo)
             
             if (resultado.success) {
                 Swal.fire({
@@ -716,11 +897,12 @@
             
             const link = this
             if (link.classList.contains('disabled')) return
+            const email = `${datosRegistroTelegram.telefono}@telegram.cubazon`
             
             link.classList.add('disabled')
             link.innerHTML = '<i class="fa fa-spinner fa-pulse"></i> Reenviando...'
             
-            const resultado = await auth.solicitarCodigoSinPassword(datosRegistro.email, 'telegram')
+            const resultado = await auth.solicitarCodigoSinPassword(email, 'telegram')
             
             if (resultado.success) {
                 Swal.fire('Éxito', 'Nuevo código enviado', 'success')
@@ -751,8 +933,20 @@
         }
         
         // Auto-formato
-        document.getElementById('telefono').addEventListener('input', function() {
+        document.getElementById('telefonoTelegram').addEventListener('input', function() {
             this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8)
+        })
+        
+        document.getElementById('telefonoEmail').addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8)
+        })
+        
+        document.getElementById('carnetTelegram').addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11)
+        })
+        
+        document.getElementById('carnetEmail').addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11)
         })
         
         document.getElementById('codigo').addEventListener('input', function() {
