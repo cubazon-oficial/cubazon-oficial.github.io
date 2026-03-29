@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedido Confirmado · CUBAZON</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+        .receipt-container {
+            max-width: 800px;
+            width: 100%;
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            animation: slideUp 0.5s ease;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .receipt-header {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 35px;
+            text-align: center;
+        }
+        .receipt-header .success-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin: 0 auto 20px;
+        }
+        .receipt-header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        .receipt-header .order-id {
+            font-family: monospace;
+            font-size: 18px;
+            background: rgba(255,255,255,0.2);
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 30px;
+            margin-top: 15px;
+        }
+        .receipt-body {
+            padding: 35px;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 6px 15px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            background: #d4edda;
+            color: #155724;
+            margin-bottom: 20px;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 16px;
+            margin: 20px 0;
+        }
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .info-label {
+            font-size: 12px;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .info-value {
+            font-size: 15px;
+            font-weight: 600;
+            color: #0f1111;
+            word-break: break-word;
+        }
+        .products-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .products-table th, .products-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .products-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+        }
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .total-row:last-child {
+            border-bottom: none;
+        }
+        .total-row.total {
+            font-size: 20px;
+            font-weight: 700;
+            color: #b12704;
+            border-top: 2px solid #dee2e6;
+            margin-top: 15px;
+            padding-top: 20px;
+        }
+        .total-row.total .value {
+            font-size: 24px;
+        }
+        .qvapay-info {
+            background: #e3f2fd;
+            border-radius: 12px;
+            padding: 15px;
+            margin: 20px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .qvapay-info span:first-child {
+            color: #0088cc;
+            font-weight: 600;
+        }
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 14px 25px;
+            border: none;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        .btn-primary {
+            background: #ffd814;
+            color: #0f1111;
+        }
+        .btn-primary:hover {
+            background: #f7ca00;
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background: #f0f2f5;
+            color: #0f1111;
+        }
+        .btn-secondary:hover {
+            background: #e3e6e9;
+        }
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #059669;
+        }
+        @media (max-width: 640px) {
+            .receipt-body { padding: 20px; }
+            .info-grid { grid-template-columns: 1fr; }
+            .btn-group { flex-direction: column; }
+            .btn { width: 100%; justify-content: center; }
+            .products-table th, .products-table td { font-size: 13px; padding: 8px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="receipt-container" id="receiptContainer">
+        <div class="receipt-header">
+            <div class="success-icon">
+                <i class="fa fa-check"></i>
+            </div>
+            <h1>¡Pago Exitoso!</h1>
+            <p>Tu pedido ha sido confirmado</p>
+            <div class="order-id" id="orderId">Cargando...</div>
+        </div>
+        
+        <div class="receipt-body" id="receiptBody">
+            <div style="text-align: center; padding: 40px;">
+                <i class="fa fa-spinner fa-pulse fa-2x"></i>
+                <p style="margin-top: 15px;">Cargando información del pedido...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let pedidoData = null
+        
+        // Obtener ID del pedido desde la URL
+        const urlParams = new URLSearchParams(window.location.search)
+        const montoParam = urlParams.get('monto')
+        
+        async function cargarPedido() {
+            try {
+                // Buscar el último pedido del usuario
+                const { data: sessionData } = await supabase.auth.getSession()
+                const accessToken = sessionData?.session?.access_token
+                const user = sessionData?.session?.user
+                
+                if (!user) {
+                    document.getElementById('receiptBody').innerHTML = `
+                        <div style="text-align: center; padding: 40px;">
+                            <i class="fa fa-exclamation-triangle" style="font-size: 48px; color: #dc3545;"></i>
+                            <h3 style="margin-top: 15px;">No se pudo cargar el pedido</h3>
+                            <p>Inicia sesión para ver tus pedidos</p>
+                            <a href="/login.html" class="btn btn-primary" style="margin-top: 20px;">Iniciar sesión</a>
+                        </div>
+                    `
+                    return
+                }
+                
+                // Buscar pedido reciente con método qvapay
+                const { data: pedidos, error } = await supabase
+                    .from('pedidos')
+                    .select('*')
+                    .eq('cliente->>email', user.email)
+                    .eq('metodo_pago', 'qvapay')
+                    .order('created_at', { ascending: false })
+                    .limit(1)
+                
+                if (error) throw error
+                
+                if (!pedidos || pedidos.length === 0) {
+                    // Buscar en localStorage (fallback)
+                    const pendiente = localStorage.getItem('pedido_pendiente_qvapay')
+                    if (pendiente) {
+                        const data = JSON.parse(pendiente)
+                        pedidoData = {
+                            id: 'PENDIENTE',
+                            ...data.pedidoData,
+                            total_qusd: data.totalQUSD,
+                            tasa_aplicada: data.tasa
+                        }
+                        localStorage.removeItem('pedido_pendiente_qvapay')
+                    } else {
+                        throw new Error('No se encontró el pedido')
+                    }
+                } else {
+                    pedidoData = pedidos[0]
+                }
+                
+                renderizarRecibo()
+                
+            } catch (error) {
+                console.error('Error cargando pedido:', error)
+                document.getElementById('receiptBody').innerHTML = `
+                    <div style="text-align: center; padding: 40px;">
+                        <i class="fa fa-exclamation-triangle" style="font-size: 48px; color: #dc3545;"></i>
+                        <h3 style="margin-top: 15px;">Pedido no encontrado</h3>
+                        <p>No pudimos encontrar la información de tu pedido.</p>
+                        <a href="/mi-cuenta.html" class="btn btn-primary" style="margin-top: 20px;">Ver mis pedidos</a>
+                    </div>
+                `
+            }
+        }
+        
+        function renderizarRecibo() {
+            if (!pedidoData) return
+            
+            const fecha = pedidoData.created_at ? new Date(pedidoData.created_at).toLocaleString('es-ES') : new Date().toLocaleString('es-ES')
+            
+            // Productos HTML
+            let productosHtml = `
+                <table class="products-table">
+                    <thead>
+                        <tr><th>Producto</th><th>Cant.</th><th>Precio</th><th>Subtotal</th></tr>
+                    </thead>
+                    <tbody>
+            `
+            pedidoData.items.forEach(item => {
+                productosHtml += `
+                    <tr>
+                        <td><strong>${item.nombre}</strong></td>
+                        <td>${item.cantidad}</td>
+                        <td>$${item.precio.toFixed(2)}</td>
+                        <td>$${(item.precio * item.cantidad).toFixed(2)}</td>
+                    </tr>
+                `
+            })
+            productosHtml += '</tbody></table>'
+            
+            // Resumen HTML
+            let resumenHtml = `
+                <div class="total-row">
+                    <span>Subtotal</span>
+                    <span class="value">$${pedidoData.subtotal.toFixed(2)} CUP</span>
+                </div>
+                <div class="total-row">
+                    <span>Envío</span>
+                    <span class="value">$${pedidoData.envio.toFixed(2)} CUP</span>
+                </div>
+            `
+            if (pedidoData.descuento > 0) {
+                resumenHtml += `
+                    <div class="total-row">
+                        <span>Descuento</span>
+                        <span class="value" style="color: #059669;">-$${pedidoData.descuento.toFixed(2)} CUP</span>
+                    </div>
+                `
+            }
+            resumenHtml += `
+                <div class="total-row total">
+                    <span>Total</span>
+                    <span class="value">$${pedidoData.total.toFixed(2)} CUP</span>
+                </div>
+            `
+            
+            // Información QvaPay
+            let qvapayHtml = ''
+            if (pedidoData.total_qusd || pedidoData.tasa_aplicada) {
+                qvapayHtml = `
+                    <div class="qvapay-info">
+                        <span><i class="fa fa-bolt"></i> Pagado con QvaPay</span>
+                        <span><strong>${(pedidoData.total_qusd || pedidoData.total / (pedidoData.tasa_aplicada || 600)).toFixed(2)} QUSD</strong></span>
+                    </div>
+                    <div style="font-size: 12px; color: #6c757d; text-align: right; margin-top: -10px; margin-bottom: 15px;">
+                        Tasa aplicada: 1 USD = ${pedidoData.tasa_aplicada || 600} CUP
+                    </div>
+                `
+            }
+            
+            document.getElementById('orderId').textContent = `#${pedidoData.id.slice(0, 8)}`
+            
+            document.getElementById('receiptBody').innerHTML = `
+                <div>
+                    <span class="status-badge"><i class="fa fa-check-circle"></i> PAGADO</span>
+                    <span style="float: right; color: #6c757d; font-size: 14px;">${fecha}</span>
+                </div>
+                
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Cliente</span>
+                        <span class="info-value">${pedidoData.cliente?.nombre || '-'}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Email</span>
+                        <span class="info-value">${pedidoData.cliente?.email || '-'}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Teléfono</span>
+                        <span class="info-value">${pedidoData.cliente?.telefono || '-'}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Dirección</span>
+                        <span class="info-value">${pedidoData.cliente?.direccion || '-'}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Localidad</span>
+                        <span class="info-value">${pedidoData.cliente?.localidad || '-'}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Referencia</span>
+                        <span class="info-value">${pedidoData.cliente?.referencia || '-'}</span>
+                    </div>
+                </div>
+                
+                <h3 style="margin: 20px 0 10px;">📦 Productos</h3>
+                ${productosHtml}
+                
+                <h3 style="margin: 25px 0 10px;">💰 Resumen de pago</h3>
+                ${resumenHtml}
+                ${qvapayHtml}
+                
+                <div class="btn-group">
+                    <button class="btn btn-success" id="downloadPdfBtn">
+                        <i class="fa fa-download"></i> Descargar Recibo (PDF)
+                    </button>
+                    <a href="/mi-cuenta.html" class="btn btn-primary">
+                        <i class="fa fa-user"></i> Mis pedidos
+                    </a>
+                    <a href="/" class="btn btn-secondary">
+                        <i class="fa fa-home"></i> Volver al inicio
+                    </a>
+                </div>
+            `
+            
+            // Configurar descarga de PDF
+            document.getElementById('downloadPdfBtn').addEventListener('click', () => {
+                const element = document.getElementById('receiptContainer')
+                const opt = {
+                    margin: 0.5,
+                    filename: `recibo_cubazon_${pedidoData.id.slice(0, 8)}.pdf`,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2 },
+                    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+                }
+                html2pdf().set(opt).from(element).save()
+            })
+        }
+        
+        // Inicializar
+        cargarPedido()
+    </script>
+    
+    <script type="module">
+        import { supabase } from '/js/supabase-client.js'
+        window.supabase = supabase
+    </script>
+</body>
+</html>

@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recibo de Pago · CUBAZON</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f2f5;
+            padding: 40px 20px;
+        }
+        .receipt-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .receipt-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .receipt-header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        .receipt-header .order-id {
+            font-family: monospace;
+            font-size: 18px;
+            background: rgba(255,255,255,0.2);
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 30px;
+            margin-top: 10px;
+        }
+        .receipt-body {
+            padding: 30px;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 6px 15px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            background: #d4edda;
+            color: #155724;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 16px;
+            margin: 20px 0;
+        }
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .info-label {
+            font-size: 12px;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .info-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #0f1111;
+        }
+        .products-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .products-table th, .products-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .products-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-top: 2px solid #dee2e6;
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .total-row.total {
+            font-size: 24px;
+            color: #b12704;
+        }
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 14px 30px;
+            border: none;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: #ffd814;
+            color: #0f1111;
+        }
+        .btn-primary:hover {
+            background: #f7ca00;
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background: #f0f2f5;
+            color: #0f1111;
+        }
+        .btn-secondary:hover {
+            background: #e3e6e9;
+        }
+        @media (max-width: 640px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            .btn-group {
+                flex-direction: column;
+            }
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="receipt-container">
+        <div class="receipt-header">
+            <h1><i class="fa fa-check-circle"></i> ¡Pago Exitoso!</h1>
+            <p>Tu pedido ha sido confirmado</p>
+            <div class="order-id" id="orderId">Cargando...</div>
+        </div>
+        
+        <div class="receipt-body">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <span class="status-badge"><i class="fa fa-check"></i> PAGADO</span>
+                <span id="fecha"></span>
+            </div>
+            
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">Cliente</span>
+                    <span class="info-value" id="clienteNombre">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Email</span>
+                    <span class="info-value" id="clienteEmail">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Teléfono</span>
+                    <span class="info-value" id="clienteTelefono">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Método de pago</span>
+                    <span class="info-value"><i class="fa fa-bolt"></i> QvaPay</span>
+                </div>
+            </div>
+            
+            <h3 style="margin: 20px 0 10px;">📦 Productos</h3>
+            <div id="productosContainer"></div>
+            
+            <div id="resumenContainer"></div>
+            
+            <div class="btn-group">
+                <button class="btn btn-primary" id="downloadPdfBtn">
+                    <i class="fa fa-download"></i> Descargar Recibo (PDF)
+                </button>
+                <a href="/mi-cuenta.html" class="btn btn-secondary">
+                    <i class="fa fa-user"></i> Ir a mis pedidos
+                </a>
+                <a href="/" class="btn btn-secondary">
+                    <i class="fa fa-home"></i> Volver al inicio
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <script>
+        // Cargar datos del pedido desde URL o localStorage
+        const urlParams = new URLSearchParams(window.location.search)
+        const pedidoId = urlParams.get('id')
+        
+        let pedidoData = null
+        
+        async function cargarPedido() {
+            try {
+                if (pedidoId) {
+                    // Cargar desde Supabase
+                    const { data, error } = await supabase
+                        .from('pedidos')
+                        .select('*')
+                        .eq('id', pedidoId)
+                        .single()
+                    
+                    if (!error && data) {
+                        pedidoData = data
+                    }
+                } else {
+                    // Cargar desde localStorage (fallback)
+                    const guardado = localStorage.getItem('pedido_exitoso')
+                    if (guardado) {
+                        pedidoData = JSON.parse(guardado)
+                    }
+                }
+                
+                if (pedidoData) {
+                    renderizarRecibo(pedidoData)
+                } else {
+                    document.getElementById('orderId').textContent = 'Pedido no encontrado'
+                }
+            } catch (error) {
+                console.error('Error cargando pedido:', error)
+            }
+        }
+        
+        function renderizarRecibo(pedido) {
+            document.getElementById('orderId').textContent = `#${pedido.id.slice(0, 8)}`
+            document.getElementById('fecha').textContent = new Date(pedido.created_at).toLocaleString('es-ES')
+            document.getElementById('clienteNombre').textContent = pedido.cliente?.nombre || '-'
+            document.getElementById('clienteEmail').textContent = pedido.cliente?.email || '-'
+            document.getElementById('clienteTelefono').textContent = pedido.cliente?.telefono || '-'
+            
+            // Productos
+            let productosHtml = '<table class="products-table"><thead><tr><th>Producto</th><th>Cant.</th><th>Precio (CUP)</th><th>Subtotal</th></tr></thead><tbody>'
+            pedido.items.forEach(item => {
+                productosHtml += `
+                    <tr>
+                        <td>${item.nombre}</td>
+                        <td>${item.cantidad}</td>
+                        <td>$${item.precio.toFixed(2)}</td>
+                        <td>$${(item.precio * item.cantidad).toFixed(2)}</td>
+                    </tr>
+                `
+            })
+            productosHtml += '</tbody></table>'
+            document.getElementById('productosContainer').innerHTML = productosHtml
+            
+            // Resumen
+            let resumenHtml = `
+                <div class="total-row">
+                    <span>Subtotal:</span>
+                    <span>$${pedido.subtotal.toFixed(2)} CUP</span>
+                </div>
+                <div class="total-row">
+                    <span>Envío:</span>
+                    <span>$${pedido.envio.toFixed(2)} CUP</span>
+                </div>
+            `
+            if (pedido.descuento > 0) {
+                resumenHtml += `
+                    <div class="total-row">
+                        <span>Descuento:</span>
+                        <span style="color: #059669;">-$${pedido.descuento.toFixed(2)} CUP</span>
+                    </div>
+                `
+            }
+            resumenHtml += `
+                <div class="total-row total">
+                    <span>Total:</span>
+                    <span>$${pedido.total.toFixed(2)} CUP</span>
+                </div>
+            `
+            if (pedido.total_qusd) {
+                resumenHtml += `
+                    <div class="total-row" style="border-top: 1px dashed #dee2e6; margin-top: 10px; padding-top: 10px;">
+                        <span>Pagado con QvaPay:</span>
+                        <span style="color: #0088cc;">${pedido.total_qusd.toFixed(2)} QUSD</span>
+                    </div>
+                    <div class="total-row" style="font-size: 12px; color: #6c757d;">
+                        <span>Tasa aplicada:</span>
+                        <span>1 USD = ${pedido.tasa_aplicada || '600'} CUP</span>
+                    </div>
+                `
+            }
+            document.getElementById('resumenContainer').innerHTML = resumenHtml
+        }
+        
+        // Descargar PDF
+        document.getElementById('downloadPdfBtn').addEventListener('click', () => {
+            const element = document.querySelector('.receipt-container')
+            const opt = {
+                margin: 0.5,
+                filename: `recibo_cubazon_${pedidoId || 'pedido'}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+            }
+            html2pdf().set(opt).from(element).save()
+        })
+        
+        cargarPedido()
+    </script>
+    
+    <script type="module">
+        import { supabase } from '/js/supabase-client.js'
+        window.supabase = supabase
+    </script>
+</body>
+</html>

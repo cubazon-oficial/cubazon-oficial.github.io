@@ -896,8 +896,8 @@ window.recargarSaldo = async function() {
                     return;
                 }
                 
-                let html = '<div class="table-responsive"><table>';
-                html += '<tr><th>Fecha</th><th>Tipo</th><th>Monto</th><th>Saldo</th><th>Descripción</th></tr>';
+                let html = '<div class="table-responsive">\n<table>\n';
+                html += '<tr><th>Fecha</th><th>Tipo</th><th>Monto</th><th>Saldo</th><th>Descripción</th></tr>\n';
                 
                 data.forEach(h => {
                     const fecha = new Date(h.created_at).toLocaleDateString('es-ES');
@@ -955,8 +955,8 @@ window.recargarSaldo = async function() {
                     return;
                 }
                 
-                let html = '<div class="table-responsive"><table>';
-                html += '<tr><th>Fecha</th><th>Tipo</th><th>Contacto</th><th>Monto</th><th>Concepto</th></tr>';
+                let html = '<div class="table-responsive">\n<table>\n';
+                html += ' <thead>\n <tr>\n<th>Fecha</th><th>Tipo</th><th>Contacto</th><th>Monto</th><th>Concepto</th>\n </tr>\n </thead>\n <tbody>\n';
                 
                 data.forEach(t => {
                     const fecha = new Date(t.created_at).toLocaleDateString('es-ES', {
@@ -983,7 +983,7 @@ window.recargarSaldo = async function() {
                     html += `</tr>`;
                 });
                 
-                html += '</table></div>';
+                html += '</tbody></table></div>';
                 html += '<p style="text-align:center; margin-top:15px; color:#6c757d; font-size:12px;">Mostrando las últimas 10 transacciones</p>';
                 
                 Swal.fire({
@@ -1033,12 +1033,71 @@ window.recargarSaldo = async function() {
             }
         }
         
-        // ========== CARGAR DATOS DEL USUARIO ==========
+        // ========== CARGAR DATOS DEL USUARIO (CORREGIDO - CON PERFIL COMPLETO) ==========
         async function cargarDatos() {
             document.getElementById('loadingContainer').style.display = 'block'
             document.getElementById('accountContent').style.display = 'none'
             
-            const usuario = auth.getUsuario()
+            const usuarioAuth = auth.getUsuario()
+            if (!usuarioAuth) {
+                window.location.href = '/login.html'
+                return
+            }
+            
+            // 🔥 OBTENER DATOS COMPLETOS DE LA TABLA PERFILES
+            let usuarioCompleto = { ...usuarioAuth }
+            
+            try {
+                const { data: perfil, error } = await supabase
+                    .from('perfiles')
+                    .select('*')
+                    .eq('id', usuarioAuth.id)
+                    .single()
+                
+                if (!error && perfil) {
+                    // Combinar datos de auth con datos de perfil
+                    usuarioCompleto = {
+                        ...usuarioAuth,
+                        nombre_completo: perfil.nombre || usuarioAuth.nombre_completo || usuarioAuth.user_metadata?.nombre || '',
+                        telefono: perfil.telefono || '',
+                        carnet: perfil.carnet || '',
+                        direccion: perfil.direccion || '',
+                        localidad: perfil.localidad || '',
+                        referencia: perfil.referencia || '',
+                        provincia: perfil.provincia || '',
+                        created_at: perfil.created_at || usuarioAuth.created_at
+                    }
+                    console.log('✅ Perfil cargado:', usuarioCompleto)
+                } else {
+                    console.log('⚠️ No se encontró perfil, usando datos de auth')
+                    usuarioCompleto = {
+                        ...usuarioAuth,
+                        nombre_completo: usuarioAuth.nombre_completo || usuarioAuth.user_metadata?.nombre || usuarioAuth.email?.split('@')[0] || '',
+                        telefono: usuarioAuth.telefono || '',
+                        carnet: '',
+                        direccion: '',
+                        localidad: '',
+                        referencia: '',
+                        provincia: '',
+                        created_at: usuarioAuth.created_at
+                    }
+                }
+            } catch (error) {
+                console.error('Error cargando perfil:', error)
+                usuarioCompleto = {
+                    ...usuarioAuth,
+                    nombre_completo: usuarioAuth.nombre_completo || usuarioAuth.user_metadata?.nombre || usuarioAuth.email?.split('@')[0] || '',
+                    telefono: usuarioAuth.telefono || '',
+                    carnet: '',
+                    direccion: '',
+                    localidad: '',
+                    referencia: '',
+                    provincia: '',
+                    created_at: usuarioAuth.created_at
+                }
+            }
+            
+            // Cargar pedidos y direcciones usando el usuario autenticado
             pedidos = await auth.obtenerPedidos()
             direcciones = await auth.obtenerDirecciones()
             await verificarVendedor()
@@ -1057,7 +1116,7 @@ window.recargarSaldo = async function() {
                 }, 500);
             }
             
-            await renderizarCuenta(usuario)
+            await renderizarCuenta(usuarioCompleto)
             
             document.getElementById('loadingContainer').style.display = 'none'
             document.getElementById('accountContent').style.display = 'block'
@@ -1273,7 +1332,7 @@ window.recargarSaldo = async function() {
             });
         }
         
-        // ========== RENDERIZAR PERFIL ==========
+        // ========== RENDERIZAR PERFIL (CORREGIDO) ==========
         function renderizarPerfil(usuario) {
             return `
                 <div class="section-title">
@@ -1313,19 +1372,24 @@ window.recargarSaldo = async function() {
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Localidad</label>
+                            <label>Localidad/Barrio</label>
                             <input type="text" class="form-control" value="${usuario.localidad || ''}" readonly disabled>
                         </div>
                         <div class="form-group">
-                            <label>Referencia</label>
-                            <input type="text" class="form-control" value="${usuario.referencia || ''}" readonly disabled>
+                            <label>Provincia</label>
+                            <input type="text" class="form-control" value="${usuario.provincia || ''}" readonly disabled>
                         </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Referencia</label>
+                        <input type="text" class="form-control" value="${usuario.referencia || ''}" readonly disabled>
                     </div>
                     
                     <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
                         <small style="color: #6c757d;">
                             <i class="fa fa-info-circle"></i> 
-                            Miembro desde ${new Date(usuario.created_at).toLocaleDateString('es-ES', { year: 'numeric', month: 'long' })}
+                            Miembro desde ${usuario.created_at ? new Date(usuario.created_at).toLocaleDateString('es-ES', { year: 'numeric', month: 'long' }) : 'recientemente'}
                         </small>
                     </div>
                 </div>
@@ -1787,15 +1851,41 @@ window.recargarSaldo = async function() {
         window.editarPerfil = async function() {
             const usuario = auth.getUsuario()
             
+            // Obtener datos actuales del perfil para mostrar en el formulario
+            const { data: perfil } = await supabase
+                .from('perfiles')
+                .select('*')
+                .eq('id', usuario.id)
+                .single()
+            
             const { value: formValues } = await Swal.fire({
                 title: 'Editar perfil',
                 html: `
-                    <input type="text" id="nombre" class="swal2-input" placeholder="Nombre completo" value="${usuario.nombre_completo || ''}">
-                    <input type="tel" id="telefono" class="swal2-input" placeholder="Teléfono" value="${usuario.telefono || ''}">
-                    <input type="text" id="direccion" class="swal2-input" placeholder="Dirección" value="${usuario.direccion || ''}">
-                    <input type="text" id="localidad" class="swal2-input" placeholder="Localidad" value="${usuario.localidad || ''}">
-                    <input type="text" id="referencia" class="swal2-input" placeholder="Referencia" value="${usuario.referencia || ''}">
-                    <input type="text" id="carnet" class="swal2-input" placeholder="Carnet/Pasaporte" value="${usuario.carnet || ''}">
+                    <input type="text" id="nombre" class="swal2-input" placeholder="Nombre completo" value="${(perfil?.nombre || usuario.nombre_completo || '').replace(/"/g, '&quot;')}">
+                    <input type="tel" id="telefono" class="swal2-input" placeholder="Teléfono" value="${perfil?.telefono || usuario.telefono || ''}">
+                    <input type="text" id="carnet" class="swal2-input" placeholder="Carnet/Pasaporte" value="${perfil?.carnet || ''}">
+                    <input type="text" id="direccion" class="swal2-input" placeholder="Dirección" value="${perfil?.direccion || ''}">
+                    <input type="text" id="localidad" class="swal2-input" placeholder="Localidad/Barrio" value="${perfil?.localidad || ''}">
+                    <select id="provincia" class="swal2-input" style="width:100%; padding:10px;">
+                        <option value="">Selecciona tu provincia</option>
+                        <option value="Pinar del Río" ${perfil?.provincia === 'Pinar del Río' ? 'selected' : ''}>Pinar del Río</option>
+                        <option value="Artemisa" ${perfil?.provincia === 'Artemisa' ? 'selected' : ''}>Artemisa</option>
+                        <option value="La Habana" ${perfil?.provincia === 'La Habana' ? 'selected' : ''}>La Habana</option>
+                        <option value="Mayabeque" ${perfil?.provincia === 'Mayabeque' ? 'selected' : ''}>Mayabeque</option>
+                        <option value="Matanzas" ${perfil?.provincia === 'Matanzas' ? 'selected' : ''}>Matanzas</option>
+                        <option value="Cienfuegos" ${perfil?.provincia === 'Cienfuegos' ? 'selected' : ''}>Cienfuegos</option>
+                        <option value="Villa Clara" ${perfil?.provincia === 'Villa Clara' ? 'selected' : ''}>Villa Clara</option>
+                        <option value="Sancti Spíritus" ${perfil?.provincia === 'Sancti Spíritus' ? 'selected' : ''}>Sancti Spíritus</option>
+                        <option value="Ciego de Ávila" ${perfil?.provincia === 'Ciego de Ávila' ? 'selected' : ''}>Ciego de Ávila</option>
+                        <option value="Camagüey" ${perfil?.provincia === 'Camagüey' ? 'selected' : ''}>Camagüey</option>
+                        <option value="Las Tunas" ${perfil?.provincia === 'Las Tunas' ? 'selected' : ''}>Las Tunas</option>
+                        <option value="Granma" ${perfil?.provincia === 'Granma' ? 'selected' : ''}>Granma</option>
+                        <option value="Holguín" ${perfil?.provincia === 'Holguín' ? 'selected' : ''}>Holguín</option>
+                        <option value="Santiago de Cuba" ${perfil?.provincia === 'Santiago de Cuba' ? 'selected' : ''}>Santiago de Cuba</option>
+                        <option value="Guantánamo" ${perfil?.provincia === 'Guantánamo' ? 'selected' : ''}>Guantánamo</option>
+                        <option value="Isla de la Juventud" ${perfil?.provincia === 'Isla de la Juventud' ? 'selected' : ''}>Isla de la Juventud</option>
+                    </select>
+                    <input type="text" id="referencia" class="swal2-input" placeholder="Referencia (opcional)" value="${perfil?.referencia || ''}">
                 `,
                 focusConfirm: false,
                 showCancelButton: true,
@@ -1805,10 +1895,11 @@ window.recargarSaldo = async function() {
                     return {
                         nombre_completo: document.getElementById('nombre').value,
                         telefono: document.getElementById('telefono').value,
+                        carnet: document.getElementById('carnet').value,
                         direccion: document.getElementById('direccion').value,
                         localidad: document.getElementById('localidad').value,
-                        referencia: document.getElementById('referencia').value,
-                        carnet: document.getElementById('carnet').value
+                        provincia: document.getElementById('provincia').value,
+                        referencia: document.getElementById('referencia').value
                     }
                 }
             })
